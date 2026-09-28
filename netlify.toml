@@ -1,0 +1,4 @@
+[build]
+  base = "web-showcase"
+  command = "npm run build"
+  publish = "dist"
