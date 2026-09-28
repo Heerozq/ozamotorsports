@@ -22,39 +22,39 @@
   <div class="subpage-container">
     <h1 class="page-heading">CONTACT US</h1>
     
-    <form class="contact-form">
+    <form class="contact-form" name="contact" method="POST" data-netlify="true">
       <div class="form-group">
         <label>FIRST NAME <span>*</span></label>
-        <input type="text" required>
+        <input type="text" name="firstName" required>
       </div>
       <div class="form-group">
         <label>LAST NAME <span>*</span></label>
-        <input type="text" required>
+        <input type="text" name="lastName" required>
       </div>
       <div class="form-group">
         <label>EMAIL <span>*</span></label>
-        <input type="email" required>
+        <input type="email" name="email" required>
       </div>
       <div class="form-group">
         <label>SUBJECT <span>*</span></label>
-        <input type="text" required>
+        <input type="text" name="subject" required>
       </div>
       <div class="form-group" style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px;">
         <div style="display: flex; flex-direction: column;">
           <label>CODE <span>*</span></label>
-          <select style="flex: 1;">
+          <select name="countryCode" style="flex: 1;">
             <option>IN +91</option>
           </select>
         </div>
         <div style="display: flex; flex-direction: column;">
           <label>PHONE <span>*</span></label>
-          <input type="tel" style="flex: 1; box-sizing: border-box;" required>
+          <input type="tel" name="phone" style="flex: 1; box-sizing: border-box;" required>
         </div>
       </div>
-      <div class="form-group" style="grid-column: 2;"></div>
+
       <div class="form-group full-width">
         <label>MESSAGE <span>*</span></label>
-        <textarea required></textarea>
+        <textarea name="message" required></textarea>
       </div>
       <button type="submit" class="submit-btn">SUBMIT</button>
     </form>
