@@ -140,7 +140,8 @@ body, html {
   gap: 15px;
 }
 
-.nav-dropdown:hover .nav-dropdown-content {
+.nav-dropdown:hover .nav-dropdown-content,
+.nav-dropdown.show-dropdown .nav-dropdown-content {
   display: flex;
   animation: dropdownBlur 0.8s ease forwards;
 }
@@ -246,7 +247,8 @@ body, html {
 }
 
 /* Hover par 1 second ka animation */
-.custom-dropdown:hover .dropdown-content {
+.custom-dropdown:hover .dropdown-content,
+.custom-dropdown.show-dropdown .dropdown-content {
   display: flex;
   animation: dropdownBlur 1s ease forwards;
 }

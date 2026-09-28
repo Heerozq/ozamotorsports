@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (bgVideo) {
     // Listen for clicks anywhere on the page
     document.body.addEventListener('click', (e) => {
-      // Ignore clicks if the user is clicking the red action button, menu buttons, or inside the side menu
-      if (e.target.closest('.action-btn') || e.target.closest('#openMenuBtn') || e.target.closest('.side-menu')) {
+      // Ignore clicks if the user is clicking the red action button, menu buttons, or inside the side menu, or dropdowns
+      if (e.target.closest('.action-btn') || e.target.closest('#openMenuBtn') || e.target.closest('.side-menu') || e.target.closest('.custom-dropdown') || e.target.closest('.nav-dropdown')) {
         return;
       }
       
@@ -52,6 +52,18 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         window.location.href = targetUrl;
       }, 550);
+    });
+  });
+
+  // Mobile dropdown toggle logic
+  const dropdownBtns = document.querySelectorAll('.drop-btn, .nav-drop-btn');
+  dropdownBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const parent = btn.closest('.custom-dropdown, .nav-dropdown');
+      if (parent) {
+        parent.classList.toggle('show-dropdown');
+      }
     });
   });
 });
