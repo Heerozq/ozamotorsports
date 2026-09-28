@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oza Motorsports | We Create Unicorns</title>
+    <!-- Use a modern Google Font like Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=BBH+Bartle&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Castoro+Titling&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Condiment&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <!-- Background Media -->
+    <div class="bg-container">
+      <video class="bg-video" autoplay loop muted playsinline>
+        <source src="/bg-video.mp4" type="video/mp4">
+      </video>
+      <!-- Overlay to slightly darken the video so the white text stays readable -->
+      <div class="bg-overlay"></div>
+    </div>
+
+    <!-- Main Content UI -->
+    <div class="ui-layer">
+      
+      <!-- Side Menu -->
+      <div class="side-menu" id="sideMenu">
+        <button class="close-btn" id="closeMenuBtn">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        
+        <nav class="nav-links">
+          <a href="/about-us.html">ABOUT US</a>
+          <a href="/design-solutions.html">DESIGN SOLUTIONS</a>
+          
+          <div class="nav-dropdown">
+            <button class="nav-drop-btn">INNOVATIONS <span class="down-arrow"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9.2828 4.89817" fill="currentColor" style="width: 12px; display: inline-block; vertical-align: middle; margin-left: 5px; margin-bottom: 2px;"><path d="M4.64116,4.89817a.5001.5001,0,0,1-.34277-.13574L.15727.86448A.50018.50018,0,0,1,.84282.136L4.64116,3.71165,8.44.136a.50018.50018,0,0,1,.68555.72852L4.98393,4.76243A.5001.5001,0,0,1,4.64116,4.89817Z"></path></svg></span></button>
+            <div class="nav-dropdown-content">
+              <a href="/v-odne1s.html">V.ODNE1<span style="font-size: 0.7em;">S</span></a>
+              <a href="/bobart.html">BOB<span style="font-size: 1.3em;">A</span>RT</a>
+              <a href="/ltb-valve-techno.html"><span style="font-size: 1.2rem;">LTB</span> <span style="font-size: 1.3em;">V</span>ALVE <span style="font-size: 1.3em;">T</span>ECHNO</a>
+            </div>
+          </div>
+          
+          <a href="/career.html">CAREER</a>
+          <a href="/contact.html">CONTACT US</a>
+          <a href="https://tfsuniverse.github.io/Portfolio/portfolio.html">FOUNDER</a>
+        </nav>
+      </div>
+
+      <!-- Top Right Logo -->
+      <div class="logo-container">
+        <img src="/logo.png" alt="Oza Motorsports Logo" class="main-logo" />
+      </div>
+
+      <!-- Left Side Text (Vertically Centered) -->
+      <div class="hero-text-container">
+        <h1 class="hero-primary">O<br>U<br>R</h1>
+        
+        <div class="custom-dropdown hero-secondary">
+          <button class="drop-btn">INNOVATIONS</button>
+          <div class="dropdown-content">
+            <a href="https://ozamotorsports.wixsite.com/website/v-odneis" class="dropdown-item">V.ODNE1<span style="font-size: 0.7em;">S</span></a>
+            <a href="https://ozamotorsports.wixsite.com/website/bobart" class="dropdown-item">BOB<span style="font-size: 1.3em;">A</span>RT</a>
+            <a href="https://ozamotorsports.wixsite.com/website/ltf-valve-techno" class="dropdown-item"><span style="font-size: 1.2rem;">LTB</span> <span style="font-size: 1.3em;">V</span>ALVE <span style="font-size: 1.3em;">T</span>ECHNO</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Right Action Button -->
+      <div class="action-container">
+        <button class="action-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+        <p class="designer-text">A design by Dhanya N Oza</p>
+      </div>
+
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

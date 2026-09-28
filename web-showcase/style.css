@@ -1,0 +1,656 @@
+/* Reset and Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden; /* Prevent scrolling, true full screen showcase */
+  background-color: #050505;
+  color: #ffffff;
+}
+
+/* Background Layer (Behind UI) */
+.bg-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+}
+
+.bg-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures video scales perfectly to fill screen */
+}
+
+/* Optional overlay to darken the video slightly so white text pops */
+.bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* UI Layer (Sits on top of background) */
+.ui-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  padding: 40px; /* Safe padding from edges */
+}
+
+/* Top Right Logo */
+.logo-container {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  z-index: 150; /* Sits behind the side menu when it opens */
+}
+
+.main-logo {
+  height: 160px; /* Decreased size by half */
+  width: auto;
+  object-fit: contain;
+}
+
+/* Side Menu Overlay */
+.side-menu {
+  position: fixed;
+  top: 0;
+  right: -55vw; /* Hidden off screen */
+  width: 50vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7); /* Transparent black */
+  backdrop-filter: blur(15px); /* Frosted glass effect */
+  z-index: 200; /* Stays below logo (if logo is > 200) */
+  transition: right 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.side-menu.open {
+  right: 0;
+}
+
+/* Close Button */
+.close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-bottom: 50px;
+  transition: transform 0.3s ease;
+}
+
+.close-btn:hover {
+  transform: rotate(90deg);
+}
+
+/* Side Nav Links */
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.nav-links > a, .nav-drop-btn {
+  color: white;
+  text-decoration: none;
+  font-family: 'Castoro Titling', serif;
+  font-size: 32px;
+  letter-spacing: 2px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  width: max-content;
+}
+
+.nav-links > a:hover, .nav-drop-btn:hover {
+  color: #D81700;
+}
+
+.down-arrow {
+  color: #D81700;
+  font-size: 20px;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
+/* Side Menu Dropdown */
+.nav-dropdown-content {
+  display: none;
+  flex-direction: column;
+  padding-left: 20px;
+  margin-top: 15px;
+  gap: 15px;
+}
+
+.nav-dropdown:hover .nav-dropdown-content {
+  display: flex;
+  animation: dropdownBlur 0.8s ease forwards;
+}
+
+.nav-dropdown-content a {
+  color: white;
+  text-decoration: none;
+  font-family: 'Castoro Titling', serif;
+  font-size: 20px;
+  letter-spacing: 1px;
+  transition: color 0.3s ease;
+}
+
+.nav-dropdown-content a:hover {
+  color: #D81700;
+}
+
+/* Left Side Hero Text */
+.hero-text-container {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: flex-end; /* Align INNOVATIONS text to the bottom of OUR */
+}
+
+.hero-primary {
+  font-family: "BBH Bartle", sans-serif; /* User requested font */
+  font-size: 80px; /* Matching the 80px from the Wix editor screenshot */
+  font-weight: 400;
+  font-style: normal;
+  color: #D81700; /* Signature Red */
+  line-height: 0.8;
+  letter-spacing: -2px;
+  text-shadow: 2px 4px 15px rgba(216, 23, 0, 0.3);
+}
+
+.hero-secondary {
+  margin-left: 20px;
+  margin-bottom: 4px; /* Finetuned to align perfectly with the baseline of the 'R' */
+}
+
+/* Page load blur-in animation */
+@keyframes pageLoadBlur {
+  0% { opacity: 0; filter: blur(12px); }
+  100% { opacity: 1; filter: blur(0px); }
+}
+
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
+  font-family: 'Castoro Titling', serif;
+  background: transparent !important;
+  animation: pageLoadBlur 2s ease forwards;
+}
+
+.drop-btn {
+  position: relative;
+  background-color: transparent;
+  color: #ffffff;
+  padding: 0;
+  font-size: 32px;
+  letter-spacing: 4px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  font-family: 'Castoro Titling', serif;
+}
+
+/* INNOVATIONS underline animation */
+.drop-btn::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: #D81700;
+  transition: width 0.4s ease-in-out;
+}
+
+.custom-dropdown:hover .drop-btn::after {
+  width: 100%;
+}
+
+/* Dropdown open blur animation */
+@keyframes dropdownBlur {
+  0% { opacity: 0; filter: blur(6px); transform: translateY(-5px); }
+  100% { opacity: 1; filter: blur(0px); transform: translateY(0); }
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background: transparent !important;
+  min-width: 280px;
+  z-index: 99999;
+  flex-direction: column;
+  padding-top: 10px;
+  top: 100%;
+  left: 0;
+}
+
+/* Hover par 1 second ka animation */
+.custom-dropdown:hover .dropdown-content {
+  display: flex;
+  animation: dropdownBlur 1s ease forwards;
+}
+
+.dropdown-item {
+  position: relative;
+  color: #ffffff;
+  padding: 8px 0;
+  margin-bottom: 4px;
+  text-decoration: none;
+  font-size: 15px; 
+  font-weight: bold;
+  font-family: 'Castoro Titling', serif;
+  transition: color 0.3s ease;
+  width: max-content;
+  background: transparent !important;
+}
+
+.dropdown-item:hover {
+  color: #D81700;
+}
+
+/* Sub-elements underline animation */
+.dropdown-item::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 2px;
+  left: 0;
+  background-color: #D81700;
+  transition: width 0.4s ease-in-out;
+}
+
+.dropdown-item:hover::after {
+  width: 100%;
+}
+
+/* Bottom Right Action Area */
+.action-container {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.action-btn {
+  background-color: #D81700;
+  color: white;
+  width: 110px;
+  height: 45px;
+  border-radius: 50px; /* Changed to 50px for pill shape */
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 30px rgba(216, 23, 0, 0.4);
+}
+
+.action-btn:hover {
+  transform: scale(1.1) translateY(-5px);
+  background-color: #f01a00;
+  box-shadow: 0 15px 40px rgba(216, 23, 0, 0.6);
+}
+
+.designer-text {
+  font-family: 'Condiment', cursive;
+  font-size: 8px;
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  margin-top: 5px;
+}
+
+/* RESPONSIVE DESIGN (Tablets and Mobile) */
+@media (max-width: 1024px) {
+  .hero-primary { font-size: 100px; }
+  .hero-secondary { font-size: 24px; margin-left: 15px; }
+}
+
+@media (max-width: 768px) {
+  .ui-layer { padding: 25px; }
+  
+  .logo-container { top: 25px; right: 25px; }
+  .main-logo { height: 100px; }
+
+  .hero-text-container { left: 5%; flex-direction: column; align-items: flex-start; }
+  .hero-primary { font-size: 80px; }
+  .hero-secondary { font-size: 20px; margin-left: 5px; margin-bottom: 0; margin-top: 5px;}
+
+  .action-container { bottom: 25px; right: 25px; gap: 8px;}
+  .action-btn { width: 85px; height: 35px; }
+  .action-btn svg { width: 20px; height: 20px; }
+  .designer-text { font-size: 10px; }
+  
+  /* Mobile Side Menu Fix */
+  .side-menu {
+    width: 100vw;
+    right: -105vw; /* Start fully offscreen */
+    padding: 60px 30px;
+  }
+  .nav-links > a, .nav-drop-btn {
+    font-size: 24px; /* Slightly smaller for mobile fit */
+  }
+
+  /* Subpage Adjustments for Mobile */
+  .subpage-header {
+    top: 20px;
+    left: 20px;
+  }
+  .subpage-header .main-logo {
+    height: 40px !important;
+  }
+  .home-btn {
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+  }
+  .home-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  .subpage-container {
+    padding: 100px 5vw 50px 5vw;
+  }
+  .page-heading {
+    font-size: 25px;
+  }
+  .page-paragraph {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .page-subheading {
+    font-size: 20px;
+  }
+  .split-layout {
+    flex-direction: column;
+    gap: 30px;
+  }
+  .split-image {
+    min-height: 250px;
+  }
+  .contact-form {
+    grid-template-columns: 1fr;
+  }
+  .form-group.full-width, .submit-btn {
+    grid-column: span 1;
+  }
+}
+
+/* --- SUBPAGE GLOBAL STYLES --- */
+.subpage-header {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  z-index: 250;
+}
+
+.home-btn {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  background-color: #D81700;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  z-index: 250;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(216, 23, 0, 0.4);
+}
+.home-btn path {
+  transition: fill 0.3s ease;
+}
+.home-btn:hover {
+  background-color: transparent;
+  box-shadow: none;
+  transform: scale(1.1);
+}
+.home-btn:hover path {
+  fill: #D81700;
+}
+
+.subpage-container {
+  width: 100vw;
+  height: 100vh;
+  padding: 120px 10vw 50px 10vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.page-heading {
+  font-family: "BBH Bartle", sans-serif;
+  font-size: 50px; /* Adjusted for natural proportions */
+  font-weight: bold;
+  color: #D81700;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-align: center;
+  margin-bottom: 30px;
+  margin-top: 50px;
+}
+.page-heading.left-align {
+  text-align: left;
+  margin-top: 0;
+}
+
+.page-subheading {
+  font-family: 'Castoro Titling', serif;
+  font-size: 24px;
+  color: white;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 1px;
+}
+.page-subheading.left-align {
+  text-align: left;
+}
+
+.page-paragraph {
+  font-family: 'Castoro Titling', serif;
+  font-size: 20px; /* Based on Wix configuration */
+  color: #cccccc;
+  line-height: 1.8;
+  text-align: center; /* Center aligned as per Wix screenshot */
+  max-width: 900px;
+  margin: 0 auto 20px auto;
+  letter-spacing: 1px;
+}
+.page-paragraph.left-align {
+  text-align: justify;
+  margin: 0 0 20px 0;
+}
+
+.split-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 50px;
+}
+.split-text {
+  flex: 1;
+}
+.split-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.placeholder-graphic {
+  font-size: 300px;
+  color: #a3a8ad;
+  font-weight: bold;
+  font-family: sans-serif;
+  text-shadow: 10px 15px 30px rgba(0,0,0,0.8);
+}
+.placeholder-graphic.gold {
+  color: #cc8800;
+}
+
+.apply-now-btn {
+  background-color: #D81700;
+  color: white;
+  font-family: 'Castoro Titling', serif;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 15px 40px;
+  border-radius: 50px;
+  text-decoration: none;
+  margin-top: 40px;
+  transition: transform 0.3s ease;
+  box-shadow: 0 5px 15px rgba(216, 23, 0, 0.4);
+}
+.apply-now-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Contact Form Styles */
+.contact-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+  max-width: 800px;
+  margin-top: 30px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+.form-group.full-width {
+  grid-column: span 2;
+}
+.form-group label {
+  font-family: 'Castoro Titling', serif;
+  color: white;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+.form-group label span {
+  color: #D81700;
+}
+.form-group input, .form-group select, .form-group textarea {
+  background-color: white;
+  border: none;
+  padding: 12px;
+  font-family: sans-serif;
+}
+.form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+.submit-btn {
+  background-color: #D81700;
+  color: white;
+  font-family: 'Castoro Titling', serif;
+  border: none;
+  padding: 12px 40px;
+  border-radius: 50px;
+  cursor: pointer;
+  grid-column: span 2;
+  justify-self: center;
+  font-size: 16px;
+  margin-top: 10px;
+  transition: transform 0.3s ease;
+}
+.submit-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Page Transition Styles */
+html {
+  background-color: black;
+  overflow-x: hidden;
+}
+body {
+  overflow-x: hidden;
+}
+.slide-out-left {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  transform: translateX(-100vw) !important;
+}
+.slide-out-right {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  transform: translateX(100vw) !important;
+}
+@keyframes slideInRight {
+  0% { transform: translateX(100vw); }
+  100% { transform: translateX(0); }
+}
+.subpage-body {
+  background-color: black;
+}
+.subpage-body.slide-in-active {
+  animation: slideInRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Subpage Content Scale Animations */
+@keyframes scaleUpText {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes scaleDownHeading {
+  0% { transform: scale(1.1); opacity: 0; }
+  100% { transform: scale(0.9); opacity: 1; }
+}
+
+@keyframes scaleUpLogo {
+  0% { transform: scale(1); opacity: 0; }
+  100% { transform: scale(1.25); opacity: 1; }
+}
+
+.subpage-header .main-logo {
+  animation: scaleUpLogo 1.5s cubic-bezier(0.1, 1, 0.1, 1) forwards;
+  animation-delay: 0.1s;
+  opacity: 0;
+  transform-origin: left center;
+}
+
+.page-heading {
+  animation: scaleDownHeading 1.5s cubic-bezier(0.1, 1, 0.1, 1) forwards;
+  animation-delay: 0.1s; /* Slight delay to let the slide start */
+}
+
+.page-paragraph, .page-subheading, .contact-form, .apply-now-btn, .split-image {
+  animation: scaleUpText 1.5s cubic-bezier(0.1, 1, 0.1, 1) forwards;
+  animation-delay: 0.2s; /* Slight delay after heading */
+  opacity: 0; /* Hold hidden until animation starts */
+}
