@@ -18,22 +18,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (bgVideo) {
-    // Listen for clicks anywhere on the page
-    document.body.addEventListener('click', (e) => {
-      // Ignore clicks if the user is clicking the red action button, menu buttons, or inside the side menu, or dropdowns
+  // Close side menu when clicking outside on blank screen
+  document.addEventListener('click', (e) => {
+    if (sideMenu && sideMenu.classList.contains('open')) {
+      if (!e.target.closest('.side-menu') && !e.target.closest('.action-btn')) {
+        sideMenu.classList.remove('open');
+        return; // Close menu without triggering audio toggle
+      }
+    }
+
+    // Audio toggle when clicking blank video background
+    if (bgVideo) {
       if (e.target.closest('.action-btn') || e.target.closest('#openMenuBtn') || e.target.closest('.side-menu') || e.target.closest('.custom-dropdown') || e.target.closest('.nav-dropdown')) {
         return;
       }
       
-      // Toggle the muted state of the video
-      if (bgVideo.muted) {
-        bgVideo.muted = false;
-      } else {
-        bgVideo.muted = true;
-      }
-    });
-  }
+      bgVideo.muted = !bgVideo.muted;
+    }
+  });
+
+  // Close side menu on Escape key press
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sideMenu && sideMenu.classList.contains('open')) {
+      sideMenu.classList.remove('open');
+    }
+  });
 
   // Intercept navigation links for page transition
   const navLinks = document.querySelectorAll('.nav-links a, .nav-dropdown-content a');
