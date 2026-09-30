@@ -10,17 +10,44 @@
 </head>
 <body class="subpage-body">
   <div class="bg-container"><div class="bg-placeholder"></div></div>
-  <div class="subpage-header">
-    <a href="/"><img src="/logo.png" alt="Oza Motorsports" class="main-logo" style="height: 60px; width: auto;"></a>
+
+  <!-- Side Menu (Contact Info) -->
+  <div class="side-menu" id="sideMenu">
+    <button class="close-btn" id="closeMenuBtn" aria-label="Close Menu">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    
+    <nav class="nav-links contact-side-links">
+      <h2 class="contact-side-title">CONTACT US</h2>
+      <a href="http://linkedin.com/company/ozamotorsports/" target="_blank" rel="noopener noreferrer">LINKEDIN</a>
+      <a href="tel:+919429669661">+91 94296 69661</a>
+      <a href="mailto:contact@ozamotorsports.com">CONTACT@OZAMOTORSPORTS.COM</a>
+    </nav>
   </div>
-  <a href="/" class="home-btn">
+
+  <div class="subpage-header">
+    <a href="/about-us.html"><img src="/logo.png" alt="Oza Motorsports" class="main-logo"></a>
+  </div>
+  
+  <a href="/" class="home-btn" aria-label="Home">
     <svg viewBox="0 0 200 200" height="28" width="28" xmlns="http://www.w3.org/2000/svg">
       <path fill="black" d="M177.861 96.309l-72.874-67.051a6.658 6.658 0 0 0-4.986-1.74 6.643 6.643 0 0 0-4.987 1.74L22.139 96.309a6.612 6.612 0 0 0-.376 9.364 6.662 6.662 0 0 0 9.393.375L43.629 94.57v77.93H158.28V96.328l10.564 9.72a6.664 6.664 0 0 0 9.393-.375 6.612 6.612 0 0 0-.376-9.364zm-32.874-11.345v74.283H56.923V84.964c0-.794-.14-1.555-.397-2.26l43.475-40 45.037 41.438c-.034.27-.051.544-.051.822z"></path>
     </svg>
   </a>
 
-  <div class="subpage-container">
-    <h1 class="page-heading">CONTACT US</h1>
+  <!-- Action button to open side menu -->
+  <button class="action-btn subpage-action-btn" id="openMenuBtn" aria-label="Open Menu">
+    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="30" viewBox="0 0 38 32" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="4" y1="16" x2="31" y2="16"></line>
+      <polyline points="24 9 31 16 24 23"></polyline>
+    </svg>
+  </button>
+
+  <div class="subpage-container contact-page-container">
+    <h1 class="page-heading contact-heading">CONTACT US</h1>
     
     <form class="contact-form" name="contact" method="POST" data-netlify="true">
       <div class="form-group">
@@ -39,24 +66,25 @@
         <label>SUBJECT <span>*</span></label>
         <input type="text" name="subject" required>
       </div>
-      <div class="form-group" style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px;">
-        <div style="display: flex; flex-direction: column;">
-          <label>CODE <span>*</span></label>
-          <select name="countryCode" style="flex: 1;">
-            <option>IN +91</option>
-          </select>
-        </div>
-        <div style="display: flex; flex-direction: column;">
-          <label>PHONE <span>*</span></label>
-          <input type="tel" name="phone" style="flex: 1; box-sizing: border-box;" required>
-        </div>
+      <div class="form-group">
+        <label>CODE <span>*</span></label>
+        <select name="countryCode">
+          <option>IN +91</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>PHONE <span>*</span></label>
+        <input type="tel" name="phone" placeholder="PHONE" required>
       </div>
 
       <div class="form-group full-width">
         <label>MESSAGE <span>*</span></label>
         <textarea name="message" required></textarea>
       </div>
-      <button type="submit" class="submit-btn">SUBMIT</button>
+      <button type="submit" class="submit-btn" id="submitBtn">SUBMIT</button>
+      <div class="form-success-msg" id="formSuccessMsg" style="display: none;">
+        THANK YOU FOR CONTACTING US! YOUR MESSAGE HAS BEEN SUCCESSFULLY SUBMITTED.
+      </div>
     </form>
   </div>
   <script src="/subpage.js"></script>

@@ -3,6 +3,14 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 body, html {
@@ -12,6 +20,15 @@ body, html {
   overflow: hidden; /* Prevent scrolling, true full screen showcase */
   background-color: #050505;
   color: #ffffff;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* Background Layer (Behind UI) */
@@ -75,7 +92,7 @@ body, html {
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.7); /* Transparent black */
   backdrop-filter: blur(15px); /* Frosted glass effect */
-  z-index: 200; /* Stays below logo (if logo is > 200) */
+  z-index: 300; /* Stays above subpage content */
   transition: right 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 60px 40px;
   display: flex;
@@ -84,6 +101,30 @@ body, html {
 
 .side-menu.open {
   right: 0;
+}
+
+/* Contact Side Menu Specific Styling */
+.contact-side-title {
+  font-family: "BBH Bartle", sans-serif;
+  font-size: clamp(28px, 4vw, 44px);
+  color: #D81700; /* Signature Red */
+  letter-spacing: 2px;
+  margin-bottom: 25px;
+}
+.contact-side-links a {
+  color: #D81700;
+  text-decoration: none;
+  font-family: 'Castoro Titling', serif;
+  font-size: clamp(16px, 1.8vw, 24px);
+  line-height: 1.2;
+  letter-spacing: 0px;
+  display: block;
+  transition: color 0.3s ease, transform 0.3s ease;
+  width: max-content;
+}
+.contact-side-links a:hover {
+  color: #ffffff;
+  transform: translateX(6px);
 }
 
 /* Close Button */
@@ -326,9 +367,11 @@ body, html {
 
 .action-btn:hover {
   transform: scale(1.1) translateY(-5px);
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: #D81700;
-  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
 }
 
 .designer-text {
@@ -338,18 +381,30 @@ body, html {
   color: #ffffff;
   letter-spacing: 0.5px;
   margin-top: 0px; /* Reduced gap */
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.designer-text:hover {
+  color: #D81700;
+  text-shadow: 0 0 10px rgba(216, 23, 0, 0.5);
 }
 
 /* --- SUBPAGE GLOBAL STYLES --- */
 .subpage-header {
   position: absolute;
-  top: 35px;
-  left: 80px; /* Moved slightly back */
+  top: 60px;
+  left: 95px;
+  transform: translateY(-50%); /* Locks vertical center line at exactly Y = 60px */
   z-index: 250;
+  display: flex;
+  align-items: center;
 }
 
 .subpage-header .main-logo {
-  height: 60px;
+  height: 82px !important; /* Slightly reduced for refined balance */
   width: auto;
   object-fit: contain;
   opacity: 1 !important;
@@ -358,8 +413,9 @@ body, html {
 
 .home-btn {
   position: absolute;
-  top: 35px;
-  right: 65px; /* Moved slightly back */
+  top: 60px;
+  right: 80px;
+  transform: translateY(-50%); /* Locks vertical center line at exactly Y = 60px */
   background-color: #D81700;
   width: 48px;
   height: 48px;
@@ -372,16 +428,47 @@ body, html {
   transition: all 0.3s ease;
   box-shadow: 0 5px 15px rgba(216, 23, 0, 0.4);
 }
+.home-btn svg {
+  width: 26px;
+  height: 26px;
+}
 .home-btn path {
   transition: fill 0.3s ease;
 }
 .home-btn:hover {
   background-color: transparent;
   box-shadow: none;
-  transform: scale(1.1);
+  transform: translateY(-50%) scale(1.1); /* Maintains identical center line on hover */
 }
 .home-btn:hover path {
   fill: #D81700;
+}
+
+.subpage-action-btn {
+  position: absolute;
+  top: 205px; /* Aligned with the lower baseline of CONTACT US heading */
+  right: 40px;
+  background-color: #D81700;
+  color: #000000;
+  width: 110px; /* Exact same size as home page action-btn */
+  height: 45px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 250;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 30px rgba(216, 23, 0, 0.4);
+}
+.subpage-action-btn:hover {
+  transform: scale(1.1) translateY(-5px);
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #D81700;
+  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
 }
 
 .subpage-container {
@@ -393,32 +480,43 @@ body, html {
   align-items: center;
   overflow-y: auto;
   box-sizing: border-box;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.subpage-container::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .page-heading {
   font-family: "BBH Bartle", sans-serif;
-  font-size: clamp(32px, 8vw, 60px);
+  font-size: clamp(28px, 3.2vw, 50px);
   font-weight: bold;
   color: #D81700;
   text-transform: uppercase;
-  letter-spacing: 4px;
+  letter-spacing: 2px;
   text-align: center;
+  white-space: nowrap; /* Keep heading strictly in a single line */
   margin-bottom: 30px;
   margin-top: 80px; /* Moved down ~30px */
 }
 .page-heading.left-align {
   text-align: left;
-  margin-top: 35px; /* Moved down 35px from top */
+  margin-top: 0; /* Zero margin so top pixel is perfectly controlled by container padding */
   margin-left: 0;
   padding-left: 0;
-  margin-bottom: 30px; /* Increased spacing to subheading */
+  margin-bottom: 30px; /* Spacing to subheading stays intact */
   font-family: "BBH Bartle", sans-serif;
-  font-size: clamp(24px, 2.8vw, 44px); /* Slightly reduced font size */
+  font-size: clamp(24px, 2.8vw, 44px);
   line-height: 1.1;
   letter-spacing: 0px;
   white-space: nowrap; /* Single line */
   transform-origin: left center;
-  animation: scaleUpText 1.5s cubic-bezier(0.1, 1, 0.1, 1) forwards !important;
+  animation: scaleDownHeading 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.1s;
+  opacity: 0;
 }
 
 .page-subheading {
@@ -444,13 +542,13 @@ body, html {
 
 .page-paragraph {
   font-family: 'Castoro Titling', serif;
-  font-size: 20px; /* Based on Wix configuration */
+  font-size: 18px;
   color: #cccccc;
   line-height: 1.8;
-  text-align: center; /* Center aligned as per Wix screenshot */
+  text-align: center;
   max-width: 900px;
   margin: 0 auto 20px auto;
-  letter-spacing: 1px;
+  letter-spacing: 0px; /* Reduced character spacing */
 }
 .page-paragraph.left-align {
   text-align: left; /* Strict left alignment in the same vertical line */
@@ -464,17 +562,25 @@ body, html {
   transform-origin: left center;
 }
 
+.subpage-container.split-view {
+  padding: 140px 5vw 30px 5vw;
+  justify-content: flex-start;
+  overflow: hidden; /* Remove scrollbars on innovation pages */
+  height: 100vh;
+  box-sizing: border-box;
+}
+
 .split-layout {
   display: flex;
   justify-content: space-between;
-  align-items: stretch;
+  align-items: flex-start; /* Fixed top alignment so heading starts at identical pixel on all pages */
   width: 100%;
-  max-width: 85vw;
+  max-width: 90vw;
   margin: 0 auto;
 }
 .split-text {
-  flex: 0 0 55%;
-  margin-left: 75px; /* Shifted further to the right */
+  flex: 0 0 46%;
+  margin-left: 150px; /* Moved additional 20px towards right while keeping heading, subhead and paragraph in exact alignment */
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -482,13 +588,47 @@ body, html {
   text-align: left;
 }
 .split-image {
-  flex: 0 0 55%;
-  margin-left: -10%;
+  flex: 0 0 58%;
+  margin-left: -14%; /* Shifted to the left towards text */
   display: flex;
-  justify-content: flex-end;
-  align-items: stretch;
+  justify-content: center;
+  align-items: center;
   z-index: 1;
-  padding-top: calc(clamp(24px, 2.8vw, 44px) * 1.1 + 2vh + 35px);
+  padding-top: 0;
+  overflow: visible;
+  align-self: center;
+  margin-top: -30px;
+}
+
+.split-image video,
+.innovation-video {
+  width: 100%;
+  max-width: 58vw;
+  max-height: 72vh;
+  object-fit: contain;
+  display: block;
+  transform: translateX(-30px); /* Moved slightly towards left */
+  transform-origin: center center;
+}
+
+.innovation-video.video-num3,
+video[src*="num3.mp4"] {
+  transform: translateX(-75px); /* Shifted 35px to the left */
+  transform-origin: center center;
+}
+
+.innovation-video.video-num6,
+video[src*="num6.mp4"] {
+  transform: translateX(-26px) scale(1.08); /* Shifted 10px to the right */
+  transform-origin: center center;
+}
+
+.innovation-video.video-num9,
+video[src*="num9.mp4"] {
+  max-width: 58vw;
+  max-height: 72vh;
+  transform: translate(-148px, -75px) scale(1.35); /* Shifted 30px to the left */
+  transform-origin: center center;
 }
 
 .placeholder-graphic {
@@ -507,11 +647,12 @@ body, html {
   color: white;
   font-family: 'Castoro Titling', serif;
   font-weight: bold;
-  font-size: 16px;
-  padding: 15px 40px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 9px 28px;
   border-radius: 50px;
   text-decoration: none;
-  margin-top: 40px;
+  margin-top: 30px;
   transition: all 0.3s ease;
   box-shadow: 0 5px 15px rgba(216, 23, 0, 0.4);
 }
@@ -522,14 +663,34 @@ body, html {
   transform: scale(1.1);
 }
 
-/* Contact Form Styles */
+/* Contact Page Specific Adjustments (Matching Reference Design) */
+.subpage-container.contact-page-container {
+  padding: 120px 10vw 40px 10vw;
+  justify-content: flex-start;
+  overflow-y: auto;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.subpage-container.contact-page-container::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.page-heading.contact-heading {
+  margin-top: 80px; /* Same as About Us & other pages */
+  margin-bottom: 48px; /* Increased gap to balance vertical spacing */
+}
+
 .contact-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  column-gap: 24px;
+  row-gap: 16px;
   width: 100%;
-  max-width: 800px;
-  margin-top: 30px;
+  max-width: 580px; /* Balanced width relative to CONTACT US heading */
+  margin: 0 auto;
 }
 .form-group {
   display: flex;
@@ -541,38 +702,93 @@ body, html {
 .form-group label {
   font-family: 'Castoro Titling', serif;
   color: white;
-  font-size: 14px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  font-weight: bold;
   margin-bottom: 5px;
+  text-align: left;
 }
 .form-group label span {
   color: #D81700;
+  margin-left: 2px;
 }
-.form-group input, .form-group select, .form-group textarea {
-  background-color: white;
+.form-group input, 
+.form-group select {
+  background-color: #ffffff;
+  color: #000000;
   border: none;
-  padding: 12px;
-  font-family: sans-serif;
+  border-radius: 0;
+  height: 32px;
+  padding: 0 10px;
+  font-family: 'Castoro Titling', serif;
+  font-size: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.form-group select {
+  cursor: pointer;
+}
+.form-group input::placeholder {
+  color: #888888;
+  font-family: 'Castoro Titling', serif;
+  font-size: 12px;
 }
 .form-group textarea {
-  min-height: 120px;
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 0;
+  min-height: 70px;
+  max-height: 120px;
+  padding: 8px 10px;
+  font-family: 'Castoro Titling', serif;
+  font-size: 12px;
   resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
 }
 .submit-btn {
   background-color: #D81700;
   color: white;
   font-family: 'Castoro Titling', serif;
+  font-weight: bold;
+  letter-spacing: 1px;
   border: none;
-  padding: 12px 40px;
+  padding: 8px 36px;
   border-radius: 50px;
   cursor: pointer;
   grid-column: span 2;
   justify-self: center;
-  font-size: 16px;
-  margin-top: 10px;
-  transition: transform 0.3s ease;
+  font-size: 13px;
+  margin-top: 15px;
+  box-shadow: 0 5px 15px rgba(216, 23, 0, 0.4);
+  transition: all 0.3s ease;
 }
 .submit-btn:hover {
-  transform: scale(1.05);
+  background-color: transparent;
+  color: #D81700;
+  box-shadow: none;
+  transform: scale(1.1);
+}
+
+.form-success-msg {
+  grid-column: span 2;
+  justify-self: center;
+  color: #D81700;
+  font-family: 'Castoro Titling', serif;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px; /* Moved slightly upwards */
+  line-height: 1.6;
+  text-shadow: 0 0 15px rgba(216, 23, 0, 0.4);
+  animation: fadeInSuccess 0.6s ease forwards;
+}
+
+@keyframes fadeInSuccess {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 /* Page Transition Styles */
@@ -597,6 +813,9 @@ body {
 }
 .subpage-body {
   background-color: black;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
 }
 .subpage-body.slide-in-active {
   animation: slideInRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -604,13 +823,13 @@ body {
 
 /* Subpage Content Scale Animations */
 @keyframes scaleUpText {
-  0% { transform: scale(0.9); opacity: 0; }
+  0% { transform: scale(0.94); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
 }
 
 @keyframes scaleDownHeading {
-  0% { transform: scale(1.1); opacity: 0; }
-  100% { transform: scale(0.9); opacity: 1; }
+  0% { transform: scale(1.07); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 @keyframes scaleUpLogo {
@@ -624,12 +843,14 @@ body {
 }
 
 .page-heading {
-  animation: scaleDownHeading 1.5s cubic-bezier(0.1, 1, 0.1, 1) forwards;
+  transform-origin: center center;
+  animation: scaleDownHeading 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: 0.1s; /* Slight delay to let the slide start */
+  opacity: 0;
 }
 
-.page-paragraph, .page-subheading, .contact-form, .apply-now-btn, .split-image {
-  animation: scaleUpText 1.5s cubic-bezier(0.1, 1, 0.1, 1) forwards;
+.page-paragraph, .page-subheading, .contact-form, .apply-now-btn, .split-image, .subpage-action-btn {
+  animation: scaleUpText 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: 0.2s; /* Slight delay after heading */
   opacity: 0; /* Hold hidden until animation starts */
 }
@@ -652,7 +873,7 @@ body {
 
   .action-container { bottom: 25px; right: 25px; gap: 8px;}
   .action-btn { width: 85px; height: 35px; }
-  .action-btn svg { width: 20px; height: 20px; }
+  .action-btn svg { width: 24px; height: 20px; }
   .designer-text { font-size: 10px; }
   
   /* Mobile Side Menu Fix */
@@ -682,6 +903,16 @@ body {
   .home-btn svg {
     width: 18px;
     height: 18px;
+  }
+  .subpage-action-btn {
+    top: 68px;
+    right: 20px;
+    width: 40px;
+    height: 28px;
+  }
+  .subpage-action-btn svg {
+    width: 19px;
+    height: 16px;
   }
   .subpage-container {
     padding: 100px 5vw 50px 5vw;
@@ -719,8 +950,15 @@ body {
     justify-content: center;
     align-items: center;
   }
-  .split-image video {
+  .split-image video,
+  .innovation-video,
+  .innovation-video.video-num3,
+  .innovation-video.video-num6,
+  .innovation-video.video-num9 {
     opacity: 0.4;
+    transform: none;
+    max-width: 100%;
+    max-height: 100%;
   }
   .contact-form {
     grid-template-columns: 1fr;
