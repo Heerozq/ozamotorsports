@@ -115,9 +115,9 @@ body::-webkit-scrollbar {
   color: #D81700;
   text-decoration: none;
   font-family: 'Castoro Titling', serif;
-  font-size: clamp(16px, 1.8vw, 24px);
+  font-size: clamp(14px, 1.4vw, 20px);
   line-height: 1.2;
-  letter-spacing: 0px;
+  letter-spacing: -0.2px;
   display: block;
   transition: color 0.3s ease, transform 0.3s ease;
   width: max-content;
@@ -174,6 +174,8 @@ body::-webkit-scrollbar {
   font-size: 20px;
   vertical-align: middle;
   margin-left: 5px;
+  display: inline-block;
+  transition: transform 0.3s ease;
 }
 
 /* Side Menu Dropdown */
@@ -396,7 +398,7 @@ body::-webkit-scrollbar {
 .subpage-header {
   position: absolute;
   top: 60px;
-  left: 95px;
+  left: 125px; /* Shifted 30px right total */
   transform: translateY(-50%); /* Locks vertical center line at exactly Y = 60px */
   z-index: 250;
   display: flex;
@@ -414,18 +416,18 @@ body::-webkit-scrollbar {
 .home-btn {
   position: absolute;
   top: 60px;
-  right: 80px;
+  right: 110px; /* Shifted 30px left total */
   transform: translateY(-50%); /* Locks vertical center line at exactly Y = 60px */
   background-color: #D81700;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  width: 90px;
+  height: 45px;
+  border-radius: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
   text-decoration: none;
   z-index: 250;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 5px 15px rgba(216, 23, 0, 0.4);
 }
 .home-btn svg {
@@ -438,7 +440,7 @@ body::-webkit-scrollbar {
 .home-btn:hover {
   background-color: transparent;
   box-shadow: none;
-  transform: translateY(-50%) scale(1.1); /* Maintains identical center line on hover */
+  transform: translateY(-50%) scale(1.08); /* Maintains identical center line on hover */
 }
 .home-btn:hover path {
   fill: #D81700;
@@ -540,6 +542,20 @@ body::-webkit-scrollbar {
   transform-origin: left center;
 }
 
+.mobile-subhead-break {
+  display: none;
+}
+.mobile-only-br {
+  display: none;
+}
+.desktop-space {
+  display: inline;
+}
+.heading-line-nowrap {
+  white-space: nowrap;
+  display: inline-block;
+}
+
 .page-paragraph {
   font-family: 'Castoro Titling', serif;
   font-size: 18px;
@@ -581,6 +597,7 @@ body::-webkit-scrollbar {
 .split-text {
   flex: 0 0 46%;
   margin-left: 150px; /* Moved additional 20px towards right while keeping heading, subhead and paragraph in exact alignment */
+  margin-top: 15px; /* Shifted title, subtitle and paragraphs down 15px together */
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -792,12 +809,13 @@ video[src*="num9.mp4"] {
 }
 
 /* Page Transition Styles */
-html {
+html, body {
   background-color: black;
-  overflow-x: hidden;
-}
-body {
-  overflow-x: hidden;
+  overflow: hidden !important;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 .slide-out-left {
   transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) !important;
@@ -813,9 +831,12 @@ body {
 }
 .subpage-body {
   background-color: black;
-  overflow: hidden;
+  overflow: hidden !important;
   width: 100vw;
   height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 .subpage-body.slide-in-active {
   animation: slideInRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -878,54 +899,222 @@ body {
   
   /* Mobile Side Menu Fix */
   .side-menu {
-    width: 100vw;
-    right: -105vw; /* Start fully offscreen */
-    padding: 60px 30px;
+    width: 106vw !important;
+    right: -112vw !important; /* Start fully offscreen */
+    background-color: rgba(0, 0, 0, 0.85) !important;
+    backdrop-filter: blur(22px) !important;
+    -webkit-backdrop-filter: blur(22px) !important;
+    padding: 60px 36px;
+    box-sizing: border-box;
+  }
+  .side-menu.open {
+    right: -3vw !important; /* Extends beyond left and right edges so no home page edge peeks through */
+  }
+  .side-menu .close-btn {
+    align-self: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-bottom: 40px;
+  }
+  .nav-links {
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
   }
   .nav-links > a, .nav-drop-btn {
     font-size: 24px; /* Slightly smaller for mobile fit */
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .nav-dropdown {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+  .nav-dropdown:hover .nav-dropdown-content {
+    display: none;
+  }
+  .nav-dropdown-content {
+    display: none !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding-left: 0 !important;
+    gap: 14px;
+    margin-top: 14px;
+  }
+  .nav-dropdown.show-dropdown .nav-dropdown-content {
+    display: flex !important;
+    animation: dropdownBlur 0.4s ease forwards;
+  }
+  .nav-dropdown.show-dropdown .down-arrow {
+    transform: rotate(180deg);
+  }
+  .nav-dropdown-content a {
+    text-align: center !important;
+  }
+  .custom-dropdown:hover .dropdown-content {
+    display: none;
+  }
+  .custom-dropdown.show-dropdown .dropdown-content {
+    display: flex !important;
+    animation: dropdownBlur 0.4s ease forwards;
+  }
+  .contact-side-title {
+    text-align: center !important;
+    width: 100% !important;
+    font-size: clamp(24px, 6.5vw, 30px);
+    letter-spacing: 1.5px;
+    margin-bottom: 25px;
+  }
+  .contact-side-links a {
+    text-align: left !important;
+    font-size: clamp(18px, 4.8vw, 22.5px) !important;
+    letter-spacing: -0.6px !important;
+    line-height: 1.35 !important;
+    white-space: nowrap !important;
+    display: block;
+    width: max-content;
+    max-width: calc(100vw - 40px);
   }
 
   /* Subpage Adjustments for Mobile */
+  /* Subpage Header & Home Button (Bigger & Aligned on Same Centerline) */
+  .subpage-header,
+  .home-btn,
+  .subpage-action-btn {
+    transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease !important;
+    will-change: transform, opacity;
+  }
+
+  body.header-hidden .subpage-header,
+  body.header-hidden .home-btn,
+  body.header-hidden .subpage-action-btn {
+    transform: translateY(-100px) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
   .subpage-header {
-    top: 20px;
-    left: 20px;
+    top: 54px !important; /* Moved 10px down */
+    left: 20px !important;
+    transform: translateY(-50%) !important; /* Centerline strictly locked at Y = 54px */
+    z-index: 200 !important;
+    display: flex !important;
+    align-items: center !important;
   }
   .subpage-header .main-logo {
-    height: 40px !important;
+    height: 66px !important; /* Larger prominent logo */
+    width: auto !important;
+    object-fit: contain !important;
+    display: block !important;
   }
   .home-btn {
-    top: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
+    top: 54px !important; /* Moved 10px down */
+    right: 20px !important; /* Aligned with action-btn */
+    transform: translateY(-50%) !important; /* Centerline strictly locked at Y = 54px */
+    width: 64px !important; /* Increased width */
+    height: 42px !important;
+    border-radius: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 200 !important;
   }
   .home-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 24px !important;
+    height: 24px !important;
   }
   .subpage-action-btn {
-    top: 68px;
+    top: 104px; /* Moved 10px upwards */
     right: 20px;
-    width: 40px;
-    height: 28px;
+    width: 68px; /* Slightly bigger */
+    height: 38px;
+    border-radius: 50px;
   }
   .subpage-action-btn svg {
-    width: 19px;
-    height: 16px;
+    width: 27px;
+    height: 21px;
   }
   .subpage-container {
-    padding: 100px 5vw 50px 5vw;
+    padding: 100px 16px 40px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .subpage-container.contact-page-container {
+    padding: 100px 16px 40px 16px;
   }
   .page-heading {
-    font-size: 25px;
+    font-size: clamp(22px, 6.2vw, 29px);
+    line-height: 1.25;
+    letter-spacing: 0.8px;
+    margin-top: 48px; /* Brought lower from top on mobile */
+    margin-bottom: 42px; /* Increased gap to paragraph/content */
+    text-align: center;
+    white-space: normal;
+    word-break: keep-all;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 8px;
+    box-sizing: border-box;
+  }
+  .page-heading.career-heading,
+  .career-page .page-heading {
+    font-size: clamp(20px, 6.0vw, 26px) !important;
+    line-height: 1.15 !important;
+    letter-spacing: 0.5px !important;
+    text-align: left !important;
+    display: block !important;
+    width: max-content !important;
+    max-width: 85vw !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-top: 48px !important;
+    margin-bottom: 42px !important;
+    padding: 0 !important;
+  }
+  .mobile-only-br {
+    display: inline !important; /* Single line break, avoids double-break block gap */
+  }
+  .desktop-space {
+    display: none !important;
+  }
+  .page-heading.contact-heading {
+    margin-top: 48px;
+    margin-bottom: 42px;
   }
   .page-paragraph {
-    font-size: 15px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.85; /* Increased line spacing */
+    letter-spacing: -0.3px;
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto 24px auto;
+    text-align: center;
+    padding: 0 6px;
+    box-sizing: border-box;
   }
   .page-subheading {
-    font-size: 20px;
+    font-size: 18px;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .apply-now-btn {
+    margin-top: 20px;
   }
   .split-layout {
     position: relative;
@@ -961,10 +1150,197 @@ body {
     max-height: 100%;
   }
   .contact-form {
-    grid-template-columns: 1fr;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 12px;
+    row-gap: 12px;
+    max-width: 360px;
+    width: 100%;
+    margin: 0 auto;
   }
-  .form-group.full-width, .submit-btn {
-    grid-column: span 1;
+  .form-group.full-width {
+    grid-column: span 2 !important;
+  }
+  .submit-btn {
+    grid-column: span 2 !important;
+    justify-self: center !important;
+    margin-top: 12px !important;
+    padding: 8px 36px !important;
+    background-color: #D81700 !important;
+    color: white !important;
+  }
+  .form-success-msg {
+    grid-column: span 2 !important;
+    justify-self: center !important;
+    font-size: 12.5px !important;
+    line-height: 1.5 !important;
+    margin-top: 14px !important;
+    max-width: 340px !important;
+    text-align: center !important;
+  }
+
+  /* Innovations Specific Mobile Layout (V.ODNE1S, BOBART, LTB VALVE TECHNO) */
+  .v-odne1s-page .subpage-container.split-view,
+  .bobart-page .subpage-container.split-view,
+  .ltb-page .subpage-container.split-view {
+    padding: clamp(80px, 12vh, 105px) 28px 70px 28px !important; /* Generous top and bottom scroll padding */
+    height: 100vh !important;
+    max-height: 100vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+    overscroll-behavior: contain !important;
+  }
+  .v-odne1s-page .split-layout,
+  .bobart-page .split-layout,
+  .ltb-page .split-layout {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 370px; /* Clean centered column width */
+    margin: 0 auto;
+    flex-shrink: 0; /* Ensures content never shrinks or cuts off */
+  }
+  .v-odne1s-page .split-text,
+  .bobart-page .split-text,
+  .ltb-page .split-text {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0 !important;
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center !important;
+    text-align: center !important;
+    flex-shrink: 0;
+  }
+  .v-odne1s-page .page-heading.left-align,
+  .bobart-page .page-heading.left-align,
+  .ltb-page .page-heading.left-align {
+    text-align: center !important;
+    font-size: clamp(33px, 9vw, 40px) !important;
+    color: #D81700 !important;
+    margin-top: clamp(8px, 1.8vh, 20px) !important;
+    margin-bottom: clamp(18px, 3.2vh, 32px) !important; /* Dynamically scales with phone height */
+    white-space: normal !important;
+    letter-spacing: 1.2px !important;
+    transform: none !important;
+    animation: none !important;
+    opacity: 1 !important;
+    line-height: 1.1 !important;
+    width: 100% !important;
+  }
+  .ltb-page .page-heading.left-align {
+    font-size: clamp(28px, 7.8vw, 38px) !important;
+  }
+  .ltb-page .page-heading.left-align .heading-nowrap {
+    white-space: nowrap !important;
+    display: inline-block !important;
+  }
+  .ltb-page .page-heading.left-align .heading-block {
+    display: block !important;
+  }
+  .mobile-subhead-break {
+    display: block !important;
+  }
+  .v-odne1s-page .page-subheading.left-align,
+  .bobart-page .page-subheading.left-align,
+  .ltb-page .page-subheading.left-align {
+    text-align: center !important;
+    font-size: clamp(12.5px, 3.7vw, 15.5px) !important;
+    color: #ffffff !important;
+    margin-bottom: clamp(28px, 4.8vh, 52px) !important; /* Proportional gap before paragraph 1 */
+    margin-left: auto !important;
+    margin-right: auto !important;
+    white-space: normal !important;
+    letter-spacing: 0.3px !important;
+    line-height: 1.4 !important;
+    max-width: 360px !important;
+    transform: none !important;
+    animation: none !important;
+    opacity: 1 !important;
+    width: 100% !important;
+  }
+  .v-odne1s-page .page-paragraph.left-align,
+  .bobart-page .page-paragraph.left-align,
+  .ltb-page .page-paragraph.left-align {
+    text-align: center !important;
+    font-size: clamp(13px, 3.6vw, 15px) !important;
+    color: #dedede !important;
+    line-height: 1.8 !important;
+    max-width: 360px !important;
+    margin: 0 auto clamp(24px, 4.4vh, 48px) auto !important; /* Proportional gap between paragraphs */
+    letter-spacing: 0px !important;
+    transform: none !important;
+    animation: none !important;
+    opacity: 1 !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 3px rgba(0, 0, 0, 1);
+  }
+  .v-odne1s-page .page-paragraph.left-align:last-child,
+  .bobart-page .page-paragraph.left-align:last-child,
+  .ltb-page .page-paragraph.left-align:last-child {
+    margin-bottom: 25px !important; /* Extra bottom clearance when scrolled */
+  }
+  /* Extra Large Centered 3D Video/Graphics in Background (100% Bigger) */
+  .v-odne1s-page .split-image,
+  .bobart-page .split-image,
+  .ltb-page .split-image {
+    position: fixed !important;
+    top: 52% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 135vw !important;
+    height: 90vh !important;
+    max-width: 750px !important;
+    max-height: 750px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    opacity: 0.52 !important; /* Prominent background visibility */
+  }
+  .v-odne1s-page .innovation-video,
+  .bobart-page .innovation-video,
+  .ltb-page .innovation-video,
+  .innovation-video.video-num3,
+  .innovation-video.video-num6,
+  .innovation-video.video-num9 {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    transform: scale(1.85) !important;
+    transform-origin: center center !important;
+    opacity: 1 !important;
+  }
+  .innovation-video.video-num3,
+  .v-odne1s-page .innovation-video {
+    transform: translate(-9px, 7px) scale(1.48) !important; /* Video 3 moved 9px LEFT & 7px DOWN */
+    transform-origin: center center !important;
+  }
+  .innovation-video.video-num6,
+  .bobart-page .innovation-video {
+    transform: translateY(-3px) scale(1.65) !important; /* Video 6 thodi si choti */
+    transform-origin: center center !important;
+  }
+  .innovation-video.video-num9,
+  .ltb-page .innovation-video {
+    transform: scale(2.10) !important; /* Video 9 thodi si choti */
+    transform-origin: center center !important;
   }
 }
 

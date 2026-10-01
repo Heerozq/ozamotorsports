@@ -5,25 +5,58 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeMenuBtn = document.getElementById('closeMenuBtn');
   const sideMenu = document.getElementById('sideMenu');
 
-  // Always-On Audio Configuration
+  // Always-On Video & Audio Configuration with Position Memory
   if (bgVideo) {
+    // Restore saved playback position if returning from a subpage
+    const savedTime = sessionStorage.getItem('homeVideoTime');
+    if (savedTime) {
+      const timeNum = parseFloat(savedTime);
+      if (!isNaN(timeNum) && isFinite(timeNum) && timeNum > 0) {
+        if (bgVideo.readyState >= 1) {
+          bgVideo.currentTime = timeNum;
+        } else {
+          bgVideo.addEventListener('loadedmetadata', () => {
+            bgVideo.currentTime = timeNum;
+          }, { once: true });
+        }
+      }
+    }
+
+    // Keep track of current playback position continuously
+    bgVideo.addEventListener('timeupdate', () => {
+      if (bgVideo.currentTime > 0) {
+        sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
+      }
+    });
+
+    // Start video playing immediately (muted by default to bypass browser autoplay restrictions)
+    bgVideo.muted = true;
+    bgVideo.play().catch(() => {});
+
+    // Try unmuting directly if browser policy allows
     bgVideo.muted = false;
     bgVideo.volume = 1.0;
     const playPromise = bgVideo.play();
+
     if (playPromise !== undefined) {
       playPromise.catch(() => {
-        // If browser autoplay policy requires initial user gesture, unmute on first interaction
+        // If unmuted autoplay was blocked by browser policy, keep video playing muted
+        bgVideo.muted = true;
+        bgVideo.play().catch(() => {});
+
+        // Unmute on the first interaction anywhere on screen
         const enableSound = () => {
           bgVideo.muted = false;
           bgVideo.volume = 1.0;
           bgVideo.play().catch(() => {});
-          window.removeEventListener('click', enableSound);
-          window.removeEventListener('keydown', enableSound);
-          window.removeEventListener('touchstart', enableSound);
+          ['click', 'keydown', 'touchstart', 'pointerdown'].forEach((evt) => {
+            window.removeEventListener(evt, enableSound);
+          });
         };
-        window.addEventListener('click', enableSound, { once: true });
-        window.addEventListener('keydown', enableSound, { once: true });
-        window.addEventListener('touchstart', enableSound, { once: true });
+
+        ['click', 'keydown', 'touchstart', 'pointerdown'].forEach((evt) => {
+          window.addEventListener(evt, enableSound, { once: true });
+        });
       });
     }
   }
@@ -38,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     closeMenuBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       sideMenu.classList.remove('open');
+      document.querySelectorAll('.nav-dropdown.show-dropdown').forEach(el => el.classList.remove('show-dropdown'));
     });
   }
 
@@ -46,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sideMenu && sideMenu.classList.contains('open')) {
       if (!e.target.closest('.side-menu') && !e.target.closest('.action-btn')) {
         sideMenu.classList.remove('open');
+        document.querySelectorAll('.nav-dropdown.show-dropdown').forEach(el => el.classList.remove('show-dropdown'));
       }
     }
   });
@@ -54,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && sideMenu && sideMenu.classList.contains('open')) {
       sideMenu.classList.remove('open');
+      document.querySelectorAll('.nav-dropdown.show-dropdown').forEach(el => el.classList.remove('show-dropdown'));
     }
   });
 
@@ -61,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('visibilitychange', () => {
     if (bgVideo) {
       if (document.hidden) {
+        sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
         bgVideo.pause();
         bgVideo.muted = true;
       } else {
@@ -72,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('blur', () => {
     if (bgVideo) {
+      sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
       bgVideo.pause();
       bgVideo.muted = true;
     }
@@ -86,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('beforeunload', () => {
     if (bgVideo) {
+      sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
       bgVideo.pause();
       bgVideo.muted = true;
     }
@@ -93,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('pagehide', () => {
     if (bgVideo) {
+      sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
       bgVideo.pause();
       bgVideo.muted = true;
     }
@@ -104,8 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
     link.addEventListener('click', (e) => {
       const targetUrl = link.href;
 
-      // Stop home audio immediately on navigating away
+      // Save exact video time and stop home audio immediately on navigating away
       if (bgVideo) {
+        sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
         bgVideo.pause();
         bgVideo.muted = true;
       }
@@ -129,11 +170,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const dropdownBtns = document.querySelectorAll('.drop-btn, .nav-drop-btn');
   dropdownBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
       const parent = btn.closest('.custom-dropdown, .nav-dropdown');
       if (parent) {
         parent.classList.toggle('show-dropdown');
       }
     });
+  });
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.nav-dropdown') && !e.target.closest('.custom-dropdown')) {
+      document.querySelectorAll('.nav-dropdown.show-dropdown, .custom-dropdown.show-dropdown').forEach(el => {
+        el.classList.remove('show-dropdown');
+      });
+    }
   });
 });

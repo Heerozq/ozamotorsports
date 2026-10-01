@@ -69,7 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (submitBtn) {
         submitBtn.textContent = 'SUBMITTED ✓';
         submitBtn.style.pointerEvents = 'none';
-        submitBtn.style.opacity = '0.85';
+        submitBtn.style.backgroundColor = '#D81700';
+        submitBtn.style.color = '#ffffff';
+        submitBtn.style.opacity = '1';
+        submitBtn.style.boxShadow = '0 5px 15px rgba(216, 23, 0, 0.4)';
       }
 
       // Show confirmation message below the submit button in #D81700
@@ -78,4 +81,43 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Smart Mobile Header Hide on Scroll (Only reveals when completely back at the top)
+  const scrollContainers = [
+    document.querySelector('.subpage-container'),
+    window
+  ].filter(Boolean);
+
+  let lastScrollTop = 0;
+
+  function updateHeaderVisibility(currentScrollTop) {
+    if (window.innerWidth > 768) {
+      document.body.classList.remove('header-hidden');
+      return;
+    }
+
+    if (currentScrollTop <= 15) {
+      // ONLY when user is completely back at the top -> gently reveal header
+      document.body.classList.remove('header-hidden');
+    } else if (currentScrollTop > 20) {
+      // While scrolled anywhere down -> keep header hidden
+      document.body.classList.add('header-hidden');
+    }
+    lastScrollTop = Math.max(0, currentScrollTop);
+  }
+
+  scrollContainers.forEach(container => {
+    container.addEventListener('scroll', () => {
+      const scrollTop = container === window ? (window.pageYOffset || document.documentElement.scrollTop) : container.scrollTop;
+      updateHeaderVisibility(scrollTop);
+    }, { passive: true });
+  });
+
+  // Touch move listener for direct gesture tracking
+  document.addEventListener('touchmove', () => {
+    if (window.innerWidth > 768) return;
+    const container = document.querySelector('.subpage-container') || document.documentElement;
+    const currentScroll = container.scrollTop || window.pageYOffset || 0;
+    updateHeaderVisibility(currentScroll);
+  }, { passive: true });
 });
