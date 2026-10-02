@@ -1,5 +1,6 @@
 // Logic to handle always-on audio and side menu
 document.addEventListener('DOMContentLoaded', () => {
+  document.body && document.body.classList.remove('slide-out-left', 'slide-out-right');
   const bgVideo = document.querySelector('.bg-video');
   const openMenuBtn = document.querySelector('.action-btn');
   const closeMenuBtn = document.getElementById('closeMenuBtn');
@@ -29,58 +30,104 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Start video playing immediately (muted by default to bypass browser autoplay restrictions)
+    // Start video playing immediately and continuously
     bgVideo.muted = true;
     bgVideo.play().catch(() => {});
 
-    // Try unmuting directly if browser policy allows
+    // Try unmuting directly if browser allows (e.g. returning user or site permission)
     bgVideo.muted = false;
     bgVideo.volume = 1.0;
     const playPromise = bgVideo.play();
 
+    const unlockSound = () => {
+      if (bgVideo) {
+        bgVideo.muted = false;
+        bgVideo.volume = 1.0;
+        bgVideo.play().catch(() => {});
+      }
+      ['click', 'pointerdown', 'touchstart', 'keydown'].forEach(evt => {
+        window.removeEventListener(evt, unlockSound);
+        document.removeEventListener(evt, unlockSound);
+      });
+    };
+
     if (playPromise !== undefined) {
       playPromise.catch(() => {
-        // If unmuted autoplay was blocked by browser policy, keep video playing muted
+        // If unmuted autoplay blocked by browser policy, keep video playing muted
         bgVideo.muted = true;
         bgVideo.play().catch(() => {});
 
-        // Unmute on the first interaction anywhere on screen
-        const enableSound = () => {
-          bgVideo.muted = false;
-          bgVideo.volume = 1.0;
-          bgVideo.play().catch(() => {});
-          ['click', 'keydown', 'touchstart', 'pointerdown'].forEach((evt) => {
-            window.removeEventListener(evt, enableSound);
-          });
-        };
-
-        ['click', 'keydown', 'touchstart', 'pointerdown'].forEach((evt) => {
-          window.addEventListener(evt, enableSound, { once: true });
+        // Unmute safely on the first user interaction (click, touch, tap, key) without interrupting playback
+        ['click', 'pointerdown', 'touchstart', 'keydown'].forEach(evt => {
+          window.addEventListener(evt, unlockSound, { once: true });
+          document.addEventListener(evt, unlockSound, { once: true });
         });
       });
     }
   }
 
   // Toggle Side Menu
-  if (openMenuBtn && closeMenuBtn && sideMenu) {
-    openMenuBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      sideMenu.classList.add('open');
-    });
+  let ignoreOutsideClickUntil = 0;
 
-    closeMenuBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      sideMenu.classList.remove('open');
-      document.querySelectorAll('.nav-dropdown.show-dropdown').forEach(el => el.classList.remove('show-dropdown'));
-    });
+  function openDrawer(fromReturn = false) {
+    if (!sideMenu) return;
+    sideMenu.classList.add('open');
+    if (fromReturn) {
+      ignoreOutsideClickUntil = Date.now() + 800; // Ignore accidental/spurious clicks or gesture residue on return
+      setTimeout(() => {
+        document.documentElement.classList.remove('menu-preset-open');
+      }, 50);
+    }
   }
 
-  // Close side menu when clicking outside
+  function closeDrawer() {
+    if (!sideMenu) return;
+    sideMenu.classList.remove('open');
+    document.documentElement.classList.remove('menu-preset-open');
+    document.querySelectorAll('.nav-dropdown.show-dropdown').forEach(el => el.classList.remove('show-dropdown'));
+  }
+
+  if (sideMenu) {
+    // If user returned from a subpage, keep slide drawer open
+    if (sessionStorage.getItem('openMenuOnHome') === 'true' || document.documentElement.classList.contains('menu-preset-open')) {
+      openDrawer(true);
+      sessionStorage.removeItem('openMenuOnHome');
+    }
+
+    if (openMenuBtn && closeMenuBtn) {
+      openMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openDrawer(false);
+      });
+
+      closeMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeDrawer();
+      });
+    }
+  }
+
+  // Handle bfcache or browser/phone back navigation (ensures page is never blank on back)
+  const handlePageRestore = (e) => {
+    document.body.classList.remove('slide-out-left', 'slide-out-right');
+    if (bgVideo && bgVideo.paused) {
+      bgVideo.play().catch(() => {});
+    }
+    if (sessionStorage.getItem('openMenuOnHome') === 'true' || (e && e.persisted)) {
+      openDrawer(true);
+      sessionStorage.removeItem('openMenuOnHome');
+    }
+  };
+
+  window.addEventListener('pageshow', handlePageRestore);
+  window.addEventListener('popstate', handlePageRestore);
+
+  // Close side menu when clicking outside (protected from trailing clicks on return)
   document.addEventListener('click', (e) => {
+    if (Date.now() < ignoreOutsideClickUntil) return;
     if (sideMenu && sideMenu.classList.contains('open')) {
       if (!e.target.closest('.side-menu') && !e.target.closest('.action-btn')) {
-        sideMenu.classList.remove('open');
-        document.querySelectorAll('.nav-dropdown.show-dropdown').forEach(el => el.classList.remove('show-dropdown'));
+        closeDrawer();
       }
     }
   });
@@ -88,8 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Close side menu on Escape key press
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && sideMenu && sideMenu.classList.contains('open')) {
-      sideMenu.classList.remove('open');
-      document.querySelectorAll('.nav-dropdown.show-dropdown').forEach(el => el.classList.remove('show-dropdown'));
+      closeDrawer();
     }
   });
 
@@ -159,6 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       document.body.classList.add('slide-out-left');
       sessionStorage.setItem('navigatedFromHome', 'true');
+      sessionStorage.setItem('openMenuOnHome', 'true');
       
       setTimeout(() => {
         window.location.href = targetUrl;
@@ -259,5 +306,34 @@ document.addEventListener('DOMContentLoaded', () => {
       triggerScrollBounce('up');
       setTimeout(() => { isBouncing = false; }, 350);
     }
+  });
+
+  // Fast hover prefetch for innovation links
+  const videoMap = {
+    'v-odne1s': '/num3.mp4',
+    'bobart': '/num6.mp4',
+    'ltb-valve': '/num9.mp4'
+  };
+
+  const preloadedVideos = new Set();
+  function preloadVideo(src) {
+    if (!src || preloadedVideos.has(src)) return;
+    preloadedVideos.add(src);
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.as = 'video';
+    link.href = src;
+    document.head.appendChild(link);
+  }
+
+  // Preload only when user hovers/touches an innovation link
+  document.querySelectorAll('a[href*="v-odne1s"], a[href*="bobart"], a[href*="ltb-valve-techno"]').forEach(link => {
+    ['mouseenter', 'touchstart'].forEach(evt => {
+      link.addEventListener(evt, () => {
+        Object.entries(videoMap).forEach(([key, src]) => {
+          if (link.href.includes(key)) preloadVideo(src);
+        });
+      }, { passive: true, once: true });
+    });
   });
 });

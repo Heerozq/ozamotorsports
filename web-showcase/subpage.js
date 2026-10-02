@@ -3,12 +3,20 @@ if (sessionStorage.getItem('navigatedFromHome') === 'true') {
   sessionStorage.removeItem('navigatedFromHome');
 }
 
+const clearSubpageExitClasses = () => {
+  document.body.classList.remove('slide-out-right', 'slide-out-left');
+};
+window.addEventListener('pageshow', clearSubpageExitClasses);
+window.addEventListener('popstate', clearSubpageExitClasses);
+
 document.addEventListener('DOMContentLoaded', () => {
+  clearSubpageExitClasses();
   const homeBtn = document.querySelector('.home-btn');
   if (homeBtn) {
     homeBtn.addEventListener('click', (e) => {
       e.preventDefault();
       const targetUrl = homeBtn.href;
+      sessionStorage.setItem('openMenuOnHome', 'true');
       document.body.classList.add('slide-out-right');
       setTimeout(() => {
         window.location.href = targetUrl;
@@ -151,11 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const isScrollable = subContainer.scrollHeight > subContainer.clientHeight + 8;
       if (!isScrollable) {
         if (!isSubpageBouncing) triggerSubpageScrollBounce(e.deltaY > 0 ? 'down' : 'up');
-      } else {
-        const atTop = subContainer.scrollTop <= 2 && e.deltaY < 0;
-        const atBottom = (subContainer.scrollTop + subContainer.clientHeight >= subContainer.scrollHeight - 6) && e.deltaY > 0;
-        if (atTop && !isSubpageBouncing) triggerSubpageScrollBounce('up');
-        if (atBottom && !isSubpageBouncing) triggerSubpageScrollBounce('down');
       }
 
       clearTimeout(subWheelCooldownTimer);
@@ -179,16 +182,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const touchDiff = subTouchStartY - e.touches[0].clientY;
       if (Math.abs(touchDiff) > 15) {
         const isScrollable = subContainer.scrollHeight > subContainer.clientHeight + 8;
+        // On non-scrollable pages, trigger custom subtle bounce. On scrollable pages, native mobile momentum handles boundary smoothly without lifting container
         if (!isScrollable) {
           triggerSubpageScrollBounce(touchDiff > 0 ? 'down' : 'up');
           subTouchHasTriggered = true;
-        } else {
-          const atTop = subContainer.scrollTop <= 2 && touchDiff < 0;
-          const atBottom = (subContainer.scrollTop + subContainer.clientHeight >= subContainer.scrollHeight - 6) && touchDiff > 0;
-          if (atTop || atBottom) {
-            triggerSubpageScrollBounce(touchDiff > 0 ? 'down' : 'up');
-            subTouchHasTriggered = true;
-          }
         }
       }
     }
@@ -215,5 +212,48 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { isSubpageBouncing = false; }, 350);
       }
     }
+  });
+
+  // Fast Video Auto-Play & Rendering Initialization
+  const innovationVideo = document.querySelector('.innovation-video');
+  if (innovationVideo) {
+    innovationVideo.preload = 'auto';
+    const startPlay = () => {
+      innovationVideo.play().catch(() => {});
+    };
+    if (innovationVideo.readyState >= 2) {
+      startPlay();
+    } else {
+      innovationVideo.addEventListener('canplay', startPlay, { once: true });
+      innovationVideo.addEventListener('loadeddata', startPlay, { once: true });
+    }
+  }
+
+  // Preload on link hover or touch
+  const videoMap = {
+    'v-odne1s': '/num3.mp4',
+    'bobart': '/num6.mp4',
+    'ltb-valve': '/num9.mp4'
+  };
+
+  const preloadedVideos = new Set();
+  function preloadVideo(src) {
+    if (!src || preloadedVideos.has(src)) return;
+    preloadedVideos.add(src);
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.as = 'video';
+    link.href = src;
+    document.head.appendChild(link);
+  }
+
+  document.querySelectorAll('a[href*="v-odne1s"], a[href*="bobart"], a[href*="ltb-valve-techno"]').forEach(link => {
+    ['mouseenter', 'touchstart'].forEach(evt => {
+      link.addEventListener(evt, () => {
+        Object.entries(videoMap).forEach(([key, src]) => {
+          if (link.href.includes(key)) preloadVideo(src);
+        });
+      }, { passive: true, once: true });
+    });
   });
 });

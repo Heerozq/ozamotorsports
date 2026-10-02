@@ -121,7 +121,8 @@ body::-webkit-scrollbar {
   flex-direction: column;
 }
 
-.side-menu.open {
+.side-menu.open,
+.menu-preset-open .side-menu {
   right: 0;
 }
 
@@ -620,18 +621,18 @@ body::-webkit-scrollbar {
   font-family: 'Castoro Titling', serif;
   font-size: 18px;
   color: #cccccc;
-  line-height: 1.8;
+  line-height: 1.95;
   text-align: center;
   max-width: 900px;
-  margin: 0 auto 20px auto;
+  margin: 0 auto 22px auto;
   letter-spacing: 0px; /* Reduced character spacing */
 }
 .page-paragraph.left-align {
   text-align: left; /* Strict left alignment in the same vertical line */
-  margin: 0 0 25px 0; /* Spacing between paragraph blocks */
+  margin: 0 0 28px 0; /* Spacing between paragraph blocks */
   padding-left: 0;
   font-size: clamp(12px, 1.05vw, 15px);
-  line-height: 1.7;
+  line-height: 1.85;
   letter-spacing: 0px; /* Reduced character spacing */
   max-width: 520px; /* Reduced paragraph box size based on reference screenshots */
   width: 100%;
@@ -952,33 +953,423 @@ html, body {
 }
 
 @media (max-width: 768px) {
-  .ui-layer { padding: 25px; }
-  
-  .logo-container { top: 20px; right: 25px; }
-  .logo-container .main-logo,
-  .main-logo { height: 60px; } /* Increased by 5px from 55px */
+  /* Scoped strictly to Home Page on Mobile */
+  body:not(.subpage-body) {
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    position: fixed !important;
+  }
 
-  .hero-text-container { left: 5%; flex-direction: column; align-items: flex-start; }
-  .hero-primary { font-size: 80px; }
-  .hero-secondary { font-size: 20px; margin-left: 5px; margin-bottom: 0; margin-top: 5px;}
-
-  .action-container { bottom: 25px; right: 25px; gap: 8px;}
-  .action-btn { width: 85px; height: 35px; }
-  .action-btn svg { width: 24px; height: 20px; }
-  .designer-text { font-size: 10px; }
+  body:not(.subpage-body) .ui-layer {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    overflow: hidden !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+  }
   
-  /* Mobile Side Menu Fix */
+  /* Mobile Header on Home Page: Logo on Left, Action Menu Button on Right (Centered on same line) */
+  body:not(.subpage-body) .logo-container {
+    top: clamp(44px, 6.5vh, 56px) !important;
+    left: 20px !important;
+    right: auto !important;
+    position: absolute !important;
+    transform: translateY(-50%) !important;
+    display: flex !important;
+    align-items: center !important;
+    z-index: 10;
+  }
+  body:not(.subpage-body) .logo-container .main-logo,
+  body:not(.subpage-body) .main-logo {
+    height: clamp(62px, 9.2vh, 78px) !important;
+    width: auto;
+    display: block !important;
+  }
+
+  body:not(.subpage-body) .action-container {
+    position: static !important;
+    transform: none !important;
+    display: contents !important;
+  }
+  body:not(.subpage-body) .action-btn {
+    position: absolute !important;
+    top: clamp(44px, 6.5vh, 56px) !important;
+    right: 20px !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: translateY(-50%) !important;
+    width: clamp(70px, 10vh, 80px) !important;
+    height: clamp(40px, 5.5vh, 46px) !important;
+    border-radius: 50px !important;
+    box-shadow: 0 4px 15px rgba(216, 23, 0, 0.4) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 20 !important;
+  }
+  body:not(.subpage-body) .action-btn svg {
+    width: 25px !important;
+    height: 20px !important;
+  }
+  body:not(.subpage-body) .designer-text {
+    position: fixed !important;
+    bottom: clamp(10px, 2vh, 18px) !important;
+    right: 20px !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    font-size: clamp(7.5px, 1.1vh, 9px) !important;
+    font-family: 'Condiment', cursive !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    z-index: 20 !important;
+    white-space: nowrap !important;
+    pointer-events: auto !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+  }
+
+  /* Centered Sized Video Box (Shifted slightly down from header) */
+  body:not(.subpage-body) .bg-container {
+    position: absolute !important;
+    top: clamp(152px, 20.5vh, 190px) !important;
+    left: 18px !important;
+    right: 18px !important;
+    transform: none !important;
+    width: calc(100vw - 36px) !important;
+    max-width: 400px !important;
+    height: clamp(135px, 24vh, 195px) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 1 !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+    background-color: #000000 !important;
+    margin: 0 auto !important;
+  }
+  body:not(.subpage-body) .bg-video {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+  }
+  body:not(.subpage-body) .bg-overlay {
+    display: none !important;
+  }
+
+  /* Hero Text (OUR INNOVATIONS) Below Video - Distance to video strictly preserved */
+  body:not(.subpage-body) .hero-text-container {
+    position: absolute !important;
+    top: calc(clamp(152px, 20.5vh, 190px) + clamp(135px, 24vh, 195px) + clamp(48px, 7.5vh, 75px)) !important;
+    left: 20px !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-end !important;
+    gap: 0 !important;
+    z-index: 5 !important;
+  }
+  body:not(.subpage-body) .hero-primary {
+    font-size: clamp(72px, 18vh, 104px) !important;
+    line-height: 0.82 !important;
+    letter-spacing: -2px !important;
+    color: #D81700 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+    transform: none !important;
+  }
+  body:not(.subpage-body) .hero-secondary {
+    margin-left: clamp(10px, 2.5vw, 16px) !important;
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+    position: relative !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    transform: translateY(4px) !important;
+  }
+  body:not(.subpage-body) .hero-secondary .drop-btn {
+    font-size: clamp(17px, 2.8vh, 23px) !important;
+    letter-spacing: 0.8px !important;
+    padding: 0 4px 6px 4px !important; /* Bottom clearance so underline never touches text */
+    margin: 0 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    display: inline-block !important;
+    position: relative !important;
+  }
+  body:not(.subpage-body) .hero-secondary .drop-btn::after {
+    bottom: 0px !important;
+    left: 4px !important;
+    height: 2px !important;
+    background-color: #D81700 !important;
+    transition: width 0.35s ease-in-out !important;
+  }
+  /* Disable hover state forcing dropdown open on mobile touch screens */
+  body:not(.subpage-body) .hero-text-container:hover .dropdown-content,
+  body:not(.subpage-body) .custom-dropdown:hover .dropdown-content {
+    display: none !important;
+  }
+  body:not(.subpage-body) .custom-dropdown.show-dropdown .dropdown-content {
+    display: flex !important;
+    animation: dropdownBlur 0.35s ease forwards !important;
+  }
+  body:not(.subpage-body) .hero-text-container:hover .drop-btn::after,
+  body:not(.subpage-body) .custom-dropdown:hover .drop-btn::after {
+    width: 0 !important;
+  }
+  body:not(.subpage-body) .custom-dropdown.show-dropdown .drop-btn::after {
+    width: calc(100% - 8px) !important;
+  }
+  /* Disable desktop invisible hover hit-boxes on mobile touch */
+  body:not(.subpage-body) .custom-dropdown::before,
+  body:not(.subpage-body) .dropdown-content::before {
+    display: none !important;
+  }
+  body:not(.subpage-body) .hero-secondary .dropdown-content {
+    min-width: 220px !important;
+    max-width: calc(100vw - 40px) !important;
+    padding-top: 10px !important;
+    padding-bottom: 18px !important;
+    left: 0 !important;
+    top: 100% !important;
+    position: absolute !important;
+  }
+  body:not(.subpage-body) .hero-secondary .dropdown-item {
+    font-size: 15.5px !important;
+    padding: 6px 0 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Compact & Small Screen Mobile Optimization (Height <= 750px e.g. iPhone SE, iPhone 8/7/6, compact devices) */
+  @media (max-height: 750px) {
+    body:not(.subpage-body) .logo-container {
+      top: clamp(28px, 4.2vh, 36px) !important;
+    }
+    body:not(.subpage-body) .logo-container .main-logo,
+    body:not(.subpage-body) .main-logo {
+      height: clamp(42px, 6.2vh, 50px) !important;
+    }
+    body:not(.subpage-body) .action-btn {
+      top: clamp(28px, 4.2vh, 36px) !important;
+      width: clamp(56px, 8.2vh, 66px) !important;
+      height: clamp(32px, 4.6vh, 38px) !important;
+    }
+    body:not(.subpage-body) .action-btn svg {
+      width: 20px !important;
+      height: 16px !important;
+    }
+    body:not(.subpage-body) .bg-container {
+      top: clamp(80px, 12.5vh, 105px) !important;
+      height: clamp(110px, 18vh, 140px) !important;
+      max-width: 340px !important;
+    }
+    body:not(.subpage-body) .hero-text-container {
+      top: calc(clamp(80px, 12.5vh, 105px) + clamp(110px, 18vh, 140px) + clamp(14px, 2.4vh, 22px)) !important;
+      gap: 0 !important;
+      align-items: flex-end !important;
+    }
+    /* "OUR" font size bigger on small screens */
+    body:not(.subpage-body) .hero-primary {
+      font-size: clamp(58px, 11.5vh, 74px) !important;
+      line-height: 0.82 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      transform: none !important;
+    }
+    /* "INNOVATIONS" font size smaller on small screens */
+    body:not(.subpage-body) .hero-secondary {
+      margin-left: clamp(6px, 1.8vw, 10px) !important;
+      margin-bottom: 0 !important;
+      display: flex !important;
+      align-items: flex-end !important;
+      transform: translateY(3px) !important;
+    }
+    body:not(.subpage-body) .hero-secondary .drop-btn {
+      font-size: clamp(10.5px, 1.6vh, 12.5px) !important;
+      padding: 0 3px 4px 3px !important;
+      margin: 0 !important;
+      line-height: 1 !important;
+    }
+    body:not(.subpage-body) .hero-secondary .dropdown-item {
+      font-size: 12px !important;
+      padding: 4px 0 !important;
+    }
+    body:not(.subpage-body) .designer-text {
+      bottom: 8px !important;
+      font-size: clamp(7px, 1vh, 8px) !important;
+    }
+
+    /* Subpages Text Smaller on Small Screens */
+    .subpage-container {
+      padding: 75px 14px 35px 14px !important;
+    }
+    .page-heading,
+    .design-page .page-heading,
+    .page-heading.career-heading,
+    .career-page .page-heading,
+    .v-odne1s-page .page-heading.left-align,
+    .bobart-page .page-heading.left-align,
+    .ltb-page .page-heading.left-align {
+      font-size: clamp(24px, 6.2vh, 32px) !important;
+      margin-top: 24px !important;
+      margin-bottom: 20px !important;
+    }
+    .page-subheading,
+    .v-odne1s-page .page-subheading.left-align,
+    .bobart-page .page-subheading.left-align,
+    .ltb-page .page-subheading.left-align {
+      font-size: clamp(10.5px, 2vh, 12.5px) !important;
+      line-height: 1.4 !important;
+      margin-bottom: 18px !important;
+    }
+    .page-paragraph,
+    .v-odne1s-page .page-paragraph.left-align,
+    .bobart-page .page-paragraph.left-align,
+    .ltb-page .page-paragraph.left-align {
+      font-size: clamp(11.5px, 2.1vh, 13px) !important;
+      line-height: 1.75 !important;
+      margin-bottom: 16px !important;
+    }
+  }
+
+  /* Extra Small / Ultra Compact Screens (Height <= 600px e.g. iPhone SE 1st gen, Fold cover screen, Landscape) */
+  @media (max-height: 600px) {
+    body:not(.subpage-body) .logo-container {
+      top: 24px !important;
+    }
+    body:not(.subpage-body) .logo-container .main-logo,
+    body:not(.subpage-body) .main-logo {
+      height: 36px !important;
+    }
+    body:not(.subpage-body) .action-btn {
+      top: 24px !important;
+      width: 50px !important;
+      height: 28px !important;
+    }
+    body:not(.subpage-body) .action-btn svg {
+      width: 17px !important;
+      height: 14px !important;
+    }
+    body:not(.subpage-body) .bg-container {
+      top: 55px !important;
+      height: 85px !important;
+      max-width: 270px !important;
+    }
+    body:not(.subpage-body) .hero-text-container {
+      top: 148px !important;
+      gap: 0 !important;
+      align-items: flex-end !important;
+    }
+    /* "OUR" font size bigger on extra small screens */
+    body:not(.subpage-body) .hero-primary {
+      font-size: 46px !important;
+      line-height: 0.82 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      transform: none !important;
+    }
+    /* "INNOVATIONS" font size smaller on extra small screens */
+    body:not(.subpage-body) .hero-secondary {
+      margin-left: 6px !important;
+      margin-bottom: 0 !important;
+      display: flex !important;
+      align-items: flex-end !important;
+      transform: translateY(2px) !important;
+    }
+    body:not(.subpage-body) .hero-secondary .drop-btn {
+      font-size: 9.5px !important;
+      padding: 0 2px 3px 2px !important;
+      margin: 0 !important;
+      line-height: 1 !important;
+    }
+    body:not(.subpage-body) .hero-secondary .dropdown-item {
+      font-size: 10.5px !important;
+      padding: 3px 0 !important;
+    }
+    body:not(.subpage-body) .designer-text {
+      bottom: 5px !important;
+      font-size: 6.5px !important;
+    }
+
+    /* Subpages Text Smaller on Extra Small Screens */
+    .subpage-container {
+      padding: 60px 10px 25px 10px !important;
+    }
+    .page-heading,
+    .design-page .page-heading,
+    .page-heading.career-heading,
+    .career-page .page-heading,
+    .v-odne1s-page .page-heading.left-align,
+    .bobart-page .page-heading.left-align,
+    .ltb-page .page-heading.left-align {
+      font-size: 20px !important;
+      margin-top: 15px !important;
+      margin-bottom: 12px !important;
+    }
+    .page-subheading,
+    .v-odne1s-page .page-subheading.left-align,
+    .bobart-page .page-subheading.left-align,
+    .ltb-page .page-subheading.left-align {
+      font-size: 10px !important;
+      margin-bottom: 10px !important;
+    }
+    .page-paragraph,
+    .v-odne1s-page .page-paragraph.left-align,
+    .bobart-page .page-paragraph.left-align,
+    .ltb-page .page-paragraph.left-align {
+      font-size: 10.5px !important;
+      line-height: 1.6 !important;
+      margin-bottom: 10px !important;
+    }
+  }
+
+  /* Narrow Screen Optimization (Width <= 360px) */
+  @media (max-width: 360px) {
+    body:not(.subpage-body) .bg-container {
+      width: calc(100vw - 24px) !important;
+      left: 12px !important;
+      right: 12px !important;
+    }
+    body:not(.subpage-body) .hero-text-container {
+      left: 12px !important;
+    }
+    body:not(.subpage-body) .hero-primary {
+      font-size: clamp(42px, 8vh, 54px) !important;
+    }
+    body:not(.subpage-body) .hero-secondary .drop-btn {
+      font-size: clamp(11.5px, 2vh, 14px) !important;
+    }
+    body:not(.subpage-body) .designer-text {
+      right: 12px !important;
+    }
+  }
+  
+  /* Mobile Side Menu Fix (Zero horizontal overflow) */
   .side-menu {
-    width: 106vw !important;
-    right: -112vw !important; /* Start fully offscreen */
-    background-color: rgba(0, 0, 0, 0.85) !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    right: -100vw !important; /* Start fully offscreen without horizontal overflow */
+    background-color: rgba(0, 0, 0, 0.88) !important;
     backdrop-filter: blur(22px) !important;
     -webkit-backdrop-filter: blur(22px) !important;
-    padding: 60px 36px;
+    padding: 50px 24px;
     box-sizing: border-box;
+    overflow-x: hidden !important;
   }
-  .side-menu.open {
-    right: -3vw !important; /* Extends beyond left and right edges so no home page edge peeks through */
+  .side-menu.open,
+  .menu-preset-open .side-menu {
+    right: 0 !important;
   }
   .side-menu .close-btn {
     align-self: center !important;
@@ -1024,8 +1415,9 @@ html, body {
   .nav-dropdown-content a {
     text-align: center !important;
   }
+  .hero-text-container:hover .dropdown-content,
   .custom-dropdown:hover .dropdown-content {
-    display: none;
+    display: none !important;
   }
   .custom-dropdown.show-dropdown .dropdown-content {
     display: flex !important;
@@ -1127,12 +1519,13 @@ html, body {
   .subpage-container.contact-page-container {
     padding: 100px 16px 40px 16px;
   }
-  .page-heading {
+  .page-heading,
+  .design-page .page-heading {
     font-size: clamp(22px, 6.2vw, 29px);
     line-height: 1.25;
     letter-spacing: 0.8px;
-    margin-top: 48px; /* Brought lower from top on mobile */
-    margin-bottom: 42px; /* Increased gap to paragraph/content */
+    margin-top: 48px !important; /* Matches About Us page on mobile */
+    margin-bottom: 42px !important; /* Matches About Us page on mobile */
     text-align: center;
     white-space: normal;
     word-break: keep-all;
@@ -1168,19 +1561,19 @@ html, body {
   }
   .page-paragraph {
     font-size: 14px;
-    line-height: 1.85; /* Increased line spacing */
+    line-height: 2.05; /* Slightly increased line spacing */
     letter-spacing: -0.3px;
     max-width: 480px;
     width: 100%;
-    margin: 0 auto 24px auto;
+    margin: 0 auto 26px auto;
     text-align: center;
     padding: 0 6px;
     box-sizing: border-box;
   }
   .page-subheading {
     font-size: 18px;
-    line-height: 1.4;
-    margin-bottom: 20px;
+    line-height: 1.55;
+    margin-bottom: 22px;
     text-align: center;
   }
   .apply-now-btn {
@@ -1259,9 +1652,11 @@ html, body {
   .v-odne1s-page .subpage-container.split-view,
   .bobart-page .subpage-container.split-view,
   .ltb-page .subpage-container.split-view {
-    padding: clamp(80px, 12vh, 105px) 28px 70px 28px !important; /* Generous top and bottom scroll padding */
+    padding: clamp(80px, 12vh, 105px) 28px 80px 28px !important; /* Generous top and bottom scroll padding */
     height: 100vh !important;
+    height: 100dvh !important;
     max-height: 100vh !important;
+    max-height: 100dvh !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     display: flex;
@@ -1271,7 +1666,7 @@ html, body {
     box-sizing: border-box;
     -webkit-overflow-scrolling: touch !important;
     touch-action: pan-y !important;
-    overscroll-behavior: contain !important;
+    overscroll-behavior-y: contain !important;
   }
   .v-odne1s-page .split-layout,
   .bobart-page .split-layout,
@@ -1340,7 +1735,7 @@ html, body {
     margin-right: auto !important;
     white-space: normal !important;
     letter-spacing: 0.3px !important;
-    line-height: 1.4 !important;
+    line-height: 1.55 !important;
     max-width: 360px !important;
     transform: none !important;
     animation: none !important;
@@ -1353,9 +1748,9 @@ html, body {
     text-align: center !important;
     font-size: clamp(13px, 3.6vw, 15px) !important;
     color: #dedede !important;
-    line-height: 1.8 !important;
+    line-height: 2.0 !important; /* Slightly increased line spacing */
     max-width: 360px !important;
-    margin: 0 auto clamp(24px, 4.4vh, 48px) auto !important; /* Proportional gap between paragraphs */
+    margin: 0 auto clamp(26px, 4.8vh, 52px) auto !important; /* Proportional gap between paragraphs */
     letter-spacing: 0px !important;
     transform: none !important;
     animation: none !important;
