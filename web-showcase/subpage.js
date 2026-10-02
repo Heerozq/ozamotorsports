@@ -120,4 +120,100 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentScroll = container.scrollTop || window.pageYOffset || 0;
     updateHeaderVisibility(currentScroll);
   }, { passive: true });
+
+  // Elastic Scroll Resistance Animation for Subpages (Single trigger per scroll gesture, no repeat/after-bounce)
+  const subContainer = document.querySelector('.subpage-container');
+  let isSubpageBouncing = false;
+  let subWheelCooldownTimer = null;
+  let subTouchHasTriggered = false;
+  let subTouchStartY = 0;
+
+  function triggerSubpageScrollBounce(direction) {
+    if (isSubpageBouncing || !subContainer) return;
+    if (sideMenu && sideMenu.classList.contains('open')) return;
+
+    isSubpageBouncing = true;
+    const animationClass = direction === 'down' ? 'scroll-bounce-down' : 'scroll-bounce-up';
+
+    subContainer.classList.remove('scroll-bounce-down', 'scroll-bounce-up');
+    void subContainer.offsetWidth; // Force CSS reflow
+    subContainer.classList.add(animationClass);
+
+    setTimeout(() => {
+      subContainer.classList.remove(animationClass);
+    }, 450);
+  }
+
+  // Wheel / Trackpad listener with momentum lockout
+  window.addEventListener('wheel', (e) => {
+    if (!subContainer) return;
+    if (Math.abs(e.deltaY) > 5) {
+      const isScrollable = subContainer.scrollHeight > subContainer.clientHeight + 8;
+      if (!isScrollable) {
+        if (!isSubpageBouncing) triggerSubpageScrollBounce(e.deltaY > 0 ? 'down' : 'up');
+      } else {
+        const atTop = subContainer.scrollTop <= 2 && e.deltaY < 0;
+        const atBottom = (subContainer.scrollTop + subContainer.clientHeight >= subContainer.scrollHeight - 6) && e.deltaY > 0;
+        if (atTop && !isSubpageBouncing) triggerSubpageScrollBounce('up');
+        if (atBottom && !isSubpageBouncing) triggerSubpageScrollBounce('down');
+      }
+
+      clearTimeout(subWheelCooldownTimer);
+      subWheelCooldownTimer = setTimeout(() => {
+        isSubpageBouncing = false;
+      }, 350);
+    }
+  }, { passive: true });
+
+  // Touch swipe listener for Mobile & Tablet (strictly once per touch contact)
+  window.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      subTouchStartY = e.touches[0].clientY;
+      subTouchHasTriggered = false;
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (!subContainer) return;
+    if (e.touches.length === 1 && !subTouchHasTriggered && subTouchStartY !== 0) {
+      const touchDiff = subTouchStartY - e.touches[0].clientY;
+      if (Math.abs(touchDiff) > 15) {
+        const isScrollable = subContainer.scrollHeight > subContainer.clientHeight + 8;
+        if (!isScrollable) {
+          triggerSubpageScrollBounce(touchDiff > 0 ? 'down' : 'up');
+          subTouchHasTriggered = true;
+        } else {
+          const atTop = subContainer.scrollTop <= 2 && touchDiff < 0;
+          const atBottom = (subContainer.scrollTop + subContainer.clientHeight >= subContainer.scrollHeight - 6) && touchDiff > 0;
+          if (atTop || atBottom) {
+            triggerSubpageScrollBounce(touchDiff > 0 ? 'down' : 'up');
+            subTouchHasTriggered = true;
+          }
+        }
+      }
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', () => {
+    subTouchStartY = 0;
+    setTimeout(() => {
+      isSubpageBouncing = false;
+      subTouchHasTriggered = false;
+    }, 150);
+  }, { passive: true });
+
+  // Keyboard navigation
+  window.addEventListener('keydown', (e) => {
+    if (!subContainer) return;
+    const isScrollable = subContainer.scrollHeight > subContainer.clientHeight + 8;
+    if (!isScrollable) {
+      if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
+        triggerSubpageScrollBounce('down');
+        setTimeout(() => { isSubpageBouncing = false; }, 350);
+      } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
+        triggerSubpageScrollBounce('up');
+        setTimeout(() => { isSubpageBouncing = false; }, 350);
+      }
+    }
+  });
 });

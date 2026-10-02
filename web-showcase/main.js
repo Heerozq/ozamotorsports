@@ -187,4 +187,77 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   });
+
+  // Elastic Scroll Resistance Animation (Single trigger per scroll gesture, no repeat/after-bounce)
+  const uiLayer = document.querySelector('.ui-layer');
+  let isBouncing = false;
+  let wheelCooldownTimer = null;
+  let touchHasTriggered = false;
+  let touchStartY = 0;
+
+  function triggerScrollBounce(direction) {
+    if (isBouncing || !uiLayer) return;
+    if (sideMenu && sideMenu.classList.contains('open')) return;
+
+    isBouncing = true;
+    const animationClass = direction === 'down' ? 'scroll-bounce-down' : 'scroll-bounce-up';
+
+    uiLayer.classList.remove('scroll-bounce-down', 'scroll-bounce-up');
+    void uiLayer.offsetWidth; // Force CSS reflow
+    uiLayer.classList.add(animationClass);
+
+    setTimeout(() => {
+      uiLayer.classList.remove(animationClass);
+    }, 450);
+  }
+
+  // Mouse wheel / Trackpad listener with momentum lockout
+  window.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaY) > 5) {
+      if (!isBouncing) {
+        triggerScrollBounce(e.deltaY > 0 ? 'down' : 'up');
+      }
+      clearTimeout(wheelCooldownTimer);
+      wheelCooldownTimer = setTimeout(() => {
+        isBouncing = false;
+      }, 350);
+    }
+  }, { passive: true });
+
+  // Touch gesture listener (strictly once per touch contact)
+  window.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      touchStartY = e.touches[0].clientY;
+      touchHasTriggered = false;
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1 && !touchHasTriggered && touchStartY !== 0) {
+      const touchDiff = touchStartY - e.touches[0].clientY;
+      if (Math.abs(touchDiff) > 15) {
+        triggerScrollBounce(touchDiff > 0 ? 'down' : 'up');
+        touchHasTriggered = true; // Locks until touch ends
+      }
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', () => {
+    touchStartY = 0;
+    setTimeout(() => {
+      isBouncing = false;
+      touchHasTriggered = false;
+    }, 150);
+  }, { passive: true });
+
+  // Arrow Keys / Space
+  window.addEventListener('keydown', (e) => {
+    if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
+      triggerScrollBounce('down');
+      setTimeout(() => { isBouncing = false; }, 350);
+    } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
+      triggerScrollBounce('up');
+      setTimeout(() => { isBouncing = false; }, 350);
+    }
+  });
 });
