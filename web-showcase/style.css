@@ -503,7 +503,7 @@ body::-webkit-scrollbar {
 .subpage-action-btn {
   position: absolute;
   top: 205px; /* Aligned with the lower baseline of CONTACT US heading */
-  right: 40px;
+  right: 65px; /* Shifted slightly to the left from the home page line */
   background-color: #D81700;
   color: #000000;
   width: 110px; /* Exact same size as home page action-btn */
