@@ -131,16 +131,14 @@ document.addEventListener('DOMContentLoaded', () => {
     container.addEventListener('scroll', onScrollThrottled, { passive: true });
   });
 
-  // Elastic Scroll Resistance Animation for Subpages (Single trigger per scroll gesture, no repeat/after-bounce)
+  // Elastic Scroll Resistance Animation for Subpages (Desktop Only - Never blocks mobile pull-to-refresh)
   const subContainer = document.querySelector('.subpage-container');
   let isSubpageBouncing = false;
   let subWheelCooldownTimer = null;
-  let subTouchHasTriggered = false;
-  let subTouchStartY = 0;
+  const isSubTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 1024);
 
   function triggerSubpageScrollBounce(direction) {
-    if (isSubpageBouncing || !subContainer) return;
-    if (window.innerWidth <= 768) return; // Native smooth scrolling on mobile
+    if (isSubTouchDevice || isSubpageBouncing || !subContainer) return;
     if (sideMenu && sideMenu.classList.contains('open')) return;
 
     isSubpageBouncing = true;
@@ -158,67 +156,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 450);
   }
 
-  // Wheel / Trackpad listener with momentum lockout
-  window.addEventListener('wheel', (e) => {
-    if (!subContainer) return;
-    if (Math.abs(e.deltaY) > 5) {
+  // Desktop wheel / keyboard listeners (Never blocks mobile pull-to-refresh)
+  if (!isSubTouchDevice) {
+    window.addEventListener('wheel', (e) => {
+      if (!subContainer) return;
+      if (Math.abs(e.deltaY) > 5) {
+        const isScrollable = subContainer.scrollHeight > subContainer.clientHeight + 8;
+        if (!isScrollable) {
+          if (!isSubpageBouncing) triggerSubpageScrollBounce(e.deltaY > 0 ? 'down' : 'up');
+        }
+
+        clearTimeout(subWheelCooldownTimer);
+        subWheelCooldownTimer = setTimeout(() => {
+          isSubpageBouncing = false;
+        }, 350);
+      }
+    }, { passive: true });
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (!subContainer) return;
       const isScrollable = subContainer.scrollHeight > subContainer.clientHeight + 8;
       if (!isScrollable) {
-        if (!isSubpageBouncing) triggerSubpageScrollBounce(e.deltaY > 0 ? 'down' : 'up');
-      }
-
-      clearTimeout(subWheelCooldownTimer);
-      subWheelCooldownTimer = setTimeout(() => {
-        isSubpageBouncing = false;
-      }, 350);
-    }
-  }, { passive: true });
-
-  // Touch swipe listener for Mobile & Tablet (strictly once per touch contact)
-  window.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 1) {
-      subTouchStartY = e.touches[0].clientY;
-      subTouchHasTriggered = false;
-    }
-  }, { passive: true });
-
-  window.addEventListener('touchmove', (e) => {
-    if (!subContainer) return;
-    if (e.touches.length === 1 && !subTouchHasTriggered && subTouchStartY !== 0) {
-      const touchDiff = subTouchStartY - e.touches[0].clientY;
-      if (Math.abs(touchDiff) > 15) {
-        const isScrollable = subContainer.scrollHeight > subContainer.clientHeight + 8;
-        // On non-scrollable pages, trigger custom subtle bounce. On scrollable pages, native mobile momentum handles boundary smoothly without lifting container
-        if (!isScrollable) {
-          triggerSubpageScrollBounce(touchDiff > 0 ? 'down' : 'up');
-          subTouchHasTriggered = true;
+        if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
+          triggerSubpageScrollBounce('down');
+          setTimeout(() => { isSubpageBouncing = false; }, 350);
+        } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
+          triggerSubpageScrollBounce('up');
+          setTimeout(() => { isSubpageBouncing = false; }, 350);
         }
       }
-    }
-  }, { passive: true });
-
-  window.addEventListener('touchend', () => {
-    subTouchStartY = 0;
-    setTimeout(() => {
-      isSubpageBouncing = false;
-      subTouchHasTriggered = false;
-    }, 150);
-  }, { passive: true });
-
-  // Keyboard navigation
-  window.addEventListener('keydown', (e) => {
-    if (!subContainer) return;
-    const isScrollable = subContainer.scrollHeight > subContainer.clientHeight + 8;
-    if (!isScrollable) {
-      if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
-        triggerSubpageScrollBounce('down');
-        setTimeout(() => { isSubpageBouncing = false; }, 350);
-      } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
-        triggerSubpageScrollBounce('up');
-        setTimeout(() => { isSubpageBouncing = false; }, 350);
-      }
-    }
-  });
+    });
+  }
 
   // Fast Video Auto-Play & Rendering Initialization
   const innovationVideo = document.querySelector('.innovation-video');

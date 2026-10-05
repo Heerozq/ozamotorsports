@@ -1,4 +1,4 @@
-// Logic to handle always-on audio and side menu
+// Logic to handle always-on audio and side menu on Home Page
 document.addEventListener('DOMContentLoaded', () => {
   document.body && document.body.classList.remove('slide-out-left', 'slide-out-right');
   const bgVideo = document.querySelector('.bg-video');
@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Always-On Video & Audio Configuration with Position Memory
   if (bgVideo) {
+    // Ensure critical mobile attributes
+    bgVideo.setAttribute('playsinline', '');
+    bgVideo.setAttribute('webkit-playsinline', '');
+    bgVideo.muted = true;
+    bgVideo.defaultMuted = true;
+
     // Restore saved playback position if returning from a subpage
     const savedTime = sessionStorage.getItem('homeVideoTime');
     if (savedTime) {
@@ -23,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Save playback position on-demand (avoids continuous main-thread write overhead)
+    // Save playback position on-demand
     const saveVideoTime = () => {
       if (bgVideo && bgVideo.currentTime > 0) {
         sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
@@ -34,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bgVideo.muted = true;
     bgVideo.play().catch(() => {});
 
-    // Try unmuting directly if browser allows (e.g. returning user or site permission)
+    // Try unmuting directly if browser allows (Desktop or allowed autoplay)
     bgVideo.muted = false;
     bgVideo.volume = 1.0;
     const playPromise = bgVideo.play();
@@ -43,27 +49,48 @@ document.addEventListener('DOMContentLoaded', () => {
       if (bgVideo) {
         bgVideo.muted = false;
         bgVideo.volume = 1.0;
-        bgVideo.play().catch(() => {});
+        if (bgVideo.paused) {
+          bgVideo.play().catch(() => {});
+        }
       }
-      ['click', 'pointerdown', 'touchstart', 'keydown'].forEach(evt => {
-        window.removeEventListener(evt, unlockSound);
-        document.removeEventListener(evt, unlockSound);
-      });
     };
 
     if (playPromise !== undefined) {
       playPromise.catch(() => {
-        // If unmuted autoplay blocked by browser policy, keep video playing muted
+        // If unmuted autoplay blocked by browser policy on mobile
         bgVideo.muted = true;
         bgVideo.play().catch(() => {});
-
-        // Unmute safely on the first user interaction (click, touch, tap, key) without interrupting playback
-        ['click', 'pointerdown', 'touchstart', 'keydown'].forEach(evt => {
-          window.addEventListener(evt, unlockSound, { once: true });
-          document.addEventListener(evt, unlockSound, { once: true });
-        });
       });
     }
+
+    // Enable sound and ensure continuous playback on user interaction anywhere
+    ['click', 'touchend', 'pointerup', 'keydown'].forEach(evt => {
+      document.addEventListener(evt, unlockSound, { passive: true });
+      window.addEventListener(evt, unlockSound, { passive: true });
+    });
+
+    // Auto-resume watchdogs: Keep horse running without getting paused or stuck
+    bgVideo.addEventListener('pause', () => {
+      if (!document.hidden && bgVideo) {
+        startPlay();
+      }
+    });
+    bgVideo.addEventListener('waiting', () => {
+      if (!document.hidden && bgVideo) {
+        startPlay();
+      }
+    });
+    bgVideo.addEventListener('stalled', () => {
+      if (!document.hidden && bgVideo) {
+        startPlay();
+      }
+    });
+    bgVideo.addEventListener('ended', () => {
+      if (bgVideo) {
+        bgVideo.currentTime = 0;
+        startPlay();
+      }
+    });
   }
 
   // Toggle Side Menu
@@ -139,15 +166,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Automatic Mute/Pause when switching tabs or windows
+  // Automatic Mute/Pause when switching tabs or windows (never freeze video)
   document.addEventListener('visibilitychange', () => {
     if (bgVideo) {
       if (document.hidden) {
         sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
         bgVideo.pause();
-        bgVideo.muted = true;
       } else {
-        bgVideo.muted = false;
         bgVideo.play().catch(() => {});
       }
     }
@@ -157,13 +182,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bgVideo) {
       sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
       bgVideo.pause();
-      bgVideo.muted = true;
     }
   });
 
   window.addEventListener('focus', () => {
-    if (bgVideo && !document.hidden) {
-      bgVideo.muted = false;
+    if (bgVideo && !document.hidden && bgVideo.paused) {
       bgVideo.play().catch(() => {});
     }
   });
@@ -172,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bgVideo) {
       sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
       bgVideo.pause();
-      bgVideo.muted = true;
     }
   });
 
@@ -180,7 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bgVideo) {
       sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
       bgVideo.pause();
-      bgVideo.muted = true;
     }
   });
 
@@ -243,16 +264,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Elastic Scroll Resistance Animation (Single trigger per scroll gesture, no repeat/after-bounce)
+  // Elastic Scroll Resistance Animation (Desktop Mouse Wheel / Keyboard Only - Never blocks mobile pull-to-refresh)
   const uiLayer = document.querySelector('.ui-layer');
   let isBouncing = false;
   let wheelCooldownTimer = null;
-  let touchHasTriggered = false;
-  let touchStartY = 0;
+  const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 1024);
 
   function triggerScrollBounce(direction) {
-    if (isBouncing || !uiLayer) return;
-    if (window.innerWidth <= 768) return; // Native smooth touch on mobile
+    if (isTouchDevice || isBouncing || !uiLayer) return;
     if (sideMenu && sideMenu.classList.contains('open')) return;
 
     isBouncing = true;
@@ -270,56 +289,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 450);
   }
 
-  // Mouse wheel / Trackpad listener with momentum lockout
-  window.addEventListener('wheel', (e) => {
-    if (Math.abs(e.deltaY) > 5) {
-      if (!isBouncing) {
-        triggerScrollBounce(e.deltaY > 0 ? 'down' : 'up');
+  // Desktop-only mouse wheel & keyboard listeners
+  if (!isTouchDevice) {
+    window.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaY) > 5) {
+        if (!isBouncing) {
+          triggerScrollBounce(e.deltaY > 0 ? 'down' : 'up');
+        }
+        clearTimeout(wheelCooldownTimer);
+        wheelCooldownTimer = setTimeout(() => {
+          isBouncing = false;
+        }, 350);
       }
-      clearTimeout(wheelCooldownTimer);
-      wheelCooldownTimer = setTimeout(() => {
-        isBouncing = false;
-      }, 350);
-    }
-  }, { passive: true });
+    }, { passive: true });
 
-  // Touch gesture listener (strictly once per touch contact)
-  window.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 1) {
-      touchStartY = e.touches[0].clientY;
-      touchHasTriggered = false;
-    }
-  }, { passive: true });
-
-  window.addEventListener('touchmove', (e) => {
-    if (window.innerWidth <= 768) return;
-    if (e.touches.length === 1 && !touchHasTriggered && touchStartY !== 0) {
-      const touchDiff = touchStartY - e.touches[0].clientY;
-      if (Math.abs(touchDiff) > 15) {
-        triggerScrollBounce(touchDiff > 0 ? 'down' : 'up');
-        touchHasTriggered = true; // Locks until touch ends
+    // Arrow Keys / Space
+    window.addEventListener('keydown', (e) => {
+      if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
+        triggerScrollBounce('down');
+        setTimeout(() => { isBouncing = false; }, 350);
+      } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
+        triggerScrollBounce('up');
+        setTimeout(() => { isBouncing = false; }, 350);
       }
-    }
-  }, { passive: true });
-
-  window.addEventListener('touchend', () => {
-    touchStartY = 0;
-    setTimeout(() => {
-      isBouncing = false;
-      touchHasTriggered = false;
-    }, 150);
-  }, { passive: true });
-
-  // Arrow Keys / Space
-  window.addEventListener('keydown', (e) => {
-    if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
-      triggerScrollBounce('down');
-      setTimeout(() => { isBouncing = false; }, 350);
-    } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
-      triggerScrollBounce('up');
-      setTimeout(() => { isBouncing = false; }, 350);
-    }
-  });
+    });
+  }
 
   // Fast hover prefetch for innovation links
   const videoMap = {
@@ -339,7 +333,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.head.appendChild(link);
   }
 
-  // Preload only when user hovers/touches an innovation link
   document.querySelectorAll('a[href*="v-odne1s"], a[href*="bobart"], a[href*="ltb-valve-techno"]').forEach(link => {
     ['mouseenter', 'touchstart'].forEach(evt => {
       link.addEventListener(evt, () => {
