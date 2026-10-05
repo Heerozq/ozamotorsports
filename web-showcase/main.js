@@ -23,12 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Keep track of current playback position continuously
-    bgVideo.addEventListener('timeupdate', () => {
-      if (bgVideo.currentTime > 0) {
+    // Save playback position on-demand (avoids continuous main-thread write overhead)
+    const saveVideoTime = () => {
+      if (bgVideo && bgVideo.currentTime > 0) {
         sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
       }
-    });
+    };
 
     // Start video playing immediately and continuously
     bgVideo.muted = true;
@@ -222,6 +222,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const parent = btn.closest('.custom-dropdown, .nav-dropdown');
       if (parent) {
         parent.classList.toggle('show-dropdown');
+        const heroContainer = btn.closest('.hero-text-container');
+        if (heroContainer) {
+          heroContainer.classList.toggle('dropdown-open', parent.classList.contains('show-dropdown'));
+        }
       }
     });
   });
@@ -233,25 +237,11 @@ document.addEventListener('DOMContentLoaded', () => {
         el.classList.remove('show-dropdown');
       });
       const heroContainer = document.querySelector('.hero-text-container');
-      if (heroContainer) heroContainer.classList.remove('touch-active');
+      if (heroContainer) {
+        heroContainer.classList.remove('touch-active', 'dropdown-open');
+      }
     }
   });
-
-  // Mobile Touch Glow Interaction for OUR / hero container
-  const heroContainer = document.querySelector('.hero-text-container');
-  if (heroContainer) {
-    heroContainer.addEventListener('touchstart', () => {
-      heroContainer.classList.add('touch-active');
-    }, { passive: true });
-
-    heroContainer.addEventListener('touchend', () => {
-      setTimeout(() => {
-        if (!document.querySelector('.custom-dropdown.show-dropdown')) {
-          heroContainer.classList.remove('touch-active');
-        }
-      }, 500);
-    }, { passive: true });
-  }
 
   // Elastic Scroll Resistance Animation (Single trigger per scroll gesture, no repeat/after-bounce)
   const uiLayer = document.querySelector('.ui-layer');
@@ -262,14 +252,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function triggerScrollBounce(direction) {
     if (isBouncing || !uiLayer) return;
+    if (window.innerWidth <= 768) return; // Native smooth touch on mobile
     if (sideMenu && sideMenu.classList.contains('open')) return;
 
     isBouncing = true;
     const animationClass = direction === 'down' ? 'scroll-bounce-down' : 'scroll-bounce-up';
 
-    uiLayer.classList.remove('scroll-bounce-down', 'scroll-bounce-up');
-    void uiLayer.offsetWidth; // Force CSS reflow
-    uiLayer.classList.add(animationClass);
+    requestAnimationFrame(() => {
+      uiLayer.classList.remove('scroll-bounce-down', 'scroll-bounce-up');
+      requestAnimationFrame(() => {
+        uiLayer.classList.add(animationClass);
+      });
+    });
 
     setTimeout(() => {
       uiLayer.classList.remove(animationClass);
@@ -298,6 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { passive: true });
 
   window.addEventListener('touchmove', (e) => {
+    if (window.innerWidth <= 768) return;
     if (e.touches.length === 1 && !touchHasTriggered && touchStartY !== 0) {
       const touchDiff = touchStartY - e.touches[0].clientY;
       if (Math.abs(touchDiff) > 15) {

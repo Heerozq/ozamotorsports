@@ -39,12 +39,21 @@ body::-webkit-scrollbar {
   width: 100vw;
   height: 100vh;
   z-index: 0;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .bg-video {
   width: 100%;
   height: 100%;
   object-fit: cover; /* Ensures video scales perfectly to fill screen */
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 /* Optional overlay to darken the video slightly so white text pops */
@@ -459,7 +468,7 @@ body::-webkit-scrollbar {
   font-weight: 400;
   color: #ffffff;
   letter-spacing: 0.5px;
-  margin-top: 0px; /* Reduced gap */
+  margin-top: 0px;
   text-decoration: none;
   cursor: pointer;
   display: inline-block;
@@ -526,7 +535,7 @@ body::-webkit-scrollbar {
 .subpage-action-btn {
   position: absolute;
   top: 205px; /* Aligned with the lower baseline of CONTACT US heading */
-  right: 110px; /* Moved further to the left */
+  right: clamp(30px, 6.5vw, 110px); /* Responsive margin avoiding form overlap on medium/large screens */
   background-color: #D81700;
   color: #000000;
   width: 110px; /* Exact same size as home page action-btn */
@@ -898,7 +907,8 @@ video[src*="num9.mp4"] {
   letter-spacing: 1.5px;
   font-weight: bold;
   text-align: center;
-  margin-top: 10px; /* Moved slightly upwards */
+  margin-top: 12px;
+  max-width: 480px;
   line-height: 1.6;
   text-shadow: 0 0 15px rgba(216, 23, 0, 0.4);
   animation: fadeInSuccess 0.6s ease forwards;
@@ -981,6 +991,13 @@ html, body {
 @media (max-width: 1024px) {
   .hero-primary { font-size: 100px; }
   .hero-secondary { font-size: 24px; margin-left: 15px; }
+
+  .contact-form {
+    max-width: 460px;
+  }
+  .subpage-action-btn {
+    right: clamp(20px, 3.5vw, 40px);
+  }
 }
 
 @media (max-width: 768px) {
@@ -1052,8 +1069,8 @@ html, body {
   }
   body:not(.subpage-body) .designer-text {
     position: fixed !important;
-    bottom: clamp(10px, 2vh, 18px) !important;
-    right: 20px !important;
+    bottom: clamp(5px, 0.9vh, 9px) !important;
+    right: 12px !important;
     top: auto !important;
     left: auto !important;
     transform: none !important;
@@ -1066,43 +1083,50 @@ html, body {
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
   }
 
-  /* Centered Sized Video Box (Shifted slightly down from header) */
+  /* Video Pinned to Bottom - Zero black space on left/right/bottom, full width */
   body:not(.subpage-body) .bg-container {
     position: absolute !important;
-    top: clamp(152px, 20.5vh, 190px) !important;
-    left: 18px !important;
-    right: 18px !important;
+    bottom: 0 !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
     transform: none !important;
-    width: calc(100vw - 36px) !important;
-    max-width: 400px !important;
-    height: clamp(135px, 24vh, 195px) !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: auto !important;
+    max-height: 52vh !important;
     display: flex !important;
     justify-content: center !important;
-    align-items: center !important;
+    align-items: flex-end !important;
     z-index: 1 !important;
-    border-radius: 6px !important;
+    border-radius: 0 !important;
     overflow: hidden !important;
-    background-color: #000000 !important;
-    margin: 0 auto !important;
+    background-color: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   body:not(.subpage-body) .bg-video {
+    width: 100vw !important;
     width: 100% !important;
-    height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: contain !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    max-height: 52vh !important;
+    object-fit: cover !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   body:not(.subpage-body) .bg-overlay {
     display: none !important;
   }
 
-  /* Hero Text (OUR INNOVATIONS) Below Video - Distance to video strictly preserved */
+  /* Hero Text (OUR INNOVATIONS) positioned comfortably in the open middle area */
   body:not(.subpage-body) .hero-text-container {
     position: absolute !important;
-    top: calc(clamp(152px, 20.5vh, 190px) + clamp(135px, 24vh, 195px) + clamp(48px, 7.5vh, 75px)) !important;
+    top: clamp(165px, 26vh, 255px) !important;
+    bottom: auto !important;
     left: 20px !important;
     right: auto !important;
-    bottom: auto !important;
     transform: none !important;
     display: flex !important;
     flex-direction: row !important;
@@ -1111,8 +1135,8 @@ html, body {
     z-index: 5 !important;
   }
   body:not(.subpage-body) .hero-primary {
-    font-size: clamp(72px, 18vh, 104px) !important;
-    line-height: 0.82 !important;
+    font-size: clamp(74px, 16.5vh, 92px) !important;
+    line-height: 0.80 !important;
     letter-spacing: -2px !important;
     color: #D81700 !important;
     margin: 0 !important;
@@ -1121,17 +1145,17 @@ html, body {
     transform: none !important;
   }
   body:not(.subpage-body) .hero-secondary {
-    margin-left: clamp(10px, 2.5vw, 16px) !important;
+    margin-left: clamp(8px, 2vw, 14px) !important;
     margin-bottom: 0 !important;
     margin-top: 0 !important;
     position: relative !important;
     display: flex !important;
     align-items: flex-end !important;
-    transform: translateY(4px) !important;
+    transform: translateY(3px) !important;
   }
   body:not(.subpage-body) .hero-secondary .drop-btn {
-    font-size: clamp(17px, 2.8vh, 23px) !important;
-    letter-spacing: 0.8px !important;
+    font-size: clamp(14px, 3.2vw, 17px) !important;
+    letter-spacing: 1.2px !important;
     padding: 0 4px 6px 4px !important; /* Bottom clearance so underline never touches text */
     margin: 0 !important;
     line-height: 1 !important;
@@ -1154,6 +1178,17 @@ html, body {
   body:not(.subpage-body) .custom-dropdown.show-dropdown .dropdown-content {
     display: flex !important;
     animation: dropdownBlur 0.35s ease forwards !important;
+  }
+  /* Mobile: Lighting effect turns ON when dropdown opens, and turns OFF when dropdown closes */
+  body:not(.subpage-body) .hero-primary,
+  body:not(.subpage-body) .hero-primary:hover,
+  body:not(.subpage-body) .hero-text-container:hover .hero-primary,
+  body:not(.subpage-body) .hero-text-container:active .hero-primary {
+    text-shadow: none !important;
+  }
+  body:not(.subpage-body) .hero-text-container.dropdown-open .hero-primary,
+  body:not(.subpage-body) .hero-text-container:has(.custom-dropdown.show-dropdown) .hero-primary {
+    text-shadow: 0 0 10px rgba(216, 23, 0, 0.7), 0 0 22px rgba(216, 23, 0, 0.4), 0 0 35px rgba(216, 23, 0, 0.2) !important;
   }
   body:not(.subpage-body) .hero-text-container:hover .drop-btn::after,
   body:not(.subpage-body) .custom-dropdown:hover .drop-btn::after {
@@ -1202,24 +1237,30 @@ html, body {
       height: 16px !important;
     }
     body:not(.subpage-body) .bg-container {
-      top: clamp(80px, 12.5vh, 105px) !important;
-      height: clamp(110px, 18vh, 140px) !important;
-      max-width: 340px !important;
+      bottom: 0 !important;
+      top: auto !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100vw !important;
+      max-width: 100vw !important;
+      height: auto !important;
+      margin: 0 !important;
     }
     body:not(.subpage-body) .hero-text-container {
-      top: calc(clamp(80px, 12.5vh, 105px) + clamp(110px, 18vh, 140px) + clamp(14px, 2.4vh, 22px)) !important;
+      top: clamp(115px, 17vh, 145px) !important;
+      bottom: auto !important;
       gap: 0 !important;
       align-items: flex-end !important;
     }
-    /* "OUR" font size bigger on small screens */
+    /* "OUR" font size prominent on small screens */
     body:not(.subpage-body) .hero-primary {
-      font-size: clamp(58px, 11.5vh, 74px) !important;
-      line-height: 0.82 !important;
+      font-size: clamp(64px, 13vh, 76px) !important;
+      line-height: 0.80 !important;
       margin: 0 !important;
       padding: 0 !important;
       transform: none !important;
     }
-    /* "INNOVATIONS" font size smaller on small screens */
+    /* "INNOVATIONS" font size as subtitle on small screens */
     body:not(.subpage-body) .hero-secondary {
       margin-left: clamp(6px, 1.8vw, 10px) !important;
       margin-bottom: 0 !important;
@@ -1228,7 +1269,8 @@ html, body {
       transform: translateY(3px) !important;
     }
     body:not(.subpage-body) .hero-secondary .drop-btn {
-      font-size: clamp(10.5px, 1.6vh, 12.5px) !important;
+      font-size: clamp(12.5px, 2.1vh, 14.5px) !important;
+      letter-spacing: 1.1px !important;
       padding: 0 3px 4px 3px !important;
       margin: 0 !important;
       line-height: 1 !important;
@@ -1238,7 +1280,7 @@ html, body {
       padding: 4px 0 !important;
     }
     body:not(.subpage-body) .designer-text {
-      bottom: 8px !important;
+      bottom: 4px !important;
       font-size: clamp(7px, 1vh, 8px) !important;
     }
 
@@ -1246,10 +1288,15 @@ html, body {
     .subpage-container {
       padding: 70px 14px 35px 14px !important;
     }
+    .about-page .subpage-container,
+    .design-page .subpage-container,
+    .contact-page .subpage-container,
+    .subpage-container.contact-page-container {
+      padding: clamp(65px, 8.5vh, 75px) 14px clamp(25px, 3.5vh, 35px) 14px !important;
+    }
     .page-heading,
     .page-heading.career-heading,
-    .career-page .page-heading,
-    .page-heading.contact-heading {
+    .career-page .page-heading {
       font-size: clamp(16px, 4.2vw, 22px) !important;
       margin-top: 14px !important;
       margin-bottom: 16px !important;
@@ -1259,38 +1306,84 @@ html, body {
       margin-left: auto !important;
       margin-right: auto !important;
     }
+    .page-heading.contact-heading,
+    .contact-page .page-heading {
+      font-size: clamp(19px, 5.2vw, 25px) !important;
+      margin-top: 0 !important;
+      margin-bottom: clamp(10px, 1.6vh, 14px) !important;
+      white-space: nowrap !important;
+      text-align: center !important;
+      width: 100% !important;
+    }
+    .contact-form {
+      row-gap: 8px !important;
+      max-width: 350px !important;
+    }
+    .form-group input,
+    .form-group select {
+      height: 30px !important;
+      font-size: 11.5px !important;
+    }
+    .form-group textarea {
+      min-height: 52px !important;
+      font-size: 11.5px !important;
+    }
+    .submit-btn {
+      height: 32px !important;
+      margin-top: 8px !important;
+      font-size: 12px !important;
+    }
+    .subpage-action-btn {
+      top: clamp(475px, calc(50dvh + 200px), 570px) !important;
+    }
+    .about-page .page-heading {
+      font-size: clamp(19px, 5.2vw, 25px) !important;
+      margin-top: 0 !important;
+      margin-bottom: clamp(14px, 2.2vh, 18px) !important;
+      white-space: nowrap !important;
+      text-align: center !important;
+      width: 100% !important;
+    }
     .design-page .page-heading {
-      font-size: clamp(18px, 5.2vw, 24px) !important;
-      margin-top: 14px !important;
-      margin-bottom: 14px !important;
+      font-size: clamp(18px, 5vw, 23px) !important;
+      margin-top: 0 !important;
+      margin-bottom: clamp(14px, 2.2vh, 18px) !important;
       white-space: normal !important;
       text-align: center !important;
       width: 100% !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
+    }
+    .about-page .page-paragraph,
+    .design-page .page-paragraph {
+      font-size: clamp(11.5px, 2vh, 13px) !important;
+      line-height: 1.78 !important;
+      margin-bottom: 12px !important;
+      max-width: clamp(300px, 90vw, 420px) !important;
+    }
+    .v-odne1s-page .subpage-container.split-view,
+    .bobart-page .subpage-container.split-view,
+    .ltb-page .subpage-container.split-view {
+      padding: clamp(55px, 7.5vh, 65px) 14px clamp(15px, 2vh, 22px) 14px !important;
     }
     .v-odne1s-page .page-heading.left-align,
     .bobart-page .page-heading.left-align,
     .ltb-page .page-heading.left-align {
-      font-size: clamp(22px, 5.5vh, 28px) !important;
-      margin-top: 16px !important;
-      margin-bottom: 16px !important;
+      font-size: clamp(24px, 5vh, 28px) !important;
+      margin-top: 0 !important;
+      margin-bottom: clamp(14px, 2.4vh, 18px) !important;
     }
-    .page-subheading,
     .v-odne1s-page .page-subheading.left-align,
     .bobart-page .page-subheading.left-align,
     .ltb-page .page-subheading.left-align {
-      font-size: clamp(10.5px, 2vh, 12.5px) !important;
-      line-height: 1.4 !important;
-      margin-bottom: 18px !important;
+      font-size: clamp(10.5px, 1.8vh, 12px) !important;
+      line-height: 1.35 !important;
+      margin-bottom: clamp(16px, 2.6vh, 24px) !important;
     }
-    .page-paragraph,
     .v-odne1s-page .page-paragraph.left-align,
     .bobart-page .page-paragraph.left-align,
     .ltb-page .page-paragraph.left-align {
-      font-size: clamp(11.5px, 2.1vh, 13px) !important;
-      line-height: 1.75 !important;
-      margin-bottom: 16px !important;
+      font-size: clamp(11px, 1.9vh, 12.5px) !important;
+      line-height: 1.62 !important;
+      margin-bottom: 7px !important;
     }
   }
 
@@ -1313,24 +1406,30 @@ html, body {
       height: 14px !important;
     }
     body:not(.subpage-body) .bg-container {
-      top: 55px !important;
-      height: 85px !important;
-      max-width: 270px !important;
+      bottom: 0 !important;
+      top: auto !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100vw !important;
+      max-width: 100vw !important;
+      height: auto !important;
+      margin: 0 !important;
     }
     body:not(.subpage-body) .hero-text-container {
-      top: 148px !important;
+      top: clamp(80px, 14vh, 105px) !important;
+      bottom: auto !important;
       gap: 0 !important;
       align-items: flex-end !important;
     }
-    /* "OUR" font size bigger on extra small screens */
+    /* "OUR" font size on extra small screens */
     body:not(.subpage-body) .hero-primary {
-      font-size: 46px !important;
-      line-height: 0.82 !important;
+      font-size: clamp(52px, 11vh, 60px) !important;
+      line-height: 0.80 !important;
       margin: 0 !important;
       padding: 0 !important;
       transform: none !important;
     }
-    /* "INNOVATIONS" font size smaller on extra small screens */
+    /* "INNOVATIONS" font size on extra small screens */
     body:not(.subpage-body) .hero-secondary {
       margin-left: 6px !important;
       margin-bottom: 0 !important;
@@ -1339,7 +1438,8 @@ html, body {
       transform: translateY(2px) !important;
     }
     body:not(.subpage-body) .hero-secondary .drop-btn {
-      font-size: 9.5px !important;
+      font-size: clamp(10.5px, 1.9vh, 12.5px) !important;
+      letter-spacing: 1px !important;
       padding: 0 2px 3px 2px !important;
       margin: 0 !important;
       line-height: 1 !important;
@@ -1349,7 +1449,7 @@ html, body {
       padding: 3px 0 !important;
     }
     body:not(.subpage-body) .designer-text {
-      bottom: 5px !important;
+      bottom: 2px !important;
       font-size: 6.5px !important;
     }
 
@@ -1357,10 +1457,15 @@ html, body {
     .subpage-container {
       padding: 55px 10px 25px 10px !important;
     }
+    .about-page .subpage-container,
+    .design-page .subpage-container,
+    .contact-page .subpage-container,
+    .subpage-container.contact-page-container {
+      padding: 55px 12px 20px 12px !important;
+    }
     .page-heading,
     .page-heading.career-heading,
-    .career-page .page-heading,
-    .page-heading.contact-heading {
+    .career-page .page-heading {
       font-size: 15px !important;
       margin-top: 10px !important;
       margin-bottom: 10px !important;
@@ -1370,72 +1475,123 @@ html, body {
       margin-left: auto !important;
       margin-right: auto !important;
     }
+    .page-heading.contact-heading,
+    .contact-page .page-heading {
+      font-size: 17px !important;
+      margin-top: 0 !important;
+      margin-bottom: 8px !important;
+      white-space: nowrap !important;
+      text-align: center !important;
+      width: 100% !important;
+    }
+    .contact-form {
+      row-gap: 6px !important;
+      max-width: 310px !important;
+    }
+    .form-group input,
+    .form-group select {
+      height: 26px !important;
+      font-size: 10.5px !important;
+    }
+    .form-group textarea {
+      min-height: 42px !important;
+      font-size: 10.5px !important;
+    }
+    .submit-btn {
+      height: 28px !important;
+      margin-top: 6px !important;
+      font-size: 11px !important;
+    }
+    .subpage-action-btn {
+      top: clamp(410px, calc(50dvh + 160px), 485px) !important;
+    }
+    .about-page .page-heading {
+      font-size: 17px !important;
+      margin-top: 0 !important;
+      margin-bottom: 10px !important;
+      white-space: nowrap !important;
+      text-align: center !important;
+      width: 100% !important;
+    }
     .design-page .page-heading {
       font-size: 16px !important;
-      margin-top: 8px !important;
-      margin-bottom: 8px !important;
+      margin-top: 0 !important;
+      margin-bottom: 10px !important;
       white-space: normal !important;
       text-align: center !important;
       width: 100% !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
+    }
+    .about-page .page-paragraph,
+    .design-page .page-paragraph {
+      font-size: 10.5px !important;
+      line-height: 1.6 !important;
+      margin-bottom: 8px !important;
+    }
+    .v-odne1s-page .subpage-container.split-view,
+    .bobart-page .subpage-container.split-view,
+    .ltb-page .subpage-container.split-view {
+      padding: 50px 12px 15px 12px !important;
     }
     .v-odne1s-page .page-heading.left-align,
     .bobart-page .page-heading.left-align,
     .ltb-page .page-heading.left-align {
       font-size: 18px !important;
-      margin-top: 12px !important;
-      margin-bottom: 10px !important;
+      margin-top: 0 !important;
+      margin-bottom: 8px !important;
     }
-    .page-subheading,
     .v-odne1s-page .page-subheading.left-align,
     .bobart-page .page-subheading.left-align,
     .ltb-page .page-subheading.left-align {
       font-size: 10px !important;
-      margin-bottom: 10px !important;
+      line-height: 1.3 !important;
+      margin-bottom: 12px !important;
     }
-    .page-paragraph,
     .v-odne1s-page .page-paragraph.left-align,
     .bobart-page .page-paragraph.left-align,
     .ltb-page .page-paragraph.left-align {
-      font-size: 10.5px !important;
-      line-height: 1.6 !important;
-      margin-bottom: 10px !important;
+      font-size: 10px !important;
+      line-height: 1.55 !important;
+      margin-bottom: 6px !important;
     }
   }
 
   /* Narrow Screen Optimization (Width <= 360px) */
   @media (max-width: 360px) {
     body:not(.subpage-body) .bg-container {
-      width: calc(100vw - 24px) !important;
-      left: 12px !important;
-      right: 12px !important;
+      width: 100vw !important;
+      left: 0 !important;
+      right: 0 !important;
     }
     body:not(.subpage-body) .hero-text-container {
-      left: 12px !important;
+      left: 14px !important;
     }
     body:not(.subpage-body) .hero-primary {
-      font-size: clamp(42px, 8vh, 54px) !important;
+      font-size: clamp(62px, 17.5vw, 74px) !important;
+      line-height: 0.80 !important;
     }
     body:not(.subpage-body) .hero-secondary .drop-btn {
-      font-size: clamp(11.5px, 2vh, 14px) !important;
+      font-size: clamp(11.5px, 3.1vw, 13.5px) !important;
+      letter-spacing: 1px !important;
     }
     body:not(.subpage-body) .designer-text {
-      right: 12px !important;
+      right: 8px !important;
     }
   }
   
-  /* Mobile Side Menu Fix (Zero horizontal overflow) */
+  /* Mobile Side Menu Fix (Zero horizontal overflow, GPU accelerated) */
   .side-menu {
     width: 100vw !important;
     max-width: 100vw !important;
     right: -100vw !important; /* Start fully offscreen without horizontal overflow */
-    background-color: rgba(0, 0, 0, 0.88) !important;
-    backdrop-filter: blur(22px) !important;
-    -webkit-backdrop-filter: blur(22px) !important;
+    background-color: rgba(0, 0, 0, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
     padding: 50px 24px;
     box-sizing: border-box;
     overflow-x: hidden !important;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    will-change: right, transform;
   }
   .side-menu.open,
   .menu-preset-open .side-menu {
@@ -1511,6 +1667,16 @@ html, body {
     max-width: calc(100vw - 40px);
   }
 
+  /* Hardware-Accelerated GPU Transitions for Mobile (Eliminates Blur Calculation Lag) */
+  @keyframes pageLoadBlur {
+    0% { opacity: 0; transform: translateY(6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes dropdownBlur {
+    0% { opacity: 0; transform: translateY(-4px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
   /* Subpage Adjustments for Mobile */
   /* Subpage Header, Home Button & Side Drawer Button */
   .subpage-header,
@@ -1559,7 +1725,7 @@ html, body {
     height: 24px !important;
   }
   .subpage-action-btn {
-    top: 104px !important; /* Stacked below home-btn in original position */
+    top: clamp(525px, calc(50dvh + 270px), 770px) !important; /* Positioned with ample clearance below submission text */
     right: 20px !important;
     transform: none !important;
     width: 68px !important;
@@ -1591,16 +1757,34 @@ html, body {
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
+  /* About Us, Design Solutions & Contact Us Mobile Centered Formatting */
+  .about-page .subpage-container,
+  .design-page .subpage-container,
+  .contact-page .subpage-container,
   .subpage-container.contact-page-container {
-    padding: clamp(155px, 18vh, 195px) 16px clamp(40px, 6vh, 65px) 16px !important; /* Starts below slide-menu button with dynamic tall-screen scaling */
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+    padding: clamp(75px, 10vh, 95px) clamp(16px, 5vw, 24px) clamp(35px, 5vh, 50px) clamp(16px, 5vw, 24px) !important;
+    text-align: center !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
   }
-  .page-heading {
+  .about-page .page-heading {
     font-family: "BBH Bartle", sans-serif !important;
     font-size: clamp(24px, 7.5vw, 34px) !important;
-    line-height: 1.2 !important;
+    line-height: 1.15 !important;
     letter-spacing: 0.8px !important;
-    margin-top: 16px !important;
-    margin-bottom: 24px !important;
+    margin-top: 0 !important;
+    margin-bottom: clamp(20px, 3.2vh, 32px) !important;
     text-align: center !important;
     white-space: nowrap !important;
     width: 100% !important;
@@ -1611,16 +1795,13 @@ html, body {
     padding: 0 4px !important;
     box-sizing: border-box !important;
   }
-  .design-page .subpage-container {
-    padding: clamp(105px, 15vh, 180px) 16px clamp(40px, 6vh, 70px) 16px !important;
-  }
   .design-page .page-heading {
     font-family: "BBH Bartle", sans-serif !important;
-    font-size: clamp(20px, 6.4vw, 29px) !important;
+    font-size: clamp(21px, 6.6vw, 30px) !important;
     line-height: 1.15 !important;
-    letter-spacing: 0.2px !important;
-    margin-top: clamp(8px, 2vh, 20px) !important;
-    margin-bottom: clamp(26px, 4.5vh, 48px) !important;
+    letter-spacing: 0.4px !important;
+    margin-top: 0 !important;
+    margin-bottom: clamp(22px, 3.5vh, 36px) !important;
     text-align: center !important;
     white-space: normal !important;
     word-break: normal !important;
@@ -1632,9 +1813,24 @@ html, body {
     padding: 0 4px !important;
     box-sizing: border-box !important;
   }
+  .about-page .page-paragraph,
   .design-page .page-paragraph {
-    margin: 0 auto clamp(22px, 3.8vh, 40px) auto !important;
-    line-height: 2.1 !important;
+    font-family: 'Castoro Titling', serif !important;
+    font-size: clamp(12.2px, 3.4vw, 14.5px) !important;
+    line-height: clamp(1.85, 2.7vh, 2.05) !important;
+    letter-spacing: -0.15px !important;
+    max-width: clamp(310px, 88vw, 440px) !important;
+    width: 100% !important;
+    margin: 0 auto clamp(16px, 2.5vh, 26px) auto !important;
+    text-align: center !important;
+    text-wrap: balance !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    color: #dedede !important;
+  }
+  .about-page .page-paragraph:last-child,
+  .design-page .page-paragraph:last-child {
+    margin-bottom: 0 !important;
   }
   .career-page .subpage-container {
     padding: 0 20px !important;
@@ -1653,16 +1849,17 @@ html, body {
   .page-heading.career-heading,
   .career-page .page-heading {
     font-family: "BBH Bartle", sans-serif !important;
-    font-size: clamp(18px, 5.8vw, 26px) !important;
-    line-height: 1.15 !important;
-    letter-spacing: 0.2px !important;
-    text-align: left !important;
+    font-size: clamp(20px, 5.8vw, 28px) !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0.6px !important;
+    text-align: center !important;
     display: block !important;
-    width: max-content !important;
-    max-width: 90vw !important;
-    margin: 0 auto clamp(45px, 6.8vh, 65px) auto !important;
-    padding: 0 !important;
+    width: 100% !important;
+    max-width: calc(100vw - 32px) !important;
+    margin: 0 auto clamp(32px, 5vh, 50px) auto !important;
+    padding: 0 4px !important;
     white-space: normal !important;
+    box-sizing: border-box !important;
   }
   .career-page .apply-now-btn {
     margin: 0 auto !important;
@@ -1676,13 +1873,14 @@ html, body {
   .desktop-space {
     display: none !important;
   }
-  .page-heading.contact-heading {
+  .page-heading.contact-heading,
+  .contact-page .page-heading {
     font-family: "BBH Bartle", sans-serif !important;
-    font-size: clamp(24px, 7.2vw, 34px) !important;
+    font-size: clamp(23px, 7vw, 32px) !important;
     line-height: 1.15 !important;
     letter-spacing: 0.8px !important;
     margin-top: 0 !important;
-    margin-bottom: clamp(20px, 3vh, 32px) !important;
+    margin-bottom: clamp(16px, 2.4vh, 26px) !important;
     text-align: center !important;
     white-space: nowrap !important; /* Strictly single line, centered with zero button overlap */
     width: 100% !important;
@@ -1752,18 +1950,18 @@ html, body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 12px;
-    row-gap: clamp(12px, 1.8vh, 18px) !important;
-    max-width: 370px;
+    row-gap: clamp(10px, 1.6vh, 16px) !important;
+    max-width: clamp(310px, 88vw, 380px) !important;
     width: 100%;
     margin: 0 auto;
   }
   .form-group input,
   .form-group select {
-    height: clamp(34px, 4.4vh, 40px) !important;
+    height: clamp(34px, 4.2vh, 38px) !important;
     font-size: 13px !important;
   }
   .form-group textarea {
-    min-height: clamp(72px, 9.5vh, 105px) !important;
+    min-height: clamp(65px, 8.5vh, 92px) !important;
     font-size: 13px !important;
   }
   .form-group.full-width {
@@ -1772,8 +1970,8 @@ html, body {
   .submit-btn {
     grid-column: span 2 !important;
     justify-self: center !important;
-    margin-top: clamp(14px, 2.4vh, 24px) !important;
-    height: clamp(36px, 4.6vh, 42px) !important;
+    margin-top: clamp(12px, 2vh, 20px) !important;
+    height: clamp(36px, 4.4vh, 40px) !important;
     padding: 0 38px !important;
     background-color: #D81700 !important;
     color: white !important;
@@ -1786,29 +1984,31 @@ html, body {
   .form-success-msg {
     grid-column: span 2 !important;
     justify-self: center !important;
-    font-size: 12.5px !important;
-    line-height: 1.5 !important;
-    margin-top: 14px !important;
-    max-width: 340px !important;
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+    margin-top: 12px !important;
+    max-width: clamp(220px, 62vw, 265px) !important;
     text-align: center !important;
+    padding: 0 4px !important;
+    box-sizing: border-box !important;
   }
 
   /* Innovations Specific Mobile Layout (V.ODNE1S, BOBART, LTB VALVE TECHNO) */
   .v-odne1s-page .subpage-container.split-view,
   .bobart-page .subpage-container.split-view,
   .ltb-page .subpage-container.split-view {
-    padding: clamp(80px, 12vh, 105px) 28px 80px 28px !important; /* Generous top and bottom scroll padding */
+    padding: clamp(65px, 8.5vh, 85px) clamp(16px, 5vw, 24px) clamp(20px, 3vh, 32px) clamp(16px, 5vw, 24px) !important;
     height: 100vh !important;
     height: 100dvh !important;
-    max-height: 100vh !important;
-    max-height: 100dvh !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    box-sizing: border-box;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
     -webkit-overflow-scrolling: touch !important;
     touch-action: pan-y !important;
     overscroll-behavior-y: contain !important;
@@ -1844,12 +2044,12 @@ html, body {
   .bobart-page .page-heading.left-align,
   .ltb-page .page-heading.left-align {
     text-align: center !important;
-    font-size: clamp(33px, 9vw, 40px) !important;
+    font-size: clamp(28px, 7.5vw, 36px) !important;
     color: #D81700 !important;
-    margin-top: clamp(8px, 1.8vh, 20px) !important;
-    margin-bottom: clamp(18px, 3.2vh, 32px) !important; /* Dynamically scales with phone height */
+    margin-top: 0 !important;
+    margin-bottom: clamp(22px, 3.6vh, 36px) !important; /* Distinctly increased gap between Title and Subtitle */
     white-space: normal !important;
-    letter-spacing: 1.2px !important;
+    letter-spacing: 0.8px !important;
     transform: none !important;
     animation: none !important;
     opacity: 1 !important;
@@ -1857,7 +2057,7 @@ html, body {
     width: 100% !important;
   }
   .ltb-page .page-heading.left-align {
-    font-size: clamp(28px, 7.8vw, 38px) !important;
+    font-size: clamp(24px, 6.5vw, 32px) !important;
   }
   .ltb-page .page-heading.left-align .heading-nowrap {
     white-space: nowrap !important;
@@ -1873,15 +2073,15 @@ html, body {
   .bobart-page .page-subheading.left-align,
   .ltb-page .page-subheading.left-align {
     text-align: center !important;
-    font-size: clamp(12.5px, 3.7vw, 15.5px) !important;
+    font-size: clamp(11px, 3.1vw, 13.5px) !important;
     color: #ffffff !important;
-    margin-bottom: clamp(28px, 4.8vh, 52px) !important; /* Proportional gap before paragraph 1 */
+    margin-bottom: clamp(24px, 3.8vh, 38px) !important; /* Increased gap between Subtitle and Paragraph */
     margin-left: auto !important;
     margin-right: auto !important;
     white-space: normal !important;
-    letter-spacing: 0.3px !important;
-    line-height: 1.55 !important;
-    max-width: 360px !important;
+    letter-spacing: 0.2px !important;
+    line-height: 1.35 !important;
+    max-width: clamp(310px, 88vw, 370px) !important;
     transform: none !important;
     animation: none !important;
     opacity: 1 !important;
@@ -1891,12 +2091,13 @@ html, body {
   .bobart-page .page-paragraph.left-align,
   .ltb-page .page-paragraph.left-align {
     text-align: center !important;
-    font-size: clamp(13px, 3.6vw, 15px) !important;
+    font-size: clamp(11.5px, 3vw, 13.5px) !important;
     color: #dedede !important;
-    line-height: 2.0 !important; /* Slightly increased line spacing */
-    max-width: 360px !important;
-    margin: 0 auto clamp(26px, 4.8vh, 52px) auto !important; /* Proportional gap between paragraphs */
-    letter-spacing: 0px !important;
+    line-height: clamp(1.62, 2.1vh, 1.74) !important;
+    max-width: clamp(310px, 88vw, 370px) !important;
+    margin: 0 auto clamp(9px, 1.4vh, 13px) auto !important; /* Kept compact internal gap between paragraphs */
+    letter-spacing: -0.1px !important;
+    text-wrap: balance !important;
     transform: none !important;
     animation: none !important;
     opacity: 1 !important;
@@ -1905,7 +2106,7 @@ html, body {
   .v-odne1s-page .page-paragraph.left-align:last-child,
   .bobart-page .page-paragraph.left-align:last-child,
   .ltb-page .page-paragraph.left-align:last-child {
-    margin-bottom: 25px !important; /* Extra bottom clearance when scrolled */
+    margin-bottom: 0 !important;
   }
   /* Extra Large Centered 3D Video/Graphics in Background (100% Bigger) */
   .v-odne1s-page .split-image,

@@ -114,20 +114,22 @@ document.addEventListener('DOMContentLoaded', () => {
     lastScrollTop = Math.max(0, currentScrollTop);
   }
 
-  scrollContainers.forEach(container => {
-    container.addEventListener('scroll', () => {
-      const scrollTop = container === window ? (window.pageYOffset || document.documentElement.scrollTop) : container.scrollTop;
-      updateHeaderVisibility(scrollTop);
-    }, { passive: true });
-  });
+  let ticking = false;
+  const onScrollThrottled = () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        const container = document.querySelector('.subpage-container') || document.documentElement;
+        const currentScroll = container.scrollTop || window.pageYOffset || 0;
+        updateHeaderVisibility(currentScroll);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  };
 
-  // Touch move listener for direct gesture tracking
-  document.addEventListener('touchmove', () => {
-    if (window.innerWidth > 768) return;
-    const container = document.querySelector('.subpage-container') || document.documentElement;
-    const currentScroll = container.scrollTop || window.pageYOffset || 0;
-    updateHeaderVisibility(currentScroll);
-  }, { passive: true });
+  scrollContainers.forEach(container => {
+    container.addEventListener('scroll', onScrollThrottled, { passive: true });
+  });
 
   // Elastic Scroll Resistance Animation for Subpages (Single trigger per scroll gesture, no repeat/after-bounce)
   const subContainer = document.querySelector('.subpage-container');
@@ -138,14 +140,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function triggerSubpageScrollBounce(direction) {
     if (isSubpageBouncing || !subContainer) return;
+    if (window.innerWidth <= 768) return; // Native smooth scrolling on mobile
     if (sideMenu && sideMenu.classList.contains('open')) return;
 
     isSubpageBouncing = true;
     const animationClass = direction === 'down' ? 'scroll-bounce-down' : 'scroll-bounce-up';
 
-    subContainer.classList.remove('scroll-bounce-down', 'scroll-bounce-up');
-    void subContainer.offsetWidth; // Force CSS reflow
-    subContainer.classList.add(animationClass);
+    requestAnimationFrame(() => {
+      subContainer.classList.remove('scroll-bounce-down', 'scroll-bounce-up');
+      requestAnimationFrame(() => {
+        subContainer.classList.add(animationClass);
+      });
+    });
 
     setTimeout(() => {
       subContainer.classList.remove(animationClass);
