@@ -557,6 +557,9 @@ body::-webkit-scrollbar {
   white-space: nowrap; /* Keep heading strictly in a single line */
   margin-top: 115px; /* Moved down on desktop */
   margin-bottom: 50px; /* Increased space between title and paragraph on desktop */
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 .design-page .page-heading,
@@ -759,6 +762,11 @@ video[src*="num9.mp4"] {
 .page-heading.contact-heading {
   margin-top: 80px; /* Same as About Us & other pages */
   margin-bottom: 48px; /* Increased gap to balance vertical spacing */
+  white-space: nowrap;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 .contact-form {
@@ -1212,18 +1220,37 @@ html, body {
 
     /* Subpages Text Smaller on Small Screens */
     .subpage-container {
-      padding: 75px 14px 35px 14px !important;
+      padding: 70px 14px 35px 14px !important;
     }
     .page-heading,
-    .design-page .page-heading,
     .page-heading.career-heading,
     .career-page .page-heading,
+    .page-heading.contact-heading {
+      font-size: clamp(16px, 4.2vw, 22px) !important;
+      margin-top: 14px !important;
+      margin-bottom: 16px !important;
+      white-space: nowrap !important;
+      text-align: center !important;
+      width: 100% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+    .design-page .page-heading {
+      font-size: clamp(18px, 5.2vw, 24px) !important;
+      margin-top: 14px !important;
+      margin-bottom: 14px !important;
+      white-space: normal !important;
+      text-align: center !important;
+      width: 100% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
     .v-odne1s-page .page-heading.left-align,
     .bobart-page .page-heading.left-align,
     .ltb-page .page-heading.left-align {
-      font-size: clamp(24px, 6.2vh, 32px) !important;
-      margin-top: 24px !important;
-      margin-bottom: 20px !important;
+      font-size: clamp(22px, 5.5vh, 28px) !important;
+      margin-top: 16px !important;
+      margin-bottom: 16px !important;
     }
     .page-subheading,
     .v-odne1s-page .page-subheading.left-align,
@@ -1304,18 +1331,37 @@ html, body {
 
     /* Subpages Text Smaller on Extra Small Screens */
     .subpage-container {
-      padding: 60px 10px 25px 10px !important;
+      padding: 55px 10px 25px 10px !important;
     }
     .page-heading,
-    .design-page .page-heading,
     .page-heading.career-heading,
     .career-page .page-heading,
+    .page-heading.contact-heading {
+      font-size: 15px !important;
+      margin-top: 10px !important;
+      margin-bottom: 10px !important;
+      white-space: nowrap !important;
+      text-align: center !important;
+      width: 100% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+    .design-page .page-heading {
+      font-size: 16px !important;
+      margin-top: 8px !important;
+      margin-bottom: 8px !important;
+      white-space: normal !important;
+      text-align: center !important;
+      width: 100% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
     .v-odne1s-page .page-heading.left-align,
     .bobart-page .page-heading.left-align,
     .ltb-page .page-heading.left-align {
-      font-size: 20px !important;
-      margin-top: 15px !important;
-      margin-bottom: 12px !important;
+      font-size: 18px !important;
+      margin-top: 12px !important;
+      margin-bottom: 10px !important;
     }
     .page-subheading,
     .v-odne1s-page .page-subheading.left-align,
@@ -1442,7 +1488,7 @@ html, body {
   }
 
   /* Subpage Adjustments for Mobile */
-  /* Subpage Header & Home Button (Bigger & Aligned on Same Centerline) */
+  /* Subpage Header, Home Button & Side Drawer Button */
   .subpage-header,
   .home-btn,
   .subpage-action-btn {
@@ -1459,24 +1505,24 @@ html, body {
   }
 
   .subpage-header {
-    top: 54px !important; /* Moved 10px down */
+    top: 54px !important;
     left: 20px !important;
-    transform: translateY(-50%) !important; /* Centerline strictly locked at Y = 54px */
+    transform: translateY(-50%) !important;
     z-index: 200 !important;
     display: flex !important;
     align-items: center !important;
   }
   .subpage-header .main-logo {
-    height: 66px !important; /* Larger prominent logo */
+    height: clamp(52px, 7vh, 64px) !important;
     width: auto !important;
     object-fit: contain !important;
     display: block !important;
   }
   .home-btn {
-    top: 54px !important; /* Moved 10px down */
-    right: 20px !important; /* Aligned with action-btn */
-    transform: translateY(-50%) !important; /* Centerline strictly locked at Y = 54px */
-    width: 64px !important; /* Increased width */
+    top: 54px !important;
+    right: 20px !important;
+    transform: translateY(-50%) !important;
+    width: 64px !important;
     height: 42px !important;
     border-radius: 50px !important;
     display: flex !important;
@@ -1489,18 +1535,23 @@ html, body {
     height: 24px !important;
   }
   .subpage-action-btn {
-    top: 104px; /* Moved 10px upwards */
-    right: 20px;
-    width: 68px; /* Slightly bigger */
-    height: 38px;
-    border-radius: 50px;
+    top: 104px !important; /* Stacked below home-btn in original position */
+    right: 20px !important;
+    transform: none !important;
+    width: 68px !important;
+    height: 38px !important;
+    border-radius: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 200 !important;
   }
   .subpage-action-btn svg {
-    width: 27px;
-    height: 21px;
+    width: 26px !important;
+    height: 20px !important;
   }
   .subpage-container {
-    padding: 100px 16px 40px 16px;
+    padding: 100px 16px 40px 16px !important;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1517,26 +1568,46 @@ html, body {
     -webkit-overflow-scrolling: touch;
   }
   .subpage-container.contact-page-container {
-    padding: 100px 16px 40px 16px;
+    padding: 160px 16px 40px 16px !important; /* Starts below slide-menu button at 104px+38px=142px so zero overlap occurs */
   }
-  .page-heading,
+  .page-heading {
+    font-family: "BBH Bartle", sans-serif !important;
+    font-size: clamp(24px, 7.5vw, 34px) !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0.8px !important;
+    margin-top: 16px !important;
+    margin-bottom: 24px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding: 0 4px !important;
+    box-sizing: border-box !important;
+  }
   .design-page .page-heading {
-    font-size: clamp(22px, 6.2vw, 29px);
-    line-height: 1.25;
-    letter-spacing: 0.8px;
-    margin-top: 48px !important; /* Matches About Us page on mobile */
-    margin-bottom: 42px !important; /* Matches About Us page on mobile */
-    text-align: center;
-    white-space: normal;
-    word-break: keep-all;
-    width: 100%;
-    max-width: 100%;
-    padding: 0 8px;
-    box-sizing: border-box;
+    font-family: "BBH Bartle", sans-serif !important;
+    font-size: clamp(20px, 6.4vw, 29px) !important;
+    line-height: 1.15 !important;
+    letter-spacing: 0.2px !important;
+    margin-top: 18px !important;
+    margin-bottom: 24px !important;
+    text-align: center !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding: 0 4px !important;
+    box-sizing: border-box !important;
   }
   .page-heading.career-heading,
   .career-page .page-heading {
-    font-size: clamp(20px, 6.0vw, 26px) !important;
+    font-size: clamp(18px, 5.5vw, 24px) !important;
     line-height: 1.15 !important;
     letter-spacing: 0.5px !important;
     text-align: left !important;
@@ -1545,30 +1616,45 @@ html, body {
     max-width: 85vw !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    margin-top: 48px !important;
-    margin-bottom: 42px !important;
+    margin-top: 20px !important;
+    margin-bottom: 26px !important;
     padding: 0 !important;
   }
   .mobile-only-br {
-    display: inline !important; /* Single line break, avoids double-break block gap */
+    display: block !important; /* Forces clean 2-line break on mobile */
   }
   .desktop-space {
     display: none !important;
   }
   .page-heading.contact-heading {
-    margin-top: 48px;
-    margin-bottom: 42px;
+    font-family: "BBH Bartle", sans-serif !important;
+    font-size: clamp(24px, 7.2vw, 34px) !important;
+    line-height: 1.15 !important;
+    letter-spacing: 0.8px !important;
+    margin-top: 0 !important;
+    margin-bottom: 24px !important;
+    text-align: center !important;
+    white-space: nowrap !important; /* Strictly single line, centered with zero button overlap */
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding: 0 4px !important;
+    box-sizing: border-box !important;
   }
   .page-paragraph {
-    font-size: 14px;
-    line-height: 2.05; /* Slightly increased line spacing */
-    letter-spacing: -0.3px;
+    font-family: 'Castoro Titling', serif !important;
+    font-size: clamp(12.5px, 3.4vw, 14.5px) !important;
+    line-height: 1.95 !important;
+    letter-spacing: -0.2px;
     max-width: 480px;
     width: 100%;
-    margin: 0 auto 26px auto;
-    text-align: center;
-    padding: 0 6px;
+    margin: 0 auto 20px auto !important;
+    text-align: center !important;
+    padding: 0 8px;
     box-sizing: border-box;
+    color: #dedede !important;
   }
   .page-subheading {
     font-size: 18px;
