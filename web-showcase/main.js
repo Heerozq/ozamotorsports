@@ -232,8 +232,26 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.nav-dropdown.show-dropdown, .custom-dropdown.show-dropdown').forEach(el => {
         el.classList.remove('show-dropdown');
       });
+      const heroContainer = document.querySelector('.hero-text-container');
+      if (heroContainer) heroContainer.classList.remove('touch-active');
     }
   });
+
+  // Mobile Touch Glow Interaction for OUR / hero container
+  const heroContainer = document.querySelector('.hero-text-container');
+  if (heroContainer) {
+    heroContainer.addEventListener('touchstart', () => {
+      heroContainer.classList.add('touch-active');
+    }, { passive: true });
+
+    heroContainer.addEventListener('touchend', () => {
+      setTimeout(() => {
+        if (!document.querySelector('.custom-dropdown.show-dropdown')) {
+          heroContainer.classList.remove('touch-active');
+        }
+      }, 500);
+    }, { passive: true });
+  }
 
   // Elastic Scroll Resistance Animation (Single trigger per scroll gesture, no repeat/after-bounce)
   const uiLayer = document.querySelector('.ui-layer');

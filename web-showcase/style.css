@@ -248,8 +248,31 @@ body::-webkit-scrollbar {
   color: #D81700; /* Signature Red */
   line-height: 0.8;
   letter-spacing: -2px;
-  text-shadow: 0 0 10px rgba(216, 23, 0, 0.6), 0 0 22px rgba(216, 23, 0, 0.3);
+  text-shadow: none;
+  transition: text-shadow 0.4s ease, filter 0.4s ease;
   animation: pageLoadBlur 2s ease forwards;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Extended invisible hover hit-box around OUR text for effortless trigger */
+.hero-primary::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  bottom: -30px;
+  left: -40px;
+  right: -20px;
+  z-index: 0;
+  pointer-events: auto;
+}
+
+.hero-primary:hover,
+.hero-text-container:hover .hero-primary,
+.hero-text-container:active .hero-primary,
+.hero-text-container.touch-active .hero-primary,
+.hero-text-container:has(.custom-dropdown.show-dropdown) .hero-primary {
+  text-shadow: 0 0 10px rgba(216, 23, 0, 0.7), 0 0 22px rgba(216, 23, 0, 0.4), 0 0 35px rgba(216, 23, 0, 0.2);
 }
 
 .hero-secondary {
@@ -503,7 +526,7 @@ body::-webkit-scrollbar {
 .subpage-action-btn {
   position: absolute;
   top: 205px; /* Aligned with the lower baseline of CONTACT US heading */
-  right: 65px; /* Shifted slightly to the left from the home page line */
+  right: 110px; /* Moved further to the left */
   background-color: #D81700;
   color: #000000;
   width: 110px; /* Exact same size as home page action-btn */
@@ -1140,6 +1163,7 @@ html, body {
     width: calc(100% - 8px) !important;
   }
   /* Disable desktop invisible hover hit-boxes on mobile touch */
+  body:not(.subpage-body) .hero-primary::before,
   body:not(.subpage-body) .custom-dropdown::before,
   body:not(.subpage-body) .dropdown-content::before {
     display: none !important;
@@ -1568,7 +1592,7 @@ html, body {
     -webkit-overflow-scrolling: touch;
   }
   .subpage-container.contact-page-container {
-    padding: 160px 16px 40px 16px !important; /* Starts below slide-menu button at 104px+38px=142px so zero overlap occurs */
+    padding: clamp(155px, 18vh, 195px) 16px clamp(40px, 6vh, 65px) 16px !important; /* Starts below slide-menu button with dynamic tall-screen scaling */
   }
   .page-heading {
     font-family: "BBH Bartle", sans-serif !important;
@@ -1587,13 +1611,16 @@ html, body {
     padding: 0 4px !important;
     box-sizing: border-box !important;
   }
+  .design-page .subpage-container {
+    padding: clamp(105px, 15vh, 180px) 16px clamp(40px, 6vh, 70px) 16px !important;
+  }
   .design-page .page-heading {
     font-family: "BBH Bartle", sans-serif !important;
     font-size: clamp(20px, 6.4vw, 29px) !important;
     line-height: 1.15 !important;
     letter-spacing: 0.2px !important;
-    margin-top: 18px !important;
-    margin-bottom: 24px !important;
+    margin-top: clamp(8px, 2vh, 20px) !important;
+    margin-bottom: clamp(26px, 4.5vh, 48px) !important;
     text-align: center !important;
     white-space: normal !important;
     word-break: normal !important;
@@ -1605,20 +1632,43 @@ html, body {
     padding: 0 4px !important;
     box-sizing: border-box !important;
   }
+  .design-page .page-paragraph {
+    margin: 0 auto clamp(22px, 3.8vh, 40px) auto !important;
+    line-height: 2.1 !important;
+  }
+  .career-page .subpage-container {
+    padding: 0 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+  }
   .page-heading.career-heading,
   .career-page .page-heading {
-    font-size: clamp(18px, 5.5vw, 24px) !important;
+    font-family: "BBH Bartle", sans-serif !important;
+    font-size: clamp(18px, 5.8vw, 26px) !important;
     line-height: 1.15 !important;
-    letter-spacing: 0.5px !important;
+    letter-spacing: 0.2px !important;
     text-align: left !important;
     display: block !important;
     width: max-content !important;
-    max-width: 85vw !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    margin-top: 20px !important;
-    margin-bottom: 26px !important;
+    max-width: 90vw !important;
+    margin: 0 auto clamp(45px, 6.8vh, 65px) auto !important;
     padding: 0 !important;
+    white-space: normal !important;
+  }
+  .career-page .apply-now-btn {
+    margin: 0 auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   .mobile-only-br {
     display: block !important; /* Forces clean 2-line break on mobile */
@@ -1632,7 +1682,7 @@ html, body {
     line-height: 1.15 !important;
     letter-spacing: 0.8px !important;
     margin-top: 0 !important;
-    margin-bottom: 24px !important;
+    margin-bottom: clamp(20px, 3vh, 32px) !important;
     text-align: center !important;
     white-space: nowrap !important; /* Strictly single line, centered with zero button overlap */
     width: 100% !important;
@@ -1702,10 +1752,19 @@ html, body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 12px;
-    row-gap: 12px;
-    max-width: 360px;
+    row-gap: clamp(12px, 1.8vh, 18px) !important;
+    max-width: 370px;
     width: 100%;
     margin: 0 auto;
+  }
+  .form-group input,
+  .form-group select {
+    height: clamp(34px, 4.4vh, 40px) !important;
+    font-size: 13px !important;
+  }
+  .form-group textarea {
+    min-height: clamp(72px, 9.5vh, 105px) !important;
+    font-size: 13px !important;
   }
   .form-group.full-width {
     grid-column: span 2 !important;
@@ -1713,9 +1772,9 @@ html, body {
   .submit-btn {
     grid-column: span 2 !important;
     justify-self: center !important;
-    margin-top: 12px !important;
-    height: 36px !important;
-    padding: 0 36px !important;
+    margin-top: clamp(14px, 2.4vh, 24px) !important;
+    height: clamp(36px, 4.6vh, 42px) !important;
+    padding: 0 38px !important;
     background-color: #D81700 !important;
     color: white !important;
     display: inline-flex !important;
