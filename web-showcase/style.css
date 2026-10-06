@@ -251,12 +251,12 @@ body::-webkit-scrollbar {
 
 .hero-primary {
   font-family: "BBH Bartle", sans-serif; /* User requested font */
-  font-size: clamp(135px, 9.5vw, 185px);
+  font-size: 100px;
   font-weight: 400;
   font-style: normal;
   color: #D81700; /* Signature Red */
   line-height: 0.8;
-  letter-spacing: -3px;
+  letter-spacing: -2px;
   text-shadow: none;
   transition: text-shadow 0.4s ease, filter 0.4s ease;
   animation: pageLoadBlur 2s ease forwards;
@@ -285,7 +285,7 @@ body::-webkit-scrollbar {
 }
 
 .hero-secondary {
-  margin-left: clamp(12px, 1vw, 18px); /* Moved closer to 'R' */
+  margin-left: 10px; /* Moved closer to 'R' */
   margin-bottom: 0px;
 }
 
@@ -319,9 +319,9 @@ body::-webkit-scrollbar {
   position: relative;
   background-color: transparent;
   color: #ffffff;
-  padding: 8px 12px;
-  margin: -8px -12px;
-  font-size: clamp(26px, 1.85vw, 34px);
+  padding: 12px 16px;
+  margin: -12px -16px;
+  font-size: 24px;
   line-height: 1;
   letter-spacing: 2px;
   font-weight: bold;
@@ -337,16 +337,15 @@ body::-webkit-scrollbar {
   position: absolute;
   width: 0;
   height: 2px;
-  bottom: 4px;
-  left: 12px;
+  bottom: 10px;
+  left: 16px;
   background-color: #D81700;
   transition: width 0.4s ease-in-out;
 }
 
 .custom-dropdown:hover .drop-btn::after,
-.hero-text-container:hover .drop-btn::after,
-.custom-dropdown.show-dropdown .drop-btn::after {
-  width: calc(100% - 24px);
+.hero-text-container:hover .drop-btn::after {
+  width: calc(100% - 32px);
 }
 
 /* Dropdown open blur animation */
@@ -359,25 +358,25 @@ body::-webkit-scrollbar {
   display: none;
   position: absolute;
   background: transparent !important;
-  min-width: 320px;
+  min-width: 360px;
   z-index: 99999;
   flex-direction: column;
-  padding-top: 12px;
-  padding-bottom: 24px;
-  padding-right: 20px;
-  padding-left: 0;
+  padding-top: 15px;
+  padding-bottom: 45px;
+  padding-right: 60px;
+  padding-left: 16px;
   top: 100%;
-  left: 0;
+  left: -16px;
 }
 
 /* Invisible bridge so moving cursor never drops hover */
 .dropdown-content::before {
   content: '';
   position: absolute;
-  top: -25px;
-  left: -20px;
-  right: -20px;
-  bottom: -20px;
+  top: -35px;
+  left: -40px;
+  right: -40px;
+  bottom: -40px;
   z-index: -1;
   pointer-events: auto;
 }
