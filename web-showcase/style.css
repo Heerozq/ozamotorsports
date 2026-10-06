@@ -680,27 +680,25 @@ body::-webkit-scrollbar {
 }
 
 .subpage-container.split-view {
-  padding: clamp(65px, 8.5vh, 90px) clamp(20px, 4vw, 5vw) clamp(15px, 2.5vh, 25px) clamp(20px, 4vw, 5vw);
-  justify-content: center;
-  align-items: center;
-  overflow: hidden !important; /* Zero scroll on laptop innovation pages */
+  padding: 140px 5vw 30px 5vw;
+  justify-content: flex-start;
+  overflow: hidden; /* Remove scrollbars on innovation pages */
   height: 100vh;
-  height: 100dvh;
   box-sizing: border-box;
 }
 
 .split-layout {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start; /* Fixed top alignment so heading starts at identical pixel on all pages */
   width: 100%;
-  max-width: clamp(960px, 90vw, 1350px);
+  max-width: 90vw;
   margin: 0 auto;
 }
 .split-text {
-  flex: 0 0 clamp(400px, 45%, 500px);
-  margin-left: clamp(40px, 7vw, 110px);
-  margin-top: 0;
+  flex: 0 0 46%;
+  margin-left: 150px; /* Moved additional 20px towards right while keeping heading, subhead and paragraph in exact alignment */
+  margin-top: 15px; /* Shifted title, subtitle and paragraphs down 15px together */
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -708,8 +706,8 @@ body::-webkit-scrollbar {
   text-align: left;
 }
 .split-image {
-  flex: 0 0 52%;
-  margin-left: -6%;
+  flex: 0 0 58%;
+  margin-left: -14%; /* Shifted to the left towards text */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -717,14 +715,14 @@ body::-webkit-scrollbar {
   padding-top: 0;
   overflow: visible;
   align-self: center;
-  margin-top: 0;
+  margin-top: -30px;
 }
 
 .split-image video,
 .innovation-video {
   width: 100%;
-  max-width: clamp(380px, 50vw, 680px);
-  max-height: clamp(320px, 56vh, 580px);
+  max-width: 58vw;
+  max-height: 72vh;
   object-fit: contain;
   display: block;
   transform: translateX(-30px); /* Moved slightly towards left */
@@ -733,21 +731,21 @@ body::-webkit-scrollbar {
 
 .innovation-video.video-num3,
 video[src*="num3.mp4"] {
-  transform: translateX(-55px);
+  transform: translateX(-75px); /* Shifted 35px to the left */
   transform-origin: center center;
 }
 
 .innovation-video.video-num6,
 video[src*="num6.mp4"] {
-  transform: translateX(-20px) scale(1.05);
+  transform: translateX(-26px) scale(1.08); /* Shifted 10px to the right */
   transform-origin: center center;
 }
 
 .innovation-video.video-num9,
 video[src*="num9.mp4"] {
-  max-width: clamp(380px, 50vw, 680px);
-  max-height: clamp(320px, 56vh, 580px);
-  transform: translate(-100px, -25px) scale(1.22);
+  max-width: 58vw;
+  max-height: 72vh;
+  transform: translate(-148px, -35px) scale(1.35); /* Shifted additional 20px down */
   transform-origin: center center;
 }
 
