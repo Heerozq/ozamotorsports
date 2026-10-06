@@ -37,8 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Start video playing immediately and continuously
+    const startPlay = () => {
+      if (bgVideo) {
+        bgVideo.play().catch(() => {});
+      }
+    };
     bgVideo.muted = true;
-    bgVideo.play().catch(() => {});
+    startPlay();
 
     // Try unmuting directly if browser allows (Desktop or allowed autoplay)
     bgVideo.muted = false;
@@ -251,9 +256,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Also allow clicking on "OUR" (hero-primary) on mobile to toggle innovations dropdown
+  const heroPrimary = document.querySelector('.hero-primary');
+  if (heroPrimary) {
+    heroPrimary.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const heroDrop = document.querySelector('.custom-dropdown.hero-secondary');
+      const heroContainer = document.querySelector('.hero-text-container');
+      if (heroDrop && heroContainer) {
+        heroDrop.classList.toggle('show-dropdown');
+        heroContainer.classList.toggle('dropdown-open', heroDrop.classList.contains('show-dropdown'));
+      }
+    });
+  }
+
   // Close dropdowns when clicking outside
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.nav-dropdown') && !e.target.closest('.custom-dropdown')) {
+    if (!e.target.closest('.nav-dropdown') && !e.target.closest('.custom-dropdown') && !e.target.closest('.hero-primary')) {
       document.querySelectorAll('.nav-dropdown.show-dropdown, .custom-dropdown.show-dropdown').forEach(el => {
         el.classList.remove('show-dropdown');
       });
