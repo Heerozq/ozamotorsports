@@ -231,4 +231,38 @@ document.addEventListener('DOMContentLoaded', () => {
       }, { passive: true, once: true });
     });
   });
+
+  // Career Page: Proximity lighting on Apply Now button when cursor is on or around Title text
+  const careerHeading = document.querySelector('.career-page .career-heading');
+  const careerApplyBtn = document.querySelector('.career-page .apply-now-btn');
+  if (careerHeading && careerApplyBtn) {
+    const checkProximity = (e) => {
+      const headingRect = careerHeading.getBoundingClientRect();
+      const btnRect = careerApplyBtn.getBoundingClientRect();
+      const proximity = 70; // 70px around the title area
+
+      const isAroundTitle =
+        e.clientX >= headingRect.left - proximity &&
+        e.clientX <= headingRect.right + proximity &&
+        e.clientY >= headingRect.top - proximity &&
+        e.clientY <= headingRect.bottom + proximity;
+
+      const isOverBtn =
+        e.clientX >= btnRect.left &&
+        e.clientX <= btnRect.right &&
+        e.clientY >= btnRect.top &&
+        e.clientY <= btnRect.bottom;
+
+      if (isAroundTitle || isOverBtn) {
+        careerApplyBtn.classList.add('lighting-active');
+      } else {
+        careerApplyBtn.classList.remove('lighting-active');
+      }
+    };
+
+    window.addEventListener('mousemove', checkProximity, { passive: true });
+    window.addEventListener('mouseleave', () => {
+      careerApplyBtn.classList.remove('lighting-active');
+    });
+  }
 });

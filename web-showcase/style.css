@@ -450,11 +450,11 @@ body::-webkit-scrollbar {
   align-items: center;
   justify-content: center;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 30px rgba(216, 23, 0, 0.4);
+  box-shadow: none;
 }
 
 .action-btn:hover {
-  transform: scale(1.1) translateY(-5px);
+  transform: translateY(-5px);
   background-color: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -468,7 +468,9 @@ body::-webkit-scrollbar {
   font-weight: 400;
   color: #ffffff;
   letter-spacing: 0.5px;
-  margin-top: 0px;
+  position: relative;
+  right: 15px; /* Shifted slightly to the left */
+  margin-top: 9px; /* Shifted slightly downwards */
   text-decoration: none;
   cursor: pointer;
   display: inline-block;
@@ -534,7 +536,7 @@ body::-webkit-scrollbar {
 
 .subpage-action-btn {
   position: absolute;
-  top: 205px; /* Aligned with the lower baseline of CONTACT US heading */
+  top: 180px; /* Aligned with the lower baseline of CONTACT US heading */
   right: clamp(30px, 6.5vw, 110px); /* Responsive margin avoiding form overlap on medium/large screens */
   background-color: #D81700;
   color: #000000;
@@ -551,7 +553,7 @@ body::-webkit-scrollbar {
   box-shadow: 0 10px 30px rgba(216, 23, 0, 0.4);
 }
 .subpage-action-btn:hover {
-  transform: scale(1.1) translateY(-5px);
+  transform: translateY(-5px);
   background-color: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -771,14 +773,43 @@ video[src*="num9.mp4"] {
   border-radius: 50px;
   text-decoration: none;
   margin-top: 30px;
-  transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(216, 23, 0, 0.4);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  transform-origin: center center;
+  will-change: transform;
+  box-shadow: none;
+  display: inline-block;
+  opacity: 1 !important; /* Guarantees button never blacks out on mouse leave */
 }
 .apply-now-btn:hover {
-  background-color: transparent;
-  color: #D81700;
-  box-shadow: none;
-  transform: scale(1.1);
+  background-color: #D81700 !important;
+  color: white !important;
+  transform: scale(1.04) !important;
+  opacity: 1 !important;
+}
+
+/* Fast On-Off Lighting & Pulse Zoom Effect for Career Apply Now Button (0.5s Glow+ZoomIn, 0.5s Fade+ZoomOut) */
+@keyframes applyBtnLightingBlink {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(216, 23, 0, 0);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(216, 23, 0, 0.65), 0 0 22px rgba(216, 23, 0, 0.28);
+    transform: scale(1.045);
+  }
+}
+
+@media (min-width: 1025px) {
+  .career-page .career-heading:hover ~ .apply-now-btn,
+  .career-page .apply-now-btn:hover,
+  .career-page .apply-now-btn.lighting-active {
+    opacity: 1 !important;
+    animation: applyBtnLightingBlink 1s ease-in-out infinite !important;
+  }
+  .career-page .apply-now-btn:hover {
+    background-color: #D81700 !important;
+    color: white !important;
+  }
 }
 
 /* Contact Page Specific Adjustments (Matching Reference Design) */
@@ -797,8 +828,8 @@ video[src*="num9.mp4"] {
 }
 
 .page-heading.contact-heading {
-  margin-top: 80px; /* Same as About Us & other pages */
-  margin-bottom: 48px; /* Increased gap to balance vertical spacing */
+  margin-top: 55px; /* Refined spacing between header and heading on desktop */
+  margin-bottom: 48px; /* Balanced vertical spacing */
   white-space: nowrap;
   text-align: center;
   margin-left: auto;
@@ -810,7 +841,7 @@ video[src*="num9.mp4"] {
   display: grid;
   grid-template-columns: 1fr 1fr;
   column-gap: 24px;
-  row-gap: 16px;
+  row-gap: 10px; /* Reduced vertical spacing between form rows on desktop */
   width: 100%;
   max-width: 580px; /* Balanced width relative to CONTACT US heading */
   margin: 0 auto;
@@ -828,7 +859,7 @@ video[src*="num9.mp4"] {
   font-size: 11px;
   letter-spacing: 0.5px;
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 3px; /* Reduced label bottom spacing */
   text-align: left;
 }
 .form-group label span {
@@ -885,7 +916,7 @@ video[src*="num9.mp4"] {
   grid-column: span 2;
   justify-self: center;
   font-size: 13px;
-  margin-top: 15px;
+  margin-top: 38px; /* Further increased spacing between form fields and submit button */
   box-shadow: 0 5px 15px rgba(216, 23, 0, 0.4);
   transition: all 0.3s ease;
   display: inline-flex;
@@ -986,7 +1017,7 @@ html, body {
   opacity: 0;
 }
 
-.page-paragraph, .page-subheading, .contact-form, .apply-now-btn, .split-image, .subpage-action-btn {
+.page-paragraph, .page-subheading, .contact-form, .split-image, .subpage-action-btn {
   animation: scaleUpText 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: 0.2s; /* Slight delay after heading */
   opacity: 0; /* Hold hidden until animation starts */
