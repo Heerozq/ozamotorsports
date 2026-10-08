@@ -202,6 +202,63 @@ document.addEventListener('DOMContentLoaded', () => {
       innovationVideo.addEventListener('canplay', startPlay, { once: true });
       innovationVideo.addEventListener('loadeddata', startPlay, { once: true });
     }
+
+    // Special loop range for num3.mp4 (starts from 0.05s and loops at 9.43s)
+    const isNum3 = innovationVideo.classList.contains('video-num3') ||
+                   (innovationVideo.src && innovationVideo.src.includes('num3.mp4')) ||
+                   (innovationVideo.getAttribute('src') && innovationVideo.getAttribute('src').includes('num3.mp4'));
+
+    if (isNum3) {
+      innovationVideo.loop = false;
+      const NUM3_START_POINT = 0.05;
+      const NUM3_END_POINT = 9.43;
+
+      const setStartPoint = () => {
+        if (innovationVideo.currentTime < NUM3_START_POINT) {
+          innovationVideo.currentTime = NUM3_START_POINT;
+        }
+      };
+
+      if (innovationVideo.readyState >= 1) {
+        setStartPoint();
+      } else {
+        innovationVideo.addEventListener('loadedmetadata', setStartPoint, { once: true });
+        innovationVideo.addEventListener('loadeddata', setStartPoint, { once: true });
+      }
+
+      const checkLoop = () => {
+        if (innovationVideo.currentTime >= NUM3_END_POINT) {
+          innovationVideo.currentTime = NUM3_START_POINT;
+          if (innovationVideo.paused) {
+            innovationVideo.play().catch(() => {});
+          }
+        }
+      };
+
+      // Frame-accurate check for smooth 60fps/120fps looping on desktop and mobile
+      const onFrame = () => {
+        checkLoop();
+        requestAnimationFrame(onFrame);
+      };
+      requestAnimationFrame(onFrame);
+
+      // Event-based fallbacks (when tab is backgrounded / throttled)
+      innovationVideo.addEventListener('timeupdate', checkLoop);
+      innovationVideo.addEventListener('ended', () => {
+        innovationVideo.currentTime = NUM3_START_POINT;
+        innovationVideo.play().catch(() => {});
+      });
+    }
+
+    // Ensure num6 and num9 use native hardware-accelerated continuous looping
+    const isPingPongVideo = innovationVideo.classList.contains('video-num6') ||
+                            innovationVideo.classList.contains('video-num9') ||
+                            (innovationVideo.src && (innovationVideo.src.includes('num6.mp4') || innovationVideo.src.includes('num9.mp4'))) ||
+                            (innovationVideo.getAttribute('src') && (innovationVideo.getAttribute('src').includes('num6.mp4') || innovationVideo.getAttribute('src').includes('num9.mp4')));
+
+    if (isPingPongVideo) {
+      innovationVideo.loop = true;
+    }
   }
 
   // Preload on link hover or touch

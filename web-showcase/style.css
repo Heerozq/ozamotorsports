@@ -516,7 +516,7 @@ body::-webkit-scrollbar {
   text-decoration: none;
   z-index: 250;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 5px 15px rgba(216, 23, 0, 0.4);
+  box-shadow: none;
 }
 .home-btn svg {
   width: 26px;
@@ -526,8 +526,10 @@ body::-webkit-scrollbar {
   transition: fill 0.3s ease;
 }
 .home-btn:hover {
-  background-color: transparent;
-  box-shadow: none;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
   transform: translateY(-50%) scale(1.08); /* Maintains identical center line on hover */
 }
 .home-btn:hover path {
@@ -550,7 +552,7 @@ body::-webkit-scrollbar {
   justify-content: center;
   z-index: 250;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 30px rgba(216, 23, 0, 0.4);
+  box-shadow: none;
 }
 .subpage-action-btn:hover {
   transform: translateY(-5px);
@@ -628,6 +630,7 @@ body::-webkit-scrollbar {
   text-align: center;
   letter-spacing: 1px;
 }
+
 .page-subheading.left-align {
   text-align: left;
   margin-left: 0;
@@ -922,7 +925,7 @@ video[src*="num9.mp4"] {
   justify-self: center;
   font-size: 13px;
   margin-top: 38px; /* Further increased spacing between form fields and submit button */
-  box-shadow: 0 5px 15px rgba(216, 23, 0, 0.4);
+  box-shadow: none;
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
@@ -931,12 +934,12 @@ video[src*="num9.mp4"] {
   line-height: 1;
 }
 .submit-btn:hover {
-  background-color: transparent;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: #D81700;
-  box-shadow: none;
-  transform: scale(1.1);
-  font-weight: 900; /* Distinct bold on hover */
-  text-shadow: 0 0 1px #D81700, 0 0 10px rgba(216, 23, 0, 0.3);
+  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
+  transform: scale(1.06);
 }
 
 .form-success-msg {
