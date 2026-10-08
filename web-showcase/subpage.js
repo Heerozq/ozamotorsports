@@ -236,6 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const careerHeading = document.querySelector('.career-page .career-heading');
   const careerApplyBtn = document.querySelector('.career-page .apply-now-btn');
   if (careerHeading && careerApplyBtn) {
+    let isCurrentlyActive = false;
     const checkProximity = (e) => {
       const headingRect = careerHeading.getBoundingClientRect();
       const btnRect = careerApplyBtn.getBoundingClientRect();
@@ -253,16 +254,23 @@ document.addEventListener('DOMContentLoaded', () => {
         e.clientY >= btnRect.top &&
         e.clientY <= btnRect.bottom;
 
-      if (isAroundTitle || isOverBtn) {
-        careerApplyBtn.classList.add('lighting-active');
-      } else {
-        careerApplyBtn.classList.remove('lighting-active');
+      const shouldBeActive = isAroundTitle || isOverBtn;
+      if (shouldBeActive !== isCurrentlyActive) {
+        isCurrentlyActive = shouldBeActive;
+        if (shouldBeActive) {
+          careerApplyBtn.classList.add('lighting-active');
+        } else {
+          careerApplyBtn.classList.remove('lighting-active');
+        }
       }
     };
 
     window.addEventListener('mousemove', checkProximity, { passive: true });
     window.addEventListener('mouseleave', () => {
-      careerApplyBtn.classList.remove('lighting-active');
+      if (isCurrentlyActive) {
+        isCurrentlyActive = false;
+        careerApplyBtn.classList.remove('lighting-active');
+      }
     });
   }
 });

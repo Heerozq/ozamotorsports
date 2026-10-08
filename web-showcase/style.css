@@ -775,15 +775,20 @@ video[src*="num9.mp4"] {
   margin-top: 30px;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
   transform-origin: center center;
-  will-change: transform;
+  will-change: transform, box-shadow;
   box-shadow: none;
   display: inline-block;
   opacity: 1 !important; /* Guarantees button never blacks out on mouse leave */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
 }
 .apply-now-btn:hover {
   background-color: #D81700 !important;
   color: white !important;
-  transform: scale(1.04) !important;
   opacity: 1 !important;
 }
 
@@ -791,11 +796,11 @@ video[src*="num9.mp4"] {
 @keyframes applyBtnLightingBlink {
   0%, 100% {
     box-shadow: 0 0 0 rgba(216, 23, 0, 0);
-    transform: scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
     box-shadow: 0 0 12px rgba(216, 23, 0, 0.65), 0 0 22px rgba(216, 23, 0, 0.28);
-    transform: scale(1.045);
+    transform: translate3d(0, 0, 0) scale(1.045);
   }
 }
 
