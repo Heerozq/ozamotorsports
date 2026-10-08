@@ -203,15 +203,15 @@ document.addEventListener('DOMContentLoaded', () => {
       innovationVideo.addEventListener('loadeddata', startPlay, { once: true });
     }
 
-    // Special loop range for num3.mp4 (starts from 0.05s and loops at 9.43s)
+    // Special loop range for num3.mp4 (starts from 0.10s and loops at 9.41s)
     const isNum3 = innovationVideo.classList.contains('video-num3') ||
                    (innovationVideo.src && innovationVideo.src.includes('num3.mp4')) ||
                    (innovationVideo.getAttribute('src') && innovationVideo.getAttribute('src').includes('num3.mp4'));
 
     if (isNum3) {
       innovationVideo.loop = false;
-      const NUM3_START_POINT = 0.05;
-      const NUM3_END_POINT = 9.43;
+      const NUM3_START_POINT = 0.10;
+      const NUM3_END_POINT = 9.41;
 
       const setStartPoint = () => {
         if (innovationVideo.currentTime < NUM3_START_POINT) {
