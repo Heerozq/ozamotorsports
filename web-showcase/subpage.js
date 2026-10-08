@@ -289,11 +289,66 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Career Page: Proximity lighting on Apply Now button when cursor is on or around Title text
+  // Career Page: Proximity lighting & pulse animation on Apply Now button with smooth seamless exit
   const careerHeading = document.querySelector('.career-page .career-heading');
   const careerApplyBtn = document.querySelector('.career-page .apply-now-btn');
   if (careerHeading && careerApplyBtn) {
-    let isCurrentlyActive = false;
+    let isTargetActive = false;
+    let currentScale = 1.0;
+    let currentGlow = 0.0;
+    let animPhase = 0; // In radians: 0 to 2*Math.PI represents one 1s cycle
+    let lastTime = null;
+    let rafId = null;
+
+    const updateAnimation = (time) => {
+      if (!lastTime) lastTime = time;
+      const dt = Math.min((time - lastTime) / 1000, 0.1);
+      lastTime = time;
+
+      if (isTargetActive) {
+        // Frequency: 1 full cycle (2*PI) per 1.0 second (matching 1s keyframes cycle)
+        animPhase = (animPhase + dt * Math.PI * 2) % (Math.PI * 2);
+        const wave = (1 - Math.cos(animPhase)) / 2; // Smooth 0 -> 1 -> 0
+        const targetScale = 1.0 + 0.045 * wave;
+        const targetGlow = wave;
+
+        currentScale += (targetScale - currentScale) * Math.min(1, dt * 18);
+        currentGlow += (targetGlow - currentGlow) * Math.min(1, dt * 18);
+      } else {
+        // Cursor left: Smoothly ease back to resting state from current scale & glow
+        currentScale += (1.0 - currentScale) * Math.min(1, dt * 8);
+        currentGlow += (0.0 - currentGlow) * Math.min(1, dt * 8);
+      }
+
+      // Render styles
+      careerApplyBtn.style.transform = `translate3d(0, 0, 0) scale(${currentScale.toFixed(4)})`;
+      if (currentGlow > 0.005) {
+        careerApplyBtn.style.boxShadow = `0 0 ${(14 * currentGlow).toFixed(1)}px rgba(255, 50, 25, ${(0.85 * currentGlow).toFixed(3)}), 0 0 ${(28 * currentGlow).toFixed(1)}px rgba(216, 23, 0, ${(0.45 * currentGlow).toFixed(3)}), inset 0 0 ${(6 * currentGlow).toFixed(1)}px rgba(255, 120, 90, ${(0.4 * currentGlow).toFixed(3)})`;
+      } else {
+        careerApplyBtn.style.boxShadow = 'none';
+      }
+
+      // Keep animating if active OR still returning smoothly to resting state
+      if (isTargetActive || Math.abs(currentScale - 1.0) > 0.001 || currentGlow > 0.005) {
+        rafId = requestAnimationFrame(updateAnimation);
+      } else {
+        // Fully returned to resting position
+        currentScale = 1.0;
+        currentGlow = 0.0;
+        careerApplyBtn.style.transform = '';
+        careerApplyBtn.style.boxShadow = '';
+        rafId = null;
+        lastTime = null;
+      }
+    };
+
+    const startAnim = () => {
+      if (!rafId) {
+        lastTime = null;
+        rafId = requestAnimationFrame(updateAnimation);
+      }
+    };
+
     const checkProximity = (e) => {
       const headingRect = careerHeading.getBoundingClientRect();
       const btnRect = careerApplyBtn.getBoundingClientRect();
@@ -312,21 +367,17 @@ document.addEventListener('DOMContentLoaded', () => {
         e.clientY <= btnRect.bottom;
 
       const shouldBeActive = isAroundTitle || isOverBtn;
-      if (shouldBeActive !== isCurrentlyActive) {
-        isCurrentlyActive = shouldBeActive;
-        if (shouldBeActive) {
-          careerApplyBtn.classList.add('lighting-active');
-        } else {
-          careerApplyBtn.classList.remove('lighting-active');
-        }
+      if (shouldBeActive !== isTargetActive) {
+        isTargetActive = shouldBeActive;
+        startAnim();
       }
     };
 
     window.addEventListener('mousemove', checkProximity, { passive: true });
     window.addEventListener('mouseleave', () => {
-      if (isCurrentlyActive) {
-        isCurrentlyActive = false;
-        careerApplyBtn.classList.remove('lighting-active');
+      if (isTargetActive) {
+        isTargetActive = false;
+        startAnim();
       }
     });
   }

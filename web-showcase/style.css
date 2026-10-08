@@ -771,23 +771,29 @@ video[src*="num9.mp4"] {
   font-family: 'Castoro Titling', serif;
   font-weight: bold;
   font-size: 13px;
-  letter-spacing: 1px;
-  padding: 9px 28px;
+  letter-spacing: 1.2px;
+  text-indent: 1.2px; /* Offsets trailing letter-spacing for exact horizontal centering */
+  padding: 10px 30px;
   border-radius: 50px;
   text-decoration: none;
   margin-top: 30px;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
   transform-origin: center center;
   will-change: transform, box-shadow;
   box-shadow: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1;
   opacity: 1 !important; /* Guarantees button never blacks out on mouse leave */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: geometricPrecision;
+  text-rendering: optimizeLegibility;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   transform: translate3d(0, 0, 0);
+  transform-style: preserve-3d;
+  contain: layout style paint;
 }
 .apply-now-btn:hover {
   background-color: #D81700 !important;
@@ -808,12 +814,6 @@ video[src*="num9.mp4"] {
 }
 
 @media (min-width: 1025px) {
-  .career-page .career-heading:hover ~ .apply-now-btn,
-  .career-page .apply-now-btn:hover,
-  .career-page .apply-now-btn.lighting-active {
-    opacity: 1 !important;
-    animation: applyBtnLightingBlink 1s ease-in-out infinite !important;
-  }
   .career-page .apply-now-btn:hover {
     background-color: #D81700 !important;
     color: white !important;
