@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sideMenu = document.getElementById('sideMenu');
 
   let userManuallyMuted = false;
+  let soundUnlocked = false;
 
   // Always-On Video & Audio Configuration with Position Memory
   if (bgVideo) {
@@ -55,14 +56,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    // Auto-enable sound right from the start
-    bgVideo.muted = false;
-    bgVideo.volume = 1.0;
-
+    // Attempt direct unmuted playback
     const startPlay = () => {
-      if (bgVideo) {
-        bgVideo.play().catch(() => {
-          // If browser policy temporarily holds unmuted autoplay before first interaction
+      if (!bgVideo) return;
+      if (!userManuallyMuted) {
+        bgVideo.muted = false;
+        bgVideo.volume = 1.0;
+      }
+      const playPromise = bgVideo.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          if (!userManuallyMuted && !bgVideo.muted) {
+            soundUnlocked = true;
+          }
+        }).catch(() => {
+          // If browser policy holds unmuted autoplay on initial visit before first interaction
           if (!userManuallyMuted) {
             bgVideo.muted = true;
             bgVideo.play().catch(() => {});
@@ -73,20 +81,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     startPlay();
 
-    // Auto-unlock sound on user gesture if browser initially restricted unmuted autoplay
-    const unlockSoundOnGesture = () => {
-      if (bgVideo && !userManuallyMuted && bgVideo.muted) {
-        bgVideo.muted = false;
-        bgVideo.volume = 1.0;
-        if (bgVideo.paused) {
-          bgVideo.play().catch(() => {});
-        }
+    // Auto-unlock sound on first user gesture anywhere on the page
+    const unlockSoundOnFirstGesture = (e) => {
+      if (!bgVideo || userManuallyMuted || soundUnlocked) return;
+
+      // If clicked specifically on the video box area, let toggleVideoAudio handle it directly
+      if (e.type === 'click') {
+        const isInteractive = e.target.closest('.side-menu') ||
+                              e.target.closest('.logo-container') ||
+                              e.target.closest('.hero-text-container') ||
+                              e.target.closest('.action-container') ||
+                              e.target.closest('a') ||
+                              e.target.closest('button');
+        if (!isInteractive) return;
       }
+
+      soundUnlocked = true;
+      bgVideo.muted = false;
+      bgVideo.volume = 1.0;
+      if (bgVideo.paused) {
+        bgVideo.play().catch(() => {});
+      }
+      removeUnlockGestureListeners();
     };
 
-    ['click', 'touchstart', 'touchend', 'pointerup', 'keydown'].forEach(evt => {
-      window.addEventListener(evt, unlockSoundOnGesture, { passive: true });
-      document.addEventListener(evt, unlockSoundOnGesture, { passive: true });
+    const gestureEvents = ['pointerdown', 'mousedown', 'touchstart', 'keydown', 'wheel', 'scroll', 'click'];
+    const removeUnlockGestureListeners = () => {
+      gestureEvents.forEach(evt => {
+        window.removeEventListener(evt, unlockSoundOnFirstGesture, { capture: true });
+        document.removeEventListener(evt, unlockSoundOnFirstGesture, { capture: true });
+      });
+    };
+
+    gestureEvents.forEach(evt => {
+      window.addEventListener(evt, unlockSoundOnFirstGesture, { capture: true, passive: true });
+      document.addEventListener(evt, unlockSoundOnFirstGesture, { capture: true, passive: true });
     });
 
     // Toggle Mute / Unmute when clicking on the video box area (Desktop & Mobile)
@@ -111,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Toggle mute state
       if (bgVideo.muted) {
         userManuallyMuted = false;
+        soundUnlocked = true;
         bgVideo.muted = false;
         bgVideo.volume = 1.0;
         if (bgVideo.paused) {
