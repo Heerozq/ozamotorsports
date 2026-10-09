@@ -1,10 +1,18 @@
 if (sessionStorage.getItem('navigatedFromHome') === 'true') {
-  document.body.classList.add('slide-in-active');
+  document.documentElement.classList.add('slide-in-active');
+  if (document.body) document.body.classList.add('slide-in-active');
   sessionStorage.removeItem('navigatedFromHome');
+  setTimeout(() => {
+    document.documentElement.classList.remove('slide-in-active');
+    if (document.body) document.body.classList.remove('slide-in-active');
+  }, 600);
 }
 
 const clearSubpageExitClasses = () => {
-  document.body.classList.remove('slide-out-right', 'slide-out-left');
+  document.documentElement.classList.remove('slide-in-active');
+  if (document.body) {
+    document.body.classList.remove('slide-out-right', 'slide-out-left', 'slide-in-active');
+  }
 };
 window.addEventListener('pageshow', clearSubpageExitClasses);
 window.addEventListener('popstate', clearSubpageExitClasses);
@@ -16,7 +24,17 @@ document.addEventListener('DOMContentLoaded', () => {
     homeBtn.addEventListener('click', (e) => {
       e.preventDefault();
       const targetUrl = homeBtn.href;
-      sessionStorage.setItem('openMenuOnHome', 'true');
+
+      // Only open menu on Home if the user originally navigated via the slide menu
+      if (sessionStorage.getItem('navigatedFromMenu') === 'true') {
+        sessionStorage.setItem('openMenuOnHome', 'true');
+      } else {
+        sessionStorage.removeItem('openMenuOnHome');
+      }
+
+      // Mark returning to Home for smooth slide-in-left landing
+      sessionStorage.setItem('navigatedToHome', 'true');
+
       document.body.classList.add('slide-out-right');
       setTimeout(() => {
         window.location.href = targetUrl;
@@ -55,7 +73,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Contact Form Submission Handler (Keeps Details & Shows Confirmation)
+  // Subpage navigation links smooth transition and origin tracking
+  const allSubpageLinks = document.querySelectorAll('.side-menu a[href], .subpage-header a[href], .subpage-container a[href]');
+  allSubpageLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      const targetUrl = link.href;
+      if (link.getAttribute('target') === '_blank' || !targetUrl.startsWith(window.location.origin) || targetUrl.includes('portfolio.html') || targetUrl === window.location.href || targetUrl.endsWith('#')) {
+        return;
+      }
+
+      const isInsideSideMenu = !!link.closest('.side-menu');
+      if (isInsideSideMenu) {
+        sessionStorage.setItem('navigatedFromMenu', 'true');
+        sessionStorage.setItem('openMenuOnHome', 'true');
+      }
+
+      // Mark navigating to next page for smooth slide-in landing
+      sessionStorage.setItem('navigatedFromHome', 'true');
+
+      e.preventDefault();
+      document.body.classList.add('slide-out-left');
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 550);
+    });
+  });
+
+  // Contact Form Submission Handler (Direct Email to contact@ozamotorsports.com)
   const contactForm = document.querySelector('.contact-form');
   if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
@@ -63,19 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const submitBtn = document.getElementById('submitBtn') || contactForm.querySelector('.submit-btn');
       const successMsg = document.getElementById('formSuccessMsg');
 
-      // Send form data in the background (for Netlify Forms compatibility)
-      const formData = new FormData(contactForm);
-      const urlEncoded = new URLSearchParams(formData).toString();
-
-      fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: urlEncoded
-      }).catch(() => {}); // Graceful offline/local handler
-
-      // Button state change for immediate visual feedback
+      // Direct immediate visual state change - directly show SUBMITTED
       if (submitBtn) {
-        submitBtn.textContent = 'SUBMITTED ✓';
+        submitBtn.classList.add('submitted');
+        submitBtn.textContent = 'SUBMITTED';
         submitBtn.style.pointerEvents = 'none';
         submitBtn.style.backgroundColor = '#D81700';
         submitBtn.style.color = '#ffffff';
@@ -83,10 +118,32 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.style.boxShadow = '0 5px 15px rgba(216, 23, 0, 0.4)';
       }
 
-      // Show confirmation message below the submit button in #D81700
       if (successMsg) {
         successMsg.style.display = 'block';
       }
+
+      const formData = new FormData(contactForm);
+      const dataObj = Object.fromEntries(formData.entries());
+
+      // Send direct email dispatch to contact@ozamotorsports.com in background
+      fetch('https://formsubmit.co/ajax/contact@ozamotorsports.com', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(dataObj)
+      })
+      .then(() => {
+        // Also forward in background for Netlify forms compatibility
+        const urlEncoded = new URLSearchParams(formData).toString();
+        fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: urlEncoded
+        }).catch(() => {});
+      })
+      .catch(() => {});
     });
   }
 

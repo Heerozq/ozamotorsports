@@ -7,6 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=BBH+Bartle&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Castoro+Titling&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
+  <script>
+    if (sessionStorage.getItem('navigatedFromHome') === 'true') {
+      document.documentElement.classList.add('slide-in-active');
+    }
+  </script>
 </head>
 <body class="subpage-body contact-page">
   <div class="bg-container"><div class="bg-placeholder"></div></div>
@@ -49,7 +54,10 @@
   <div class="subpage-container contact-page-container">
     <h1 class="page-heading contact-heading">CONTACT US</h1>
     
-    <form class="contact-form" name="contact" method="POST" data-netlify="true">
+    <form class="contact-form" name="contact" method="POST" action="https://formsubmit.co/contact@ozamotorsports.com" data-netlify="true">
+      <input type="hidden" name="_subject" value="New Inquiry from Oza Motorsports Website">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
       <div class="form-group">
         <label>FIRST NAME <span>*</span></label>
         <input type="text" name="firstName" required>
@@ -83,7 +91,8 @@
       </div>
       <button type="submit" class="submit-btn" id="submitBtn">SUBMIT</button>
       <div class="form-success-msg" id="formSuccessMsg" style="display: none;">
-        THANK YOU FOR CONTACTING US! YOUR MESSAGE HAS BEEN SUCCESSFULLY SUBMITTED.
+        <span>THANK YOU FOR CONTACTING US!</span>
+        <span>YOUR MESSAGE HAS BEEN SUCCESSFULLY SUBMITTED.</span>
       </div>
     </form>
   </div>

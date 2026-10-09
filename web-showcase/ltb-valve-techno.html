@@ -7,6 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=BBH+Bartle&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Castoro+Titling&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
+  <script>
+    if (sessionStorage.getItem('navigatedFromHome') === 'true') {
+      document.documentElement.classList.add('slide-in-active');
+    }
+  </script>
 </head>
 <body class="subpage-body ltb-page">
   <div class="bg-container"><div class="bg-placeholder"></div></div>

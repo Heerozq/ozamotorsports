@@ -1,18 +1,37 @@
+if (sessionStorage.getItem('navigatedToHome') === 'true') {
+  document.documentElement.classList.add('slide-in-left-active');
+  if (document.body) document.body.classList.add('slide-in-left-active');
+  sessionStorage.removeItem('navigatedToHome');
+  setTimeout(() => {
+    document.documentElement.classList.remove('slide-in-left-active');
+    if (document.body) document.body.classList.remove('slide-in-left-active');
+  }, 600);
+}
+
+const clearHomeExitClasses = () => {
+  document.documentElement.classList.remove('slide-in-left-active', 'slide-in-active');
+  if (document.body) {
+    document.body.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-left-active', 'slide-in-active');
+  }
+};
+window.addEventListener('pageshow', clearHomeExitClasses);
+window.addEventListener('popstate', clearHomeExitClasses);
+
 // Logic to handle always-on audio and side menu on Home Page
 document.addEventListener('DOMContentLoaded', () => {
-  document.body && document.body.classList.remove('slide-out-left', 'slide-out-right');
+  clearHomeExitClasses();
   const bgVideo = document.querySelector('.bg-video');
   const openMenuBtn = document.querySelector('.action-btn');
   const closeMenuBtn = document.getElementById('closeMenuBtn');
   const sideMenu = document.getElementById('sideMenu');
+
+  let userManuallyMuted = false;
 
   // Always-On Video & Audio Configuration with Position Memory
   if (bgVideo) {
     // Ensure critical mobile attributes
     bgVideo.setAttribute('playsinline', '');
     bgVideo.setAttribute('webkit-playsinline', '');
-    bgVideo.muted = true;
-    bgVideo.defaultMuted = true;
 
     // Restore saved playback position if returning from a subpage
     const savedTime = sessionStorage.getItem('homeVideoTime');
@@ -36,22 +55,27 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    // Start video playing immediately and continuously
-    const startPlay = () => {
-      if (bgVideo) {
-        bgVideo.play().catch(() => {});
-      }
-    };
-    bgVideo.muted = true;
-    startPlay();
-
-    // Try unmuting directly if browser allows (Desktop or allowed autoplay)
+    // Auto-enable sound right from the start
     bgVideo.muted = false;
     bgVideo.volume = 1.0;
-    const playPromise = bgVideo.play();
 
-    const unlockSound = () => {
+    const startPlay = () => {
       if (bgVideo) {
+        bgVideo.play().catch(() => {
+          // If browser policy temporarily holds unmuted autoplay before first interaction
+          if (!userManuallyMuted) {
+            bgVideo.muted = true;
+            bgVideo.play().catch(() => {});
+          }
+        });
+      }
+    };
+
+    startPlay();
+
+    // Auto-unlock sound on user gesture if browser initially restricted unmuted autoplay
+    const unlockSoundOnGesture = () => {
+      if (bgVideo && !userManuallyMuted && bgVideo.muted) {
         bgVideo.muted = false;
         bgVideo.volume = 1.0;
         if (bgVideo.paused) {
@@ -60,19 +84,45 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // If unmuted autoplay blocked by browser policy on mobile
-        bgVideo.muted = true;
-        bgVideo.play().catch(() => {});
-      });
-    }
-
-    // Enable sound and ensure continuous playback on user interaction anywhere
-    ['click', 'touchend', 'pointerup', 'keydown'].forEach(evt => {
-      document.addEventListener(evt, unlockSound, { passive: true });
-      window.addEventListener(evt, unlockSound, { passive: true });
+    ['click', 'touchstart', 'touchend', 'pointerup', 'keydown'].forEach(evt => {
+      window.addEventListener(evt, unlockSoundOnGesture, { passive: true });
+      document.addEventListener(evt, unlockSoundOnGesture, { passive: true });
     });
+
+    // Toggle Mute / Unmute when clicking on the video box area (Desktop & Mobile)
+    const toggleVideoAudio = (e) => {
+      if (!bgVideo) return;
+
+      // If side menu is open, clicking outside closes the drawer, do not toggle audio
+      if (sideMenu && sideMenu.classList.contains('open')) {
+        return;
+      }
+
+      // Do not toggle audio when clicking on interactive UI elements (links, buttons, menu, dropdowns)
+      if (e.target.closest('.side-menu') ||
+          e.target.closest('.logo-container') ||
+          e.target.closest('.hero-text-container') ||
+          e.target.closest('.action-container') ||
+          e.target.closest('a') ||
+          e.target.closest('button')) {
+        return;
+      }
+
+      // Toggle mute state
+      if (bgVideo.muted) {
+        userManuallyMuted = false;
+        bgVideo.muted = false;
+        bgVideo.volume = 1.0;
+        if (bgVideo.paused) {
+          bgVideo.play().catch(() => {});
+        }
+      } else {
+        userManuallyMuted = true;
+        bgVideo.muted = true;
+      }
+    };
+
+    document.addEventListener('click', toggleVideoAudio);
 
     // Auto-resume watchdogs: Keep horse running without getting paused or stuck
     bgVideo.addEventListener('pause', () => {
@@ -105,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!sideMenu) return;
     sideMenu.classList.add('open');
     if (fromReturn) {
-      ignoreOutsideClickUntil = Date.now() + 800; // Ignore accidental/spurious clicks or gesture residue on return
+      ignoreOutsideClickUntil = Date.now() + 1500; // Ignore accidental/spurious clicks or gesture residue on return
       setTimeout(() => {
         document.documentElement.classList.remove('menu-preset-open');
       }, 50);
@@ -117,15 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
     sideMenu.classList.remove('open');
     document.documentElement.classList.remove('menu-preset-open');
     document.querySelectorAll('.nav-dropdown.show-dropdown').forEach(el => el.classList.remove('show-dropdown'));
+    sessionStorage.removeItem('openMenuOnHome');
+    sessionStorage.removeItem('navigatedFromMenu');
   }
 
   if (sideMenu) {
-    // If user returned from a subpage, keep slide drawer open
-    if (sessionStorage.getItem('openMenuOnHome') === 'true' || document.documentElement.classList.contains('menu-preset-open')) {
-      openDrawer(true);
-      sessionStorage.removeItem('openMenuOnHome');
-    }
-
     if (openMenuBtn && closeMenuBtn) {
       openMenuBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -137,6 +183,11 @@ document.addEventListener('DOMContentLoaded', () => {
         closeDrawer();
       });
     }
+
+    // If returning from a page visited through the slide menu, open the drawer
+    if (sessionStorage.getItem('openMenuOnHome') === 'true' || sessionStorage.getItem('navigatedFromMenu') === 'true') {
+      openDrawer(true);
+    }
   }
 
   // Handle bfcache or browser/phone back navigation (ensures page is never blank on back)
@@ -145,9 +196,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bgVideo && bgVideo.paused) {
       bgVideo.play().catch(() => {});
     }
-    if (sessionStorage.getItem('openMenuOnHome') === 'true' || (e && e.persisted)) {
+    if (sessionStorage.getItem('openMenuOnHome') === 'true' || sessionStorage.getItem('navigatedFromMenu') === 'true') {
       openDrawer(true);
-      sessionStorage.removeItem('openMenuOnHome');
+    } else {
+      closeDrawer();
     }
   };
 
@@ -210,11 +262,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Intercept navigation links for smooth page transition and sound cut-off
-  const navLinks = document.querySelectorAll('.nav-links a, .nav-dropdown-content a, .dropdown-content a');
+  // Intercept navigation links for smooth page transition, sound cut-off, and origin tracking
+  const navLinks = document.querySelectorAll('.nav-links a, .nav-dropdown-content a, .dropdown-content a, .logo-container a');
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       const targetUrl = link.href;
+
+      // Track if navigating from Slide Menu vs Hero Dropdown/Logo
+      const isInsideSideMenu = !!link.closest('.side-menu');
+      if (isInsideSideMenu) {
+        sessionStorage.setItem('navigatedFromMenu', 'true');
+        sessionStorage.setItem('openMenuOnHome', 'true');
+      } else {
+        sessionStorage.setItem('navigatedFromMenu', 'false');
+        sessionStorage.removeItem('openMenuOnHome');
+      }
 
       // Save exact video time and stop home audio immediately on navigating away
       if (bgVideo) {
@@ -231,7 +293,6 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       document.body.classList.add('slide-out-left');
       sessionStorage.setItem('navigatedFromHome', 'true');
-      sessionStorage.setItem('openMenuOnHome', 'true');
       
       setTimeout(() => {
         window.location.href = targetUrl;
