@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Contact Form Submission Handler (Direct Email to contact@ozamotorsports.com)
+  // Contact Form Submission Handler (Direct Email to ozamotorsports@gmail.com)
   const contactForm = document.querySelector('.contact-form');
   if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
@@ -125,8 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const formData = new FormData(contactForm);
       const dataObj = Object.fromEntries(formData.entries());
 
-      // Send direct email dispatch to contact@ozamotorsports.com in background
-      fetch('https://formsubmit.co/ajax/contact@ozamotorsports.com', {
+      // Send direct email dispatch to ozamotorsports@gmail.com in background
+      fetch('https://formsubmit.co/ajax/ozamotorsports@gmail.com', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
