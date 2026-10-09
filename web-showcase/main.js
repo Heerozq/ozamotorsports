@@ -56,25 +56,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    // Attempt direct unmuted playback
+    // Immediate guaranteed autoplay on mobile & desktop
     const startPlay = () => {
       if (!bgVideo) return;
-      if (!userManuallyMuted) {
-        bgVideo.muted = false;
-        bgVideo.volume = 1.0;
-      }
+      bgVideo.muted = true;
+      bgVideo.defaultMuted = true;
       const playPromise = bgVideo.play();
       if (playPromise !== undefined) {
-        playPromise.then(() => {
-          if (!userManuallyMuted && !bgVideo.muted) {
-            soundUnlocked = true;
-          }
-        }).catch(() => {
-          // If browser policy holds unmuted autoplay on initial visit before first interaction
-          if (!userManuallyMuted) {
-            bgVideo.muted = true;
+        playPromise.catch(() => {
+          // Retry on metadata / canplay event
+          bgVideo.addEventListener('canplay', () => {
             bgVideo.play().catch(() => {});
-          }
+          }, { once: true });
         });
       }
     };
