@@ -22,6 +22,14 @@
       window.addEventListener('pageshow', clearExitState);
       window.addEventListener('popstate', clearExitState);
 
+      const navEntries = window.performance && performance.getEntriesByType && performance.getEntriesByType('navigation');
+      const isReload = (navEntries && navEntries.length > 0 && navEntries[0].type === 'reload') ||
+                       (window.performance && window.performance.navigation && window.performance.navigation.type === 1);
+      if (isReload) {
+        sessionStorage.removeItem('homeVideoTime');
+        sessionStorage.removeItem('navigatedToHome');
+      }
+
       if (sessionStorage.getItem('navigatedToHome') === 'true') {
         document.documentElement.classList.add('slide-in-left-active');
       }
@@ -41,12 +49,37 @@
     </script>
     <!-- Background Media -->
     <div class="bg-container">
-      <video class="bg-video" autoplay loop muted playsinline webkit-playsinline preload="auto">
-        <source src="/bg-video.mp4" type="video/mp4">
-      </video>
+      <video class="bg-video" id="bgVideo" src="/bg-video.mp4" autoplay loop playsinline webkit-playsinline preload="auto"></video>
       <!-- Overlay to slightly darken the video so the white text stays readable -->
       <div class="bg-overlay"></div>
     </div>
+    <script>
+      (function() {
+        var v = document.getElementById('bgVideo');
+        if (v) {
+          var isWin = /Windows/i.test(navigator.userAgent || navigator.platform || '');
+          var savedState = sessionStorage.getItem('homeVideoAudioMuted');
+          if (savedState === 'false' || (savedState === null && isWin)) {
+            v.muted = false;
+            v.volume = 1.0;
+            var p = v.play();
+            if (p !== undefined) {
+              p.catch(function() {
+                v.muted = true;
+                v.defaultMuted = true;
+                var pRetry = v.play();
+                if (pRetry !== undefined) pRetry.catch(function(){});
+              });
+            }
+          } else {
+            v.muted = true;
+            v.defaultMuted = true;
+            var pMobile = v.play();
+            if (pMobile !== undefined) pMobile.catch(function(){});
+          }
+        }
+      })();
+    </script>
 
     <!-- Main Content UI -->
     <div class="ui-layer">

@@ -25,102 +25,148 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeMenuBtn = document.getElementById('closeMenuBtn');
   const sideMenu = document.getElementById('sideMenu');
 
-  let userManuallyMuted = false;
-  let soundUnlocked = false;
-
-  // Always-On Video & Audio Configuration with Position Memory
+  // 1. Guaranteed Continuous Autoplay & Audio Controller for Horse Video
   if (bgVideo) {
-    // Ensure critical mobile attributes
+    // Detect Windows desktop
+    const isWindows = /Windows/i.test(navigator.userAgent || navigator.platform || '');
+    let userManuallyMuted = false;
+
+    // Ensure critical mobile & cross-browser attributes
     bgVideo.setAttribute('playsinline', '');
     bgVideo.setAttribute('webkit-playsinline', '');
 
-    // Restore saved playback position if returning from a subpage
-    const savedTime = sessionStorage.getItem('homeVideoTime');
-    if (savedTime) {
-      const timeNum = parseFloat(savedTime);
-      if (!isNaN(timeNum) && isFinite(timeNum) && timeNum > 0) {
-        if (bgVideo.readyState >= 1) {
-          bgVideo.currentTime = timeNum;
-        } else {
-          bgVideo.addEventListener('loadedmetadata', () => {
-            bgVideo.currentTime = timeNum;
-          }, { once: true });
+    // Detect page reload vs subpage navigation
+    const navEntries = window.performance && performance.getEntriesByType && performance.getEntriesByType('navigation');
+    const isReload = (navEntries && navEntries.length > 0 && navEntries[0].type === 'reload') ||
+                     (window.performance && window.performance.navigation && window.performance.navigation.type === 1);
+
+    if (isReload) {
+      // On page reload: Horse video restarts from the very beginning (0s)
+      sessionStorage.removeItem('homeVideoTime');
+      try { bgVideo.currentTime = 0; } catch (err) {}
+    } else {
+      // Restore saved playback position ONLY when returning from a subpage
+      const savedTime = sessionStorage.getItem('homeVideoTime');
+      if (savedTime) {
+        sessionStorage.removeItem('homeVideoTime');
+        const timeNum = parseFloat(savedTime);
+        if (!isNaN(timeNum) && isFinite(timeNum) && timeNum > 0 && timeNum < (bgVideo.duration || 30)) {
+          if (bgVideo.readyState >= 2) {
+            try { bgVideo.currentTime = timeNum; } catch(err) {}
+          } else {
+            bgVideo.addEventListener('canplay', () => {
+              try { bgVideo.currentTime = timeNum; } catch(err) {}
+            }, { once: true });
+          }
         }
       }
     }
 
-    // Save playback position on-demand
-    const saveVideoTime = () => {
-      if (bgVideo && bgVideo.currentTime > 0) {
-        sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
+    // Set initial audio configuration (with cross-page memory):
+    const savedAudioState = sessionStorage.getItem('homeVideoAudioMuted');
+    if (savedAudioState !== null) {
+      if (savedAudioState === 'true') {
+        userManuallyMuted = true;
+        bgVideo.muted = true;
+      } else {
+        userManuallyMuted = false;
+        bgVideo.muted = false;
+        bgVideo.volume = 1.0;
       }
-    };
+    } else {
+      // First visit: On Windows enable audio; on Mobile/Mac default to muted.
+      if (isWindows && !userManuallyMuted) {
+        bgVideo.muted = false;
+        bgVideo.volume = 1.0;
+      } else {
+        bgVideo.muted = true;
+      }
+    }
 
-    // Immediate guaranteed autoplay on mobile & desktop
-    const startPlay = () => {
+    // Function to ensure video is continuously playing without interrupting stream
+    const ensureVideoPlaying = () => {
       if (!bgVideo) return;
-      bgVideo.muted = true;
-      bgVideo.defaultMuted = true;
-      const playPromise = bgVideo.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Retry on metadata / canplay event
-          bgVideo.addEventListener('canplay', () => {
-            bgVideo.play().catch(() => {});
-          }, { once: true });
-        });
-      }
-    };
-
-    startPlay();
-
-    // Auto-unlock sound on first user gesture anywhere on the page
-    const unlockSoundOnFirstGesture = (e) => {
-      if (!bgVideo || userManuallyMuted || soundUnlocked) return;
-
-      // If clicked specifically on the video box area, let toggleVideoAudio handle it directly
-      if (e.type === 'click') {
-        const isInteractive = e.target.closest('.side-menu') ||
-                              e.target.closest('.logo-container') ||
-                              e.target.closest('.hero-text-container') ||
-                              e.target.closest('.action-container') ||
-                              e.target.closest('a') ||
-                              e.target.closest('button');
-        if (!isInteractive) return;
-      }
-
-      soundUnlocked = true;
-      bgVideo.muted = false;
-      bgVideo.volume = 1.0;
       if (bgVideo.paused) {
-        bgVideo.play().catch(() => {});
+        const playPromise = bgVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            // If browser policy blocked unmuted autoplay (e.g. Chrome MEI threshold):
+            // Fallback immediately to muted play so the video still plays 100% of the time!
+            if (!bgVideo.muted) {
+              bgVideo.muted = true;
+              const retryPromise = bgVideo.play();
+              if (retryPromise !== undefined) retryPromise.catch(() => {});
+            }
+          });
+        }
       }
-      removeUnlockGestureListeners();
     };
 
-    const gestureEvents = ['pointerdown', 'mousedown', 'touchstart', 'keydown', 'wheel', 'scroll', 'click'];
-    const removeUnlockGestureListeners = () => {
-      gestureEvents.forEach(evt => {
-        window.removeEventListener(evt, unlockSoundOnFirstGesture, { capture: true });
-        document.removeEventListener(evt, unlockSoundOnFirstGesture, { capture: true });
+    // Immediate play trigger on DOMContentLoaded
+    ensureVideoPlaying();
+
+    // 2. Smooth, Freeze-Free Mute / Unmute Toggle on Horse / Video Tap
+    let lastAudioToggleTime = 0;
+    let justAutoUnlocked = false;
+
+    // On Windows: If initial unmuted play was restricted by browser MEI,
+    // turn on audio immediately upon the user's first interaction anywhere on Windows (unless user muted it)
+    if (isWindows) {
+      const unlockAudioOnWindows = (e) => {
+        const savedState = sessionStorage.getItem('homeVideoAudioMuted');
+        if (savedState === 'true' || userManuallyMuted || !bgVideo) return;
+        if (bgVideo.muted) {
+          bgVideo.muted = false;
+          bgVideo.volume = 1.0;
+          sessionStorage.setItem('homeVideoAudioMuted', 'false');
+          justAutoUnlocked = true;
+          setTimeout(() => { justAutoUnlocked = false; }, 400);
+        }
+        if (bgVideo.paused) {
+          bgVideo.play().catch(() => {});
+        }
+        removeWindowsAudioUnlockers();
+      };
+
+      const winEvents = ['pointerdown', 'mousedown', 'keydown', 'click', 'wheel', 'touchstart'];
+      const removeWindowsAudioUnlockers = () => {
+        winEvents.forEach(evt => window.removeEventListener(evt, unlockAudioOnWindows, { capture: true }));
+      };
+      winEvents.forEach(evt => window.addEventListener(evt, unlockAudioOnWindows, { capture: true, passive: true }));
+    }
+
+    // Fallback: If autoplay was blocked initially by strict browser policies (e.g. Low Power Mode),
+    // start playing immediately upon the first user interaction anywhere
+    const startOnFirstGesture = () => {
+      ensureVideoPlaying();
+      ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(evt => {
+        window.removeEventListener(evt, startOnFirstGesture, { capture: true });
       });
     };
-
-    gestureEvents.forEach(evt => {
-      window.addEventListener(evt, unlockSoundOnFirstGesture, { capture: true, passive: true });
-      document.addEventListener(evt, unlockSoundOnFirstGesture, { capture: true, passive: true });
+    ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(evt => {
+      window.addEventListener(evt, startOnFirstGesture, { capture: true, passive: true });
     });
 
-    // Toggle Mute / Unmute when clicking on the video box area (Desktop & Mobile)
     const toggleVideoAudio = (e) => {
       if (!bgVideo) return;
 
-      // If side menu is open, clicking outside closes the drawer, do not toggle audio
+      // Debounce rapid multi-taps (within 300ms)
+      const now = Date.now();
+      if (now - lastAudioToggleTime < 300) return;
+      lastAudioToggleTime = now;
+
+      // If audio was just unlocked on this gesture, don't immediately mute it
+      if (justAutoUnlocked) {
+        justAutoUnlocked = false;
+        return;
+      }
+
+      // If side menu is open, clicking outside closes the drawer; do not toggle audio
       if (sideMenu && sideMenu.classList.contains('open')) {
         return;
       }
 
-      // Do not toggle audio when clicking on interactive UI elements (links, buttons, menu, dropdowns)
+      // Do not toggle audio when clicking on interactive UI elements
       if (e.target.closest('.side-menu') ||
           e.target.closest('.logo-container') ||
           e.target.closest('.hero-text-container') ||
@@ -130,45 +176,25 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Toggle mute state
+      // If video was somehow paused, ensure it runs
+      if (bgVideo.paused) {
+        bgVideo.play().catch(() => {});
+      }
+
+      // Smoothly toggle audio and persist preference across pages
       if (bgVideo.muted) {
         userManuallyMuted = false;
-        soundUnlocked = true;
         bgVideo.muted = false;
         bgVideo.volume = 1.0;
-        if (bgVideo.paused) {
-          bgVideo.play().catch(() => {});
-        }
+        sessionStorage.setItem('homeVideoAudioMuted', 'false');
       } else {
         userManuallyMuted = true;
         bgVideo.muted = true;
+        sessionStorage.setItem('homeVideoAudioMuted', 'true');
       }
     };
 
     document.addEventListener('click', toggleVideoAudio);
-
-    // Auto-resume watchdogs: Keep horse running without getting paused or stuck
-    bgVideo.addEventListener('pause', () => {
-      if (!document.hidden && bgVideo) {
-        startPlay();
-      }
-    });
-    bgVideo.addEventListener('waiting', () => {
-      if (!document.hidden && bgVideo) {
-        startPlay();
-      }
-    });
-    bgVideo.addEventListener('stalled', () => {
-      if (!document.hidden && bgVideo) {
-        startPlay();
-      }
-    });
-    bgVideo.addEventListener('ended', () => {
-      if (bgVideo) {
-        bgVideo.currentTime = 0;
-        startPlay();
-      }
-    });
   }
 
   // Toggle Side Menu
@@ -216,8 +242,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Handle bfcache or browser/phone back navigation (ensures page is never blank on back)
   const handlePageRestore = (e) => {
     document.body.classList.remove('slide-out-left', 'slide-out-right');
-    if (bgVideo && bgVideo.paused) {
-      bgVideo.play().catch(() => {});
+    const savedAudioState = sessionStorage.getItem('homeVideoAudioMuted');
+    if (bgVideo) {
+      if (savedAudioState === 'true') {
+        bgVideo.muted = true;
+      } else if (savedAudioState === 'false') {
+        bgVideo.muted = false;
+        bgVideo.volume = 1.0;
+      }
+      if (bgVideo.paused) {
+        bgVideo.play().catch(() => {});
+      }
     }
     if (sessionStorage.getItem('openMenuOnHome') === 'true' || sessionStorage.getItem('navigatedFromMenu') === 'true') {
       openDrawer(true);
@@ -246,42 +281,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Automatic Mute/Pause when switching tabs or windows (never freeze video)
+  // Handle tab visibility changes cleanly (pause only when tab is genuinely hidden, never on window blur)
   document.addEventListener('visibilitychange', () => {
     if (bgVideo) {
       if (document.hidden) {
-        sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
+        if (bgVideo.currentTime > 0) {
+          sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
+        }
+        sessionStorage.setItem('homeVideoAudioMuted', bgVideo.muted ? 'true' : 'false');
         bgVideo.pause();
       } else {
-        bgVideo.play().catch(() => {});
+        if (bgVideo.paused) {
+          bgVideo.play().catch(() => {});
+        }
       }
-    }
-  });
-
-  window.addEventListener('blur', () => {
-    if (bgVideo) {
-      sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
-      bgVideo.pause();
-    }
-  });
-
-  window.addEventListener('focus', () => {
-    if (bgVideo && !document.hidden && bgVideo.paused) {
-      bgVideo.play().catch(() => {});
     }
   });
 
   window.addEventListener('beforeunload', () => {
     if (bgVideo) {
-      sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
-      bgVideo.pause();
+      if (bgVideo.currentTime > 0) {
+        sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
+      }
+      sessionStorage.setItem('homeVideoAudioMuted', bgVideo.muted ? 'true' : 'false');
     }
   });
 
   window.addEventListener('pagehide', () => {
     if (bgVideo) {
-      sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
-      bgVideo.pause();
+      if (bgVideo.currentTime > 0) {
+        sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
+      }
+      sessionStorage.setItem('homeVideoAudioMuted', bgVideo.muted ? 'true' : 'false');
     }
   });
 
@@ -301,9 +332,10 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.removeItem('openMenuOnHome');
       }
 
-      // Save exact video time and stop home audio immediately on navigating away
+      // Save exact video time and audio muted state on navigating away
       if (bgVideo) {
         sessionStorage.setItem('homeVideoTime', bgVideo.currentTime.toString());
+        sessionStorage.setItem('homeVideoAudioMuted', bgVideo.muted ? 'true' : 'false');
         bgVideo.pause();
         bgVideo.muted = true;
       }
