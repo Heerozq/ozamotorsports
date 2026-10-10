@@ -22,6 +22,20 @@ body, html {
   color: #ffffff;
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  caret-color: transparent !important;
+}
+
+/* Ensure form inputs on contact page still allow text selection & typing caret */
+input, textarea, select {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  caret-color: auto !important;
 }
 
 html::-webkit-scrollbar,
@@ -247,6 +261,12 @@ body::-webkit-scrollbar {
   transform: translateY(-50%);
   display: flex;
   align-items: flex-end; /* Align INNOVATIONS text to the bottom of OUR */
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  caret-color: transparent !important;
+  outline: none !important;
 }
 
 .hero-primary {
@@ -262,6 +282,12 @@ body::-webkit-scrollbar {
   animation: pageLoadBlur 0.6s ease forwards;
   cursor: pointer;
   position: relative;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  caret-color: transparent !important;
+  outline: none !important;
 }
 
 /* Extended invisible hover hit-box around OUR text for effortless trigger */
@@ -274,6 +300,8 @@ body::-webkit-scrollbar {
   right: -20px;
   z-index: 0;
   pointer-events: auto;
+  user-select: none !important;
+  caret-color: transparent !important;
 }
 
 .hero-primary:hover,
@@ -287,6 +315,9 @@ body::-webkit-scrollbar {
 .hero-secondary {
   margin-left: 10px; /* Moved closer to 'R' */
   margin-bottom: 0px;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  caret-color: transparent !important;
 }
 
 /* Page load blur-in animation */
@@ -301,6 +332,12 @@ body::-webkit-scrollbar {
   font-family: 'Castoro Titling', serif;
   background: transparent !important;
   animation: pageLoadBlur 0.6s ease forwards;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  caret-color: transparent !important;
+  outline: none !important;
 }
 
 /* Extended invisible hover hit-box around INNOVATIONS */
@@ -313,6 +350,8 @@ body::-webkit-scrollbar {
   right: -100px;
   z-index: 0;
   pointer-events: auto;
+  user-select: none !important;
+  caret-color: transparent !important;
 }
 
 .drop-btn {
@@ -329,6 +368,24 @@ body::-webkit-scrollbar {
   cursor: pointer;
   font-family: 'Castoro Titling', serif;
   z-index: 1;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  caret-color: transparent !important;
+  outline: none !important;
+}
+
+.drop-btn:focus,
+.drop-btn:focus-visible,
+.hero-primary:focus,
+.hero-primary:focus-visible,
+.hero-text-container:focus,
+.hero-text-container:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  caret-color: transparent !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 /* INNOVATIONS underline animation */
