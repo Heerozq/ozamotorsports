@@ -1,15 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta charset="UTF-8">
   <title>LTB Valve Techno | Oza Motorsports</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q8XQW6C9BB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-Q8XQW6C9BB');
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=BBH+Bartle&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Castoro+Titling&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
   <script>
     if (sessionStorage.getItem('navigatedFromHome') === 'true') {
       document.documentElement.classList.add('slide-in-active');
+    } else if (sessionStorage.getItem('navigatedToPrev') === 'true') {
+      document.documentElement.classList.add('slide-in-left-active');
     }
   </script>
 </head>
@@ -29,18 +40,40 @@
       <div class="split-text">
         <h1 class="page-heading left-align"><span class="heading-nowrap">LTB VALVE</span> <span class="heading-block">TECHNO</span></h1>
         <h2 class="page-subheading left-align">CREATING A WHOLE NEW MECHANISM<br class="mobile-subhead-break"> FOR ENGINE BREATHING.</h2>
-        <p class="page-paragraph left-align">
-          JUST LIKE THE HUMAN BODY, ENGINES ALSO HAVE THEIR BREATHING CYCLES. BASED ON THIS, THE ENGINE CONVERTS CHEMICAL ENERGY INTO MECHANICAL ENERGY. HOWEVER, THE CONVENTIONAL MECHANISM HAS NEVER BEEN AN IDEAL DESIGN FOR PROVIDING THE REQUIRED FLOW OF AIR FUEL RATIO. THIS ENTIRE PROCESS DRASTICALLY AFFECTS ON WHAT IT PERFORMS AND HOW IT REACTS. HOWEVER, ENGINEERS HAVE FOUND OPTIONS FOR BETTER BREATHING BY INVENTING TECHNOLOGIES SUCH AS VVT, VVL, AND COMPONENTS LIKE SUPERCHARGER AND TURBO CHARGERS. YET THE END RESULTS ARE NOT EVEN NEAR TO SATISFACTORY.
-        </p>
-        <p class="page-paragraph left-align">
-          THUS OZA MOTORSPORTS DO PROVIDE DESIGN OPTION OF CAM-LESS VALVE MECHANISM BY OFFERING LTB VALVE TECHNO. WHICH WORKS ON DATA PROVIDED BY SENSORS AND REAL-TIME CALIBRATION. IT ALSO PROVIDES HUGE FLEXIBILITY IN OPENING AND CLOSING INLET AND OUTLET VALVES IN TERMS OF TIMINGS AND LIFT.
-        </p>
+        <div class="ltb-text-slider">
+          <div class="ltb-slide ltb-slide-1 is-active" id="ltbSlide1">
+            <p class="page-paragraph left-align">
+              JUST LIKE THE HUMAN BODY, ENGINES ALSO HAVE THEIR BREATHING CYCLES. BASED ON THIS, THE ENGINE CONVERTS CHEMICAL ENERGY INTO MECHANICAL ENERGY. HOWEVER, THE CONVENTIONAL MECHANISM HAS NEVER BEEN AN IDEAL DESIGN FOR PROVIDING THE REQUIRED FLOW OF AIR FUEL RATIO. THIS ENTIRE PROCESS DRASTICALLY AFFECTS ON WHAT IT PERFORMS AND HOW IT REACTS. HOWEVER, ENGINEERS HAVE FOUND OPTIONS FOR BETTER BREATHING BY INVENTING TECHNOLOGIES SUCH AS VVT, VVL, AND COMPONENTS LIKE SUPERCHARGER AND TURBO CHARGERS. YET THE END RESULTS ARE NOT EVEN NEAR TO SATISFACTORY.
+            </p>
+            <button type="button" class="ltb-toggle-btn ltb-more-btn" id="ltbMoreBtn" aria-label="Read more">
+              <span>READ MORE</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+          <div class="ltb-slide ltb-slide-2" id="ltbSlide2">
+            <p class="page-paragraph left-align">
+              THUS OZA MOTORSPORTS DO PROVIDE DESIGN OPTION OF CAM-LESS VALVE MECHANISM BY OFFERING LTB VALVE TECHNO. WHICH WORKS ON DATA PROVIDED BY SENSORS AND REAL-TIME CALIBRATION. IT ALSO PROVIDES HUGE FLEXIBILITY IN OPENING AND CLOSING INLET AND OUTLET VALVES IN TERMS OF TIMINGS AND LIFT.
+            </p>
+            <button type="button" class="ltb-toggle-btn ltb-back-btn" id="ltbBackBtn" aria-label="Back to first paragraph">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              <span>BACK</span>
+            </button>
+          </div>
+        </div>
       </div>
       <div class="split-image">
-        <video class="innovation-video video-num9" src="/num9.mp4" autoplay loop muted playsinline preload="auto"></video>
+        <video class="innovation-video video-num9" src="/num9.mp4" poster="/num9-poster.webp" autoplay loop muted playsinline preload="auto"></video>
       </div>
     </div>
   </div>
+
+  <!-- Innovation Navigation: Prev to BOBART -->
+  <a href="/bobart.html" class="nav-arrow nav-arrow-prev" aria-label="Previous: BOBART">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#D81700" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+  </a>
+
   <script type="module" src="/subpage.js"></script>
 </body>
 </html>

@@ -3,8 +3,10 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  -ms-overflow-style: none !important;  /* IE and Edge */
-  scrollbar-width: none !important;  /* Firefox */
+  -ms-overflow-style: none !important;
+  /* IE and Edge */
+  scrollbar-width: none !important;
+  /* Firefox */
 }
 
 *::-webkit-scrollbar {
@@ -13,11 +15,13 @@
   height: 0 !important;
 }
 
-body, html {
+body,
+html {
   width: 100%;
   height: 100%;
   font-family: 'Inter', sans-serif;
-  overflow: hidden; /* Prevent scrolling, true full screen showcase */
+  overflow: hidden;
+  /* Prevent scrolling, true full screen showcase */
   background-color: #050505;
   color: #ffffff;
   -ms-overflow-style: none !important;
@@ -30,7 +34,9 @@ body, html {
 }
 
 /* Ensure form inputs on contact page still allow text selection & typing caret */
-input, textarea, select {
+input,
+textarea,
+select {
   user-select: text !important;
   -webkit-user-select: text !important;
   -moz-user-select: text !important;
@@ -57,17 +63,22 @@ body::-webkit-scrollbar {
   transform: translate3d(0, 0, 0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  will-change: transform;
+  isolation: isolate;
 }
 
 .bg-video {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensures video scales perfectly to fill screen */
+  object-fit: cover;
+  /* Ensures video scales perfectly to fill screen */
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  /* Stabilize Chromium color management: forces standard sRGB compositor pipeline 
+     from frame 0, preventing washed-out hardware overlay and eliminating color shifts */
+  filter: contrast(100.01%) brightness(100%);
+  -webkit-filter: contrast(100.01%) brightness(100%);
 }
 
 /* Optional overlay to darken the video slightly so white text pops */
@@ -78,6 +89,7 @@ body::-webkit-scrollbar {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
+  pointer-events: none;
 }
 
 /* UI Layer (Sits on top of background) */
@@ -88,8 +100,9 @@ body::-webkit-scrollbar {
   width: 100%;
   height: 100%;
   z-index: 10;
-  padding: 40px; /* Safe padding from edges */
-  will-change: transform;
+  padding: 40px;
+  /* Safe padding from edges */
+  isolation: isolate;
 }
 
 /* Single Page Refined Scroll Resistance Feedback (Single smooth glide, no double bounce) */
@@ -102,15 +115,31 @@ body::-webkit-scrollbar {
 }
 
 @keyframes refinedScrollNudgeDown {
-  0% { transform: translateY(0); }
-  35% { transform: translateY(-7.5px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+
+  35% {
+    transform: translateY(-7.5px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
 }
 
 @keyframes refinedScrollNudgeUp {
-  0% { transform: translateY(0); }
-  35% { transform: translateY(7.5px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+
+  35% {
+    transform: translateY(7.5px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
 }
 
 /* Top Right Logo */
@@ -118,12 +147,14 @@ body::-webkit-scrollbar {
   position: absolute;
   top: 20px;
   right: 40px;
-  z-index: 150; /* Sits behind the side menu when it opens */
+  z-index: 150;
+  /* Sits behind the side menu when it opens */
   animation: pageLoadBlur 0.6s ease forwards;
 }
 
 .main-logo {
-  height: 105px; /* Increased by 5px */
+  height: 105px;
+  /* Increased by 5px */
   width: auto;
   object-fit: contain;
 }
@@ -132,31 +163,46 @@ body::-webkit-scrollbar {
 .side-menu {
   position: fixed;
   top: 0;
-  right: -55vw; /* Hidden off screen */
+  right: -55vw;
+  /* Hidden off screen */
   width: 50vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7); /* Transparent black */
-  backdrop-filter: blur(15px); /* Frosted glass effect */
-  z-index: 300; /* Stays above subpage content */
+  background-color: rgba(0, 0, 0, 0.7);
+  /* Transparent black */
+  backdrop-filter: blur(15px);
+  /* Frosted glass effect */
+  -webkit-backdrop-filter: blur(15px);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: right, transform;
+  contain: layout paint;
+  z-index: 300;
+  /* Stays above subpage content */
   transition: right 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 60px 40px;
   display: flex;
   flex-direction: column;
+  pointer-events: none;
 }
 
 .side-menu.open,
 .menu-preset-open .side-menu {
   right: 0;
+  pointer-events: auto;
 }
 
 /* Contact Side Menu Specific Styling */
 .contact-side-title {
   font-family: "BBH Bartle", sans-serif;
   font-size: clamp(28px, 4vw, 44px);
-  color: #D81700; /* Signature Red */
+  color: #D81700;
+  /* Signature Red */
   letter-spacing: 2px;
   margin-bottom: 25px;
 }
+
 .contact-side-links a {
   color: #D81700;
   text-decoration: none;
@@ -168,6 +214,7 @@ body::-webkit-scrollbar {
   transition: color 0.3s ease, transform 0.3s ease;
   width: max-content;
 }
+
 .contact-side-links a:hover {
   color: #ffffff;
   transform: translateX(6px);
@@ -176,7 +223,8 @@ body::-webkit-scrollbar {
 /* Close Button */
 .close-btn {
   background: transparent;
-  color: #D81700; /* Resting color red */
+  color: #D81700;
+  /* Resting color red */
   border: none;
   cursor: pointer;
   align-self: flex-start;
@@ -186,17 +234,20 @@ body::-webkit-scrollbar {
 
 .close-btn:hover {
   transform: rotate(90deg);
-  color: #ffffff; /* Hover color white */
+  color: #ffffff;
+  /* Hover color white */
 }
 
 /* Side Nav Links */
 .nav-links {
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Finetuned vertical line spacing */
+  gap: 20px;
+  /* Finetuned vertical line spacing */
 }
 
-.nav-links > a, .nav-drop-btn {
+.nav-links>a,
+.nav-drop-btn {
   color: white;
   text-decoration: none;
   font-family: 'Castoro Titling', serif;
@@ -211,7 +262,8 @@ body::-webkit-scrollbar {
   width: max-content;
 }
 
-.nav-links > a:hover, .nav-drop-btn:hover {
+.nav-links>a:hover,
+.nav-drop-btn:hover {
   color: #D81700;
 }
 
@@ -230,7 +282,8 @@ body::-webkit-scrollbar {
   flex-direction: column;
   padding-left: 20px;
   margin-top: 12px;
-  gap: 12px; /* Finetuned dropdown line spacing */
+  gap: 12px;
+  /* Finetuned dropdown line spacing */
 }
 
 .nav-dropdown:hover .nav-dropdown-content,
@@ -260,7 +313,8 @@ body::-webkit-scrollbar {
   left: 10%;
   transform: translateY(-50%);
   display: flex;
-  align-items: flex-end; /* Align INNOVATIONS text to the bottom of OUR */
+  align-items: flex-end;
+  /* Align INNOVATIONS text to the bottom of OUR */
   user-select: none !important;
   -webkit-user-select: none !important;
   -moz-user-select: none !important;
@@ -270,11 +324,13 @@ body::-webkit-scrollbar {
 }
 
 .hero-primary {
-  font-family: "BBH Bartle", sans-serif; /* User requested font */
+  font-family: "BBH Bartle", sans-serif;
+  /* User requested font */
   font-size: 100px;
   font-weight: 400;
   font-style: normal;
-  color: #D81700; /* Signature Red */
+  color: #D81700;
+  /* Signature Red */
   line-height: 0.8;
   letter-spacing: -2px;
   text-shadow: none;
@@ -313,7 +369,8 @@ body::-webkit-scrollbar {
 }
 
 .hero-secondary {
-  margin-left: 10px; /* Moved closer to 'R' */
+  margin-left: 10px;
+  /* Moved closer to 'R' */
   margin-bottom: 0px;
   user-select: none !important;
   -webkit-user-select: none !important;
@@ -322,8 +379,15 @@ body::-webkit-scrollbar {
 
 /* Page load blur-in animation */
 @keyframes pageLoadBlur {
-  0% { opacity: 0; filter: blur(6px); }
-  100% { opacity: 1; filter: blur(0px); }
+  0% {
+    opacity: 0;
+    filter: blur(6px);
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+  }
 }
 
 .custom-dropdown {
@@ -407,14 +471,32 @@ body::-webkit-scrollbar {
 
 /* Dropdown open blur animation */
 @keyframes dropdownBlur {
-  0% { opacity: 0; filter: blur(6px); transform: translateY(-5px); }
-  100% { opacity: 1; filter: blur(0px); transform: translateY(0); }
+  0% {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(-5px);
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
 }
 
 /* Dropdown close blur animation */
 @keyframes dropdownBlurClose {
-  0% { opacity: 1; filter: blur(0px); transform: translateY(0); }
-  100% { opacity: 0; filter: blur(6px); transform: translateY(-5px); }
+  0% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(-5px);
+  }
 }
 
 .dropdown-content {
@@ -464,7 +546,7 @@ body::-webkit-scrollbar {
   padding: 8px 10px;
   margin-bottom: 4px;
   text-decoration: none;
-  font-size: 15px; 
+  font-size: 15px;
   font-weight: bold;
   font-family: 'Castoro Titling', serif;
   transition: color 0.3s ease;
@@ -506,13 +588,17 @@ body::-webkit-scrollbar {
 
 .action-btn {
   position: relative;
-  top: -15px;   /* Move button slightly upwards */
-  right: 5px;   /* Moved 20px to the left */
+  top: -15px;
+  /* Move button slightly upwards */
+  right: 5px;
+  /* Moved 20px to the left */
   background-color: #D81700;
-  color: #000000; /* Resting arrow color is black */
+  color: #000000;
+  /* Resting arrow color is black */
   width: 110px;
   height: 45px;
-  border-radius: 50px; /* Changed to 50px for pill shape */
+  border-radius: 50px;
+  /* Changed to 50px for pill shape */
   border: none;
   cursor: pointer;
   display: flex;
@@ -538,8 +624,10 @@ body::-webkit-scrollbar {
   color: #ffffff;
   letter-spacing: 0.5px;
   position: relative;
-  right: 15px; /* Shifted slightly to the left */
-  margin-top: 9px; /* Shifted slightly downwards */
+  right: 15px;
+  /* Shifted slightly to the left */
+  margin-top: 9px;
+  /* Shifted slightly downwards */
   text-decoration: none;
   cursor: pointer;
   display: inline-block;
@@ -555,15 +643,18 @@ body::-webkit-scrollbar {
 .subpage-header {
   position: absolute;
   top: 60px;
-  left: 125px; /* Shifted 30px right total */
-  transform: translateY(-50%); /* Locks vertical center line at exactly Y = 60px */
+  left: 125px;
+  /* Shifted 30px right total */
+  transform: translateY(-50%);
+  /* Locks vertical center line at exactly Y = 60px */
   z-index: 250;
   display: flex;
   align-items: center;
 }
 
 .subpage-header .main-logo {
-  height: 82px !important; /* Slightly reduced for refined balance */
+  height: 82px !important;
+  /* Slightly reduced for refined balance */
   width: auto;
   object-fit: contain;
   opacity: 1 !important;
@@ -573,8 +664,10 @@ body::-webkit-scrollbar {
 .home-btn {
   position: absolute;
   top: 60px;
-  right: 110px; /* Shifted 30px left total */
-  transform: translateY(-50%); /* Locks vertical center line at exactly Y = 60px */
+  right: 110px;
+  /* Shifted 30px left total */
+  transform: translateY(-50%);
+  /* Locks vertical center line at exactly Y = 60px */
   background-color: #D81700;
   width: 90px;
   height: 45px;
@@ -587,31 +680,39 @@ body::-webkit-scrollbar {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: none;
 }
+
 .home-btn svg {
   width: 26px;
   height: 26px;
 }
+
 .home-btn path {
   transition: fill 0.3s ease;
 }
+
 .home-btn:hover {
   background-color: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
-  transform: translateY(-50%) scale(1.08); /* Maintains identical center line on hover */
+  transform: translateY(-50%) scale(1.08);
+  /* Maintains identical center line on hover */
 }
+
 .home-btn:hover path {
   fill: #D81700;
 }
 
 .subpage-action-btn {
   position: absolute;
-  top: 180px; /* Aligned with the lower baseline of CONTACT US heading */
-  right: clamp(30px, 6.5vw, 110px); /* Responsive margin avoiding form overlap on medium/large screens */
+  top: 180px;
+  /* Aligned with the lower baseline of CONTACT US heading */
+  right: clamp(30px, 6.5vw, 110px);
+  /* Responsive margin avoiding form overlap on medium/large screens */
   background-color: #D81700;
   color: #000000;
-  width: 110px; /* Exact same size as home page action-btn */
+  width: 110px;
+  /* Exact same size as home page action-btn */
   height: 45px;
   border-radius: 50px;
   border: none;
@@ -623,6 +724,7 @@ body::-webkit-scrollbar {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: none;
 }
+
 .subpage-action-btn:hover {
   transform: translateY(-5px);
   background-color: rgba(255, 255, 255, 0.7);
@@ -630,6 +732,62 @@ body::-webkit-scrollbar {
   -webkit-backdrop-filter: blur(8px);
   color: #D81700;
   box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
+}
+
+/* Innovations Navigation Arrows (NUM3, NUM6, NUM9) */
+.nav-arrow {
+  position: fixed;
+  z-index: 280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 62px;
+  background: transparent;
+  color: #D81700;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transform: translate3d(0, 0, 0) scale(1);
+  -webkit-transform: translate3d(0, 0, 0) scale(1);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform-origin: center center;
+  will-change: transform;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.nav-arrow svg {
+  display: block;
+  width: 46px;
+  height: 46px;
+  stroke: #D81700;
+  overflow: visible;
+  transition: stroke 0.25s ease;
+}
+
+.nav-arrow:hover {
+  transform: translate3d(0, 0, 0) scale(1.18);
+  -webkit-transform: translate3d(0, 0, 0) scale(1.18);
+}
+
+.nav-arrow:active {
+  transform: translate3d(0, 0, 0) scale(1.05);
+  -webkit-transform: translate3d(0, 0, 0) scale(1.05);
+}
+
+.nav-arrow-prev {
+  bottom: clamp(38px, 5.5vh, 52px);
+  left: clamp(65px, 6.5vw, 100px);
+}
+
+.nav-arrow-next {
+  bottom: clamp(38px, 5.5vh, 52px);
+  right: clamp(65px, 6.5vw, 100px);
 }
 
 .subpage-container {
@@ -659,9 +817,12 @@ body::-webkit-scrollbar {
   text-transform: uppercase;
   letter-spacing: 2px;
   text-align: center;
-  white-space: nowrap; /* Keep heading strictly in a single line */
-  margin-top: 115px; /* Moved down on desktop */
-  margin-bottom: 50px; /* Increased space between title and paragraph on desktop */
+  white-space: nowrap;
+  /* Keep heading strictly in a single line */
+  margin-top: 115px;
+  /* Moved down on desktop */
+  margin-bottom: 50px;
+  /* Increased space between title and paragraph on desktop */
   margin-left: auto;
   margin-right: auto;
   width: 100%;
@@ -670,20 +831,26 @@ body::-webkit-scrollbar {
 .design-page .page-heading,
 .career-page .page-heading,
 .page-heading.career-heading {
-  margin-top: 135px; /* Moved slightly lower on desktop */
-  margin-bottom: 65px; /* Further increased gap before paragraphs/button on desktop */
+  margin-top: 135px;
+  /* Moved slightly lower on desktop */
+  margin-bottom: 65px;
+  /* Further increased gap before paragraphs/button on desktop */
 }
+
 .page-heading.left-align {
   text-align: left;
-  margin-top: 0; /* Zero margin so top pixel is perfectly controlled by container padding */
+  margin-top: 0;
+  /* Zero margin so top pixel is perfectly controlled by container padding */
   margin-left: 0;
   padding-left: 0;
-  margin-bottom: 30px; /* Spacing to subheading stays intact */
+  margin-bottom: 30px;
+  /* Spacing to subheading stays intact */
   font-family: "BBH Bartle", sans-serif;
   font-size: clamp(24px, 2.8vw, 44px);
   line-height: 1.1;
   letter-spacing: 0px;
-  white-space: nowrap; /* Single line */
+  white-space: nowrap;
+  /* Single line */
   transform-origin: left center;
 }
 
@@ -702,22 +869,28 @@ body::-webkit-scrollbar {
   margin-left: 0;
   padding-left: 0;
   font-family: 'Castoro Titling', serif;
-  font-size: clamp(12px, 1.25vw, 19px); /* Uniform size across all 3 pages fitting in single line */
-  margin-bottom: 35px; /* Increased spacing to paragraph */
+  font-size: clamp(12px, 1.25vw, 19px);
+  /* Uniform size across all 3 pages fitting in single line */
+  margin-bottom: 35px;
+  /* Increased spacing to paragraph */
   line-height: 1.3;
-  white-space: nowrap; /* Single line */
+  white-space: nowrap;
+  /* Single line */
   transform-origin: left center;
 }
 
 .mobile-subhead-break {
   display: none;
 }
+
 .mobile-only-br {
   display: none;
 }
+
 .desktop-space {
   display: inline;
 }
+
 .heading-line-nowrap {
   white-space: nowrap;
   display: inline-block;
@@ -731,29 +904,54 @@ body::-webkit-scrollbar {
   text-align: center;
   max-width: 900px;
   margin: 0 auto 22px auto;
-  letter-spacing: 0px; /* Reduced character spacing */
+  letter-spacing: 0px;
+  /* Reduced character spacing */
 }
+
 .page-paragraph.left-align {
-  text-align: left; /* Strict left alignment in the same vertical line */
-  margin: 0 0 28px 0; /* Spacing between paragraph blocks */
+  text-align: left;
+  /* Strict left alignment in the same vertical line */
+  margin: 0 0 28px 0;
+  /* Spacing between paragraph blocks */
   padding-left: 0;
   font-size: clamp(12px, 1.05vw, 15px);
   line-height: 1.85;
-  letter-spacing: 0px; /* Reduced character spacing */
-  max-width: 520px; /* Reduced paragraph box size based on reference screenshots */
+  letter-spacing: 0px;
+  /* Reduced character spacing */
+  max-width: 520px;
+  /* Reduced paragraph box size based on reference screenshots */
   width: 100%;
   transform-origin: left center;
 }
+
 .ltb-page .page-paragraph.left-align,
 .ltb-page .page-paragraph {
-  letter-spacing: -0.4px; /* Reduced character spacing for LTB Valve page on desktop */
-  line-height: 1.7; /* Slightly reduced line spacing for LTB Valve page on desktop */
+  letter-spacing: -0.4px;
+  /* Reduced character spacing for LTB Valve page on desktop */
+  line-height: 1.7;
+  /* Slightly reduced line spacing for LTB Valve page on desktop */
+}
+
+/* Desktop: LTB text slider displays both paragraphs in continuous flow, hides mobile buttons */
+.ltb-text-slider {
+  display: block;
+  width: 100%;
+}
+
+.ltb-slide {
+  display: block;
+  width: 100%;
+}
+
+.ltb-toggle-btn {
+  display: none !important;
 }
 
 .subpage-container.split-view {
   padding: 140px 5vw 30px 5vw;
   justify-content: flex-start;
-  overflow: hidden; /* Remove scrollbars on innovation pages */
+  overflow: hidden;
+  /* Remove scrollbars on innovation pages */
   height: 100vh;
   box-sizing: border-box;
 }
@@ -761,24 +959,30 @@ body::-webkit-scrollbar {
 .split-layout {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start; /* Fixed top alignment so heading starts at identical pixel on all pages */
+  align-items: flex-start;
+  /* Fixed top alignment so heading starts at identical pixel on all pages */
   width: 100%;
   max-width: 90vw;
   margin: 0 auto;
 }
+
 .split-text {
   flex: 0 0 46%;
-  margin-left: 150px; /* Moved additional 20px towards right while keeping heading, subhead and paragraph in exact alignment */
-  margin-top: 15px; /* Shifted title, subtitle and paragraphs down 15px together */
+  margin-left: 150px;
+  /* Moved additional 20px towards right while keeping heading, subhead and paragraph in exact alignment */
+  margin-top: 15px;
+  /* Shifted title, subtitle and paragraphs down 15px together */
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
 }
+
 .split-image {
   flex: 0 0 58%;
-  margin-left: -14%; /* Shifted to the left towards text */
+  margin-left: -14%;
+  /* Shifted to the left towards text */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -796,19 +1000,22 @@ body::-webkit-scrollbar {
   max-height: 72vh;
   object-fit: contain;
   display: block;
-  transform: translateX(-30px); /* Moved slightly towards left */
+  transform: translateX(-30px);
+  /* Moved slightly towards left */
   transform-origin: center center;
 }
 
 .innovation-video.video-num3,
 video[src*="num3.mp4"] {
-  transform: translateX(-75px); /* Shifted 35px to the left */
+  transform: translateX(-75px);
+  /* Shifted 35px to the left */
   transform-origin: center center;
 }
 
 .innovation-video.video-num6,
 video[src*="num6.mp4"] {
-  transform: translateX(-26px) scale(1.08); /* Shifted 10px to the right */
+  transform: translateX(-26px) scale(1.08);
+  /* Shifted 10px to the right */
   transform-origin: center center;
 }
 
@@ -816,7 +1023,8 @@ video[src*="num6.mp4"] {
 video[src*="num9.mp4"] {
   max-width: 58vw;
   max-height: 72vh;
-  transform: translate(-148px, -35px) scale(1.35); /* Shifted additional 20px down */
+  transform: translate(-148px, -35px) scale(1.35);
+  /* Shifted additional 20px down */
   transform-origin: center center;
 }
 
@@ -825,8 +1033,9 @@ video[src*="num9.mp4"] {
   color: #a3a8ad;
   font-weight: bold;
   font-family: sans-serif;
-  text-shadow: 10px 15px 30px rgba(0,0,0,0.8);
+  text-shadow: 10px 15px 30px rgba(0, 0, 0, 0.8);
 }
+
 .placeholder-graphic.gold {
   color: #cc8800;
 }
@@ -838,7 +1047,8 @@ video[src*="num9.mp4"] {
   font-weight: bold;
   font-size: 13px;
   letter-spacing: 1.2px;
-  text-indent: 1.2px; /* Offsets trailing letter-spacing for exact horizontal centering */
+  text-indent: 1.2px;
+  /* Offsets trailing letter-spacing for exact horizontal centering */
   padding: 10px 30px;
   border-radius: 50px;
   text-decoration: none;
@@ -851,7 +1061,8 @@ video[src*="num9.mp4"] {
   justify-content: center;
   text-align: center;
   line-height: 1;
-  opacity: 1 !important; /* Guarantees button never blacks out on mouse leave */
+  opacity: 1 !important;
+  /* Guarantees button never blacks out on mouse leave */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -861,6 +1072,7 @@ video[src*="num9.mp4"] {
   transform-style: preserve-3d;
   contain: layout style paint;
 }
+
 .apply-now-btn:hover {
   background-color: #D81700 !important;
   color: white !important;
@@ -869,10 +1081,13 @@ video[src*="num9.mp4"] {
 
 /* Fast On-Off Lighting & Pulse Zoom Effect for Career Apply Now Button (0.5s Glow+ZoomIn, 0.5s Fade+ZoomOut) */
 @keyframes applyBtnLightingBlink {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 0 rgba(216, 23, 0, 0);
     transform: translate3d(0, 0, 0) scale(1);
   }
+
   50% {
     box-shadow: 0 0 12px rgba(216, 23, 0, 0.65), 0 0 22px rgba(216, 23, 0, 0.28);
     transform: translate3d(0, 0, 0) scale(1.045);
@@ -902,8 +1117,10 @@ video[src*="num9.mp4"] {
 }
 
 .page-heading.contact-heading {
-  margin-top: 55px; /* Refined spacing between header and heading on desktop */
-  margin-bottom: 48px; /* Balanced vertical spacing */
+  margin-top: 55px;
+  /* Refined spacing between header and heading on desktop */
+  margin-bottom: 48px;
+  /* Balanced vertical spacing */
   white-space: nowrap;
   text-align: center;
   margin-left: auto;
@@ -915,32 +1132,40 @@ video[src*="num9.mp4"] {
   display: grid;
   grid-template-columns: 1fr 1fr;
   column-gap: 24px;
-  row-gap: 10px; /* Reduced vertical spacing between form rows on desktop */
+  row-gap: 10px;
+  /* Reduced vertical spacing between form rows on desktop */
   width: 100%;
-  max-width: 580px; /* Balanced width relative to CONTACT US heading */
+  max-width: 580px;
+  /* Balanced width relative to CONTACT US heading */
   margin: 0 auto;
 }
+
 .form-group {
   display: flex;
   flex-direction: column;
 }
+
 .form-group.full-width {
   grid-column: span 2;
 }
+
 .form-group label {
   font-family: 'Castoro Titling', serif;
   color: white;
   font-size: 11px;
   letter-spacing: 0.5px;
   font-weight: bold;
-  margin-bottom: 3px; /* Reduced label bottom spacing */
+  margin-bottom: 3px;
+  /* Reduced label bottom spacing */
   text-align: left;
 }
+
 .form-group label span {
   color: #D81700;
   margin-left: 2px;
 }
-.form-group input, 
+
+.form-group input,
 .form-group select {
   background-color: #ffffff;
   color: #000000;
@@ -953,14 +1178,17 @@ video[src*="num9.mp4"] {
   width: 100%;
   box-sizing: border-box;
 }
+
 .form-group select {
   cursor: pointer;
 }
+
 .form-group input::placeholder {
   color: #888888;
   font-family: 'Castoro Titling', serif;
   font-size: 12px;
 }
+
 .form-group textarea {
   background-color: #ffffff;
   color: #000000;
@@ -975,13 +1203,15 @@ video[src*="num9.mp4"] {
   width: 100%;
   box-sizing: border-box;
 }
+
 .submit-btn {
   background-color: #D81700;
   color: white;
   font-family: 'Castoro Titling', serif;
   font-weight: 600;
   letter-spacing: 1.5px;
-  text-indent: 1.5px; /* Offsets trailing letter-spacing for exact horizontal centering */
+  text-indent: 1.5px;
+  /* Offsets trailing letter-spacing for exact horizontal centering */
   border: none;
   height: 36px;
   padding: 0 38px;
@@ -992,7 +1222,8 @@ video[src*="num9.mp4"] {
   margin-left: auto;
   margin-right: auto;
   font-size: 13px;
-  margin-top: 38px; /* Spacing between form fields and submit button */
+  margin-top: 38px;
+  /* Spacing between form fields and submit button */
   box-shadow: none;
   display: inline-flex;
   align-items: center;
@@ -1010,12 +1241,15 @@ video[src*="num9.mp4"] {
   transform-style: preserve-3d;
   transition: box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
+
 .submit-btn:hover {
-  background-color: #ff2200;
+  background-color: #D81700;
   color: #ffffff;
   box-shadow: 0 0 16px rgba(216, 23, 0, 0.65), 0 0 28px rgba(216, 23, 0, 0.3);
-  transform: translate3d(0, 0, 0); /* Perfectly locked in place without any movement */
+  transform: translate3d(0, 0, 0);
+  /* Perfectly locked in place without any movement */
 }
+
 .submit-btn.submitted,
 .submit-btn.submitted:hover {
   background-color: #D81700 !important;
@@ -1047,13 +1281,21 @@ video[src*="num9.mp4"] {
 }
 
 @keyframes fadeInSuccess {
-  0% { opacity: 0; transform: translateY(6px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Page Transition Styles */
 /* Page Transition Styles */
-html, body {
+html,
+body {
   background-color: black;
   overflow: hidden !important;
   width: 100%;
@@ -1087,13 +1329,23 @@ body.slide-out-right,
 }
 
 @keyframes slideInRight {
-  0% { transform: translate3d(100vw, 0, 0); }
-  100% { transform: translate3d(0, 0, 0); }
+  0% {
+    transform: translate3d(100vw, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes slideInLeft {
-  0% { transform: translate3d(-100vw, 0, 0); }
-  100% { transform: translate3d(0, 0, 0); }
+  0% {
+    transform: translate3d(-100vw, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 .subpage-body {
@@ -1125,18 +1377,39 @@ body.slide-in-left-active {
 
 /* Subpage Content Scale Animations */
 @keyframes scaleUpText {
-  0% { transform: scale(0.94); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes scaleDownHeading {
-  0% { transform: scale(1.07); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(1.07);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes scaleUpLogo {
-  0% { transform: scale(1); opacity: 0; }
-  100% { transform: scale(1.25); opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1.25);
+    opacity: 1;
+  }
 }
 
 .subpage-header .main-logo {
@@ -1151,7 +1424,8 @@ body.slide-in-left-active {
 .page-heading {
   transform-origin: center center;
   animation: scaleDownHeading 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.1s; /* Slight delay to let the slide start */
+  animation-delay: 0.1s;
+  /* Slight delay to let the slide start */
   opacity: 0;
 }
 
@@ -1162,27 +1436,42 @@ body.slide-in-left-active {
   opacity: 0;
 }
 
-.page-paragraph, .page-subheading, .contact-form, .split-image, .subpage-action-btn, .apply-now-btn {
+.page-paragraph,
+.page-subheading,
+.contact-form,
+.split-image,
+.subpage-action-btn,
+.apply-now-btn {
   animation: scaleUpText 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.2s; /* Slight delay after heading */
-  opacity: 0; /* Hold hidden until animation starts */
+  animation-delay: 0.2s;
+  /* Slight delay after heading */
+  opacity: 0;
+  /* Hold hidden until animation starts */
 }
 
 /* RESPONSIVE DESIGN (Tablets and Mobile) */
 @media (max-width: 1024px) {
-  .hero-primary { font-size: 100px; }
-  .hero-secondary { font-size: 24px; margin-left: 15px; }
+  .hero-primary {
+    font-size: 100px;
+  }
+
+  .hero-secondary {
+    font-size: 24px;
+    margin-left: 15px;
+  }
 
   .contact-form {
     max-width: 460px;
   }
+
   .subpage-action-btn {
     right: clamp(20px, 3.5vw, 40px);
   }
 }
 
-@media (max-width: 768px) {
-  /* Scoped strictly to Home Page on Mobile */
+@media (max-width: 768px), (max-width: 1100px) and (orientation: portrait), (pointer: coarse) and (orientation: portrait) {
+
+  /* Scoped strictly to Home Page on Mobile & Portrait Devices */
   body:not(.subpage-body) {
     overflow-x: hidden !important;
     overflow-y: auto !important;
@@ -1207,7 +1496,7 @@ body.slide-in-left-active {
     position: relative !important;
     box-sizing: border-box !important;
   }
-  
+
   /* Mobile Header on Home Page: Logo on Left, Action Menu Button on Right (Matching Subpage Header Exactly) */
   body:not(.subpage-body) .logo-container {
     top: 54px !important;
@@ -1219,6 +1508,7 @@ body.slide-in-left-active {
     align-items: center !important;
     z-index: 10;
   }
+
   body:not(.subpage-body) .logo-container .main-logo,
   body:not(.subpage-body) .main-logo {
     height: clamp(52px, 7vh, 64px) !important;
@@ -1232,6 +1522,7 @@ body.slide-in-left-active {
     transform: none !important;
     display: contents !important;
   }
+
   body:not(.subpage-body) .action-btn {
     position: absolute !important;
     top: 54px !important;
@@ -1248,10 +1539,12 @@ body.slide-in-left-active {
     justify-content: center !important;
     z-index: 20 !important;
   }
+
   body:not(.subpage-body) .action-btn svg {
     width: 24px !important;
     height: 20px !important;
   }
+
   body:not(.subpage-body) .designer-text {
     position: fixed !important;
     bottom: clamp(5px, 0.9vh, 9px) !important;
@@ -1293,6 +1586,7 @@ body.slide-in-left-active {
     margin: 0 !important;
     padding: 0 !important;
   }
+
   body:not(.subpage-body) .bg-video {
     width: 100vw !important;
     width: 100% !important;
@@ -1307,6 +1601,7 @@ body.slide-in-left-active {
     margin: 0 !important;
     padding: 0 !important;
   }
+
   body:not(.subpage-body) .bg-overlay {
     display: none !important;
     pointer-events: none !important;
@@ -1326,11 +1621,13 @@ body.slide-in-left-active {
     gap: 0 !important;
     z-index: 25 !important;
   }
+
   body:not(.subpage-body) .hero-text-container.dropdown-open {
     z-index: 100 !important;
   }
+
   body:not(.subpage-body) .hero-primary {
-    font-size: clamp(72px, 15.5vh, 88px) !important;
+    font-size: clamp(72px, 11vw, 130px) !important;
     line-height: 0.80 !important;
     letter-spacing: -2px !important;
     color: #D81700 !important;
@@ -1339,8 +1636,9 @@ body.slide-in-left-active {
     flex-shrink: 0 !important;
     transform: none !important;
   }
+
   body:not(.subpage-body) .hero-secondary {
-    margin-left: clamp(8px, 2vw, 14px) !important;
+    margin-left: clamp(8px, 2vw, 16px) !important;
     margin-bottom: 0 !important;
     margin-top: 0 !important;
     position: relative !important;
@@ -1348,16 +1646,19 @@ body.slide-in-left-active {
     align-items: flex-end !important;
     transform: translateY(3px) !important;
   }
+
   body:not(.subpage-body) .hero-secondary .drop-btn {
-    font-size: clamp(13.5px, 3.2vw, 16.5px) !important;
+    font-size: clamp(13.5px, 2.4vw, 24px) !important;
     letter-spacing: 1.2px !important;
-    padding: 0 4px 6px 4px !important; /* Bottom clearance so underline never touches text */
+    padding: 0 4px 6px 4px !important;
+    /* Bottom clearance so underline never touches text */
     margin: 0 !important;
     line-height: 1 !important;
     white-space: nowrap !important;
     display: inline-block !important;
     position: relative !important;
   }
+
   body:not(.subpage-body) .hero-secondary .drop-btn::after {
     bottom: 0px !important;
     left: 4px !important;
@@ -1365,15 +1666,18 @@ body.slide-in-left-active {
     background-color: #D81700 !important;
     transition: width 0.35s ease-in-out !important;
   }
+
   /* Disable hover state forcing dropdown open on mobile touch screens */
   body:not(.subpage-body) .hero-text-container:hover .dropdown-content,
   body:not(.subpage-body) .custom-dropdown:hover .dropdown-content {
     display: none !important;
   }
+
   body:not(.subpage-body) .custom-dropdown.show-dropdown .dropdown-content {
     display: flex !important;
     animation: dropdownBlur 0.35s ease forwards !important;
   }
+
   /* Mobile: Lighting effect turns ON when dropdown opens, and turns OFF when dropdown closes */
   body:not(.subpage-body) .hero-primary,
   body:not(.subpage-body) .hero-primary:hover,
@@ -1381,23 +1685,28 @@ body.slide-in-left-active {
   body:not(.subpage-body) .hero-text-container:active .hero-primary {
     text-shadow: none !important;
   }
+
   body:not(.subpage-body) .hero-text-container.dropdown-open .hero-primary,
   body:not(.subpage-body) .hero-text-container:has(.custom-dropdown.show-dropdown) .hero-primary {
     text-shadow: 0 0 10px rgba(216, 23, 0, 0.7), 0 0 22px rgba(216, 23, 0, 0.4), 0 0 35px rgba(216, 23, 0, 0.2) !important;
   }
+
   body:not(.subpage-body) .hero-text-container:hover .drop-btn::after,
   body:not(.subpage-body) .custom-dropdown:hover .drop-btn::after {
     width: 0 !important;
   }
+
   body:not(.subpage-body) .custom-dropdown.show-dropdown .drop-btn::after {
     width: calc(100% - 8px) !important;
   }
+
   /* Disable desktop invisible hover hit-boxes on mobile touch */
   body:not(.subpage-body) .hero-primary::before,
   body:not(.subpage-body) .custom-dropdown::before,
   body:not(.subpage-body) .dropdown-content::before {
     display: none !important;
   }
+
   body:not(.subpage-body) .hero-secondary .dropdown-content {
     position: absolute !important;
     left: 0 !important;
@@ -1410,8 +1719,9 @@ body.slide-in-left-active {
     z-index: 99999 !important;
     box-sizing: border-box !important;
   }
+
   body:not(.subpage-body) .hero-secondary .dropdown-item {
-    font-size: clamp(13px, 3.4vw, 15px) !important;
+    font-size: clamp(13px, 2.2vw, 22px) !important;
     line-height: 1.35 !important;
     padding: 5px 0 !important;
     margin: 0 0 3px 0 !important;
@@ -1420,11 +1730,13 @@ body.slide-in-left-active {
     width: max-content !important;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 1) !important;
   }
+
   body:not(.subpage-body) .hero-secondary .dropdown-item::after {
     left: 0 !important;
     bottom: 2px !important;
     height: 2px !important;
   }
+
   body:not(.subpage-body) .hero-secondary .dropdown-item:hover::after {
     width: 100% !important;
   }
@@ -1441,12 +1753,14 @@ body.slide-in-left-active {
       height: auto !important;
       margin: 0 !important;
     }
+
     body:not(.subpage-body) .hero-text-container {
       top: clamp(115px, 17vh, 142px) !important;
       bottom: auto !important;
       gap: 0 !important;
       align-items: flex-end !important;
     }
+
     /* "OUR" font size prominent on small screens */
     body:not(.subpage-body) .hero-primary {
       font-size: clamp(62px, 12.5vh, 74px) !important;
@@ -1455,6 +1769,7 @@ body.slide-in-left-active {
       padding: 0 !important;
       transform: none !important;
     }
+
     /* "INNOVATIONS" font size as subtitle on small screens */
     body:not(.subpage-body) .hero-secondary {
       margin-left: clamp(6px, 1.8vw, 10px) !important;
@@ -1463,6 +1778,7 @@ body.slide-in-left-active {
       align-items: flex-end !important;
       transform: translateY(3px) !important;
     }
+
     body:not(.subpage-body) .hero-secondary .drop-btn {
       font-size: clamp(12px, 2.1vh, 14px) !important;
       letter-spacing: 1.1px !important;
@@ -1470,11 +1786,13 @@ body.slide-in-left-active {
       margin: 0 !important;
       line-height: 1 !important;
     }
+
     body:not(.subpage-body) .hero-secondary .dropdown-item {
       font-size: clamp(11.5px, 2vh, 13px) !important;
       padding: 3px 0 !important;
       margin: 0 0 2px 0 !important;
     }
+
     body:not(.subpage-body) .designer-text {
       bottom: 4px !important;
       font-size: clamp(7px, 1vh, 8px) !important;
@@ -1484,12 +1802,14 @@ body.slide-in-left-active {
     .subpage-container {
       padding: 70px 14px 35px 14px !important;
     }
+
     .about-page .subpage-container,
     .design-page .subpage-container,
     .contact-page .subpage-container,
     .subpage-container.contact-page-container {
       padding: clamp(65px, 8.5vh, 75px) 14px clamp(25px, 3.5vh, 35px) 14px !important;
     }
+
     .page-heading,
     .page-heading.career-heading,
     .career-page .page-heading {
@@ -1502,6 +1822,7 @@ body.slide-in-left-active {
       margin-left: auto !important;
       margin-right: auto !important;
     }
+
     .page-heading.contact-heading,
     .contact-page .page-heading {
       font-size: clamp(19px, 5.2vw, 25px) !important;
@@ -1511,27 +1832,33 @@ body.slide-in-left-active {
       text-align: center !important;
       width: 100% !important;
     }
+
     .contact-form {
       row-gap: 8px !important;
       max-width: 350px !important;
     }
+
     .form-group input,
     .form-group select {
       height: 30px !important;
       font-size: 11.5px !important;
     }
+
     .form-group textarea {
       min-height: 52px !important;
       font-size: 11.5px !important;
     }
+
     .submit-btn {
       height: 32px !important;
       margin-top: 8px !important;
       font-size: 12px !important;
     }
+
     .subpage-action-btn {
       top: clamp(475px, calc(50dvh + 200px), 570px) !important;
     }
+
     .about-page .page-heading {
       font-size: clamp(19px, 5.2vw, 25px) !important;
       margin-top: 0 !important;
@@ -1540,6 +1867,7 @@ body.slide-in-left-active {
       text-align: center !important;
       width: 100% !important;
     }
+
     .design-page .page-heading {
       font-size: clamp(18px, 5vw, 23px) !important;
       margin-top: 0 !important;
@@ -1548,6 +1876,7 @@ body.slide-in-left-active {
       text-align: center !important;
       width: 100% !important;
     }
+
     .about-page .page-paragraph,
     .design-page .page-paragraph {
       font-size: clamp(11.5px, 2vh, 13px) !important;
@@ -1555,11 +1884,13 @@ body.slide-in-left-active {
       margin-bottom: 12px !important;
       max-width: clamp(300px, 90vw, 420px) !important;
     }
+
     .v-odne1s-page .subpage-container.split-view,
     .bobart-page .subpage-container.split-view,
     .ltb-page .subpage-container.split-view {
       padding: clamp(55px, 7.5vh, 65px) 14px clamp(15px, 2vh, 22px) 14px !important;
     }
+
     .v-odne1s-page .page-heading.left-align,
     .bobart-page .page-heading.left-align,
     .ltb-page .page-heading.left-align {
@@ -1567,6 +1898,7 @@ body.slide-in-left-active {
       margin-top: 0 !important;
       margin-bottom: clamp(14px, 2.4vh, 18px) !important;
     }
+
     .v-odne1s-page .page-subheading.left-align,
     .bobart-page .page-subheading.left-align,
     .ltb-page .page-subheading.left-align {
@@ -1574,6 +1906,7 @@ body.slide-in-left-active {
       line-height: 1.35 !important;
       margin-bottom: clamp(16px, 2.6vh, 24px) !important;
     }
+
     .v-odne1s-page .page-paragraph.left-align,
     .bobart-page .page-paragraph.left-align,
     .ltb-page .page-paragraph.left-align {
@@ -1595,12 +1928,14 @@ body.slide-in-left-active {
       height: auto !important;
       margin: 0 !important;
     }
+
     body:not(.subpage-body) .hero-text-container {
       top: clamp(80px, 14vh, 105px) !important;
       bottom: auto !important;
       gap: 0 !important;
       align-items: flex-end !important;
     }
+
     /* "OUR" font size on extra small screens */
     body:not(.subpage-body) .hero-primary {
       font-size: clamp(52px, 11vh, 60px) !important;
@@ -1609,6 +1944,7 @@ body.slide-in-left-active {
       padding: 0 !important;
       transform: none !important;
     }
+
     /* "INNOVATIONS" font size on extra small screens */
     body:not(.subpage-body) .hero-secondary {
       margin-left: 6px !important;
@@ -1617,6 +1953,7 @@ body.slide-in-left-active {
       align-items: flex-end !important;
       transform: translateY(2px) !important;
     }
+
     body:not(.subpage-body) .hero-secondary .drop-btn {
       font-size: clamp(10.5px, 1.9vh, 12.5px) !important;
       letter-spacing: 1px !important;
@@ -1624,10 +1961,12 @@ body.slide-in-left-active {
       margin: 0 !important;
       line-height: 1 !important;
     }
+
     body:not(.subpage-body) .hero-secondary .dropdown-item {
       font-size: 10.5px !important;
       padding: 3px 0 !important;
     }
+
     body:not(.subpage-body) .designer-text {
       bottom: 2px !important;
       font-size: 6.5px !important;
@@ -1637,12 +1976,14 @@ body.slide-in-left-active {
     .subpage-container {
       padding: 55px 10px 25px 10px !important;
     }
+
     .about-page .subpage-container,
     .design-page .subpage-container,
     .contact-page .subpage-container,
     .subpage-container.contact-page-container {
       padding: 55px 12px 20px 12px !important;
     }
+
     .page-heading,
     .page-heading.career-heading,
     .career-page .page-heading {
@@ -1655,6 +1996,7 @@ body.slide-in-left-active {
       margin-left: auto !important;
       margin-right: auto !important;
     }
+
     .page-heading.contact-heading,
     .contact-page .page-heading {
       font-size: 17px !important;
@@ -1664,24 +2006,29 @@ body.slide-in-left-active {
       text-align: center !important;
       width: 100% !important;
     }
+
     .contact-form {
       row-gap: 6px !important;
       max-width: 310px !important;
     }
+
     .form-group input,
     .form-group select {
       height: 26px !important;
       font-size: 10.5px !important;
     }
+
     .form-group textarea {
       min-height: 42px !important;
       font-size: 10.5px !important;
     }
+
     .submit-btn {
       height: 28px !important;
       margin-top: 6px !important;
       font-size: 11px !important;
     }
+
     .form-success-msg {
       font-size: clamp(8px, 2.4vw, 10px) !important;
       letter-spacing: 0.4px !important;
@@ -1689,13 +2036,16 @@ body.slide-in-left-active {
       margin-top: 6px !important;
       max-width: 300px !important;
     }
+
     .form-success-msg span {
       display: block !important;
       white-space: nowrap !important;
     }
+
     .subpage-action-btn {
       top: clamp(410px, calc(50dvh + 160px), 485px) !important;
     }
+
     .about-page .page-heading {
       font-size: 17px !important;
       margin-top: 0 !important;
@@ -1704,6 +2054,7 @@ body.slide-in-left-active {
       text-align: center !important;
       width: 100% !important;
     }
+
     .design-page .page-heading {
       font-size: 16px !important;
       margin-top: 0 !important;
@@ -1712,17 +2063,20 @@ body.slide-in-left-active {
       text-align: center !important;
       width: 100% !important;
     }
+
     .about-page .page-paragraph,
     .design-page .page-paragraph {
       font-size: 10.5px !important;
       line-height: 1.6 !important;
       margin-bottom: 8px !important;
     }
+
     .v-odne1s-page .subpage-container.split-view,
     .bobart-page .subpage-container.split-view,
     .ltb-page .subpage-container.split-view {
       padding: 50px 12px 15px 12px !important;
     }
+
     .v-odne1s-page .page-heading.left-align,
     .bobart-page .page-heading.left-align,
     .ltb-page .page-heading.left-align {
@@ -1730,6 +2084,7 @@ body.slide-in-left-active {
       margin-top: 0 !important;
       margin-bottom: 8px !important;
     }
+
     .v-odne1s-page .page-subheading.left-align,
     .bobart-page .page-subheading.left-align,
     .ltb-page .page-subheading.left-align {
@@ -1737,6 +2092,7 @@ body.slide-in-left-active {
       line-height: 1.3 !important;
       margin-bottom: 12px !important;
     }
+
     .v-odne1s-page .page-paragraph.left-align,
     .bobart-page .page-paragraph.left-align,
     .ltb-page .page-paragraph.left-align {
@@ -1753,22 +2109,26 @@ body.slide-in-left-active {
       left: 0 !important;
       right: 0 !important;
     }
+
     body:not(.subpage-body) .hero-text-container {
       left: 14px !important;
     }
+
     body:not(.subpage-body) .hero-primary {
       font-size: clamp(62px, 17.5vw, 74px) !important;
       line-height: 0.80 !important;
     }
+
     body:not(.subpage-body) .hero-secondary .drop-btn {
       font-size: clamp(11.5px, 3.1vw, 13.5px) !important;
       letter-spacing: 1px !important;
     }
+
     body:not(.subpage-body) .designer-text {
       right: 8px !important;
     }
   }
-  
+
   /* Mobile Side Menu Fix (Zero horizontal overflow, GPU accelerated, Full vertical scroll support) */
   .side-menu {
     width: 100vw !important;
@@ -1777,7 +2137,8 @@ body.slide-in-left-active {
     height: 100dvh !important;
     max-height: 100vh !important;
     max-height: 100dvh !important;
-    right: -100vw !important; /* Start fully offscreen without horizontal overflow */
+    right: -100vw !important;
+    /* Start fully offscreen without horizontal overflow */
     background-color: rgba(0, 0, 0, 0.95) !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
@@ -1791,37 +2152,46 @@ body.slide-in-left-active {
     transform: translate3d(0, 0, 0);
     will-change: right, transform;
   }
+
   .side-menu.open,
   .menu-preset-open .side-menu {
     right: 0 !important;
   }
+
   .side-menu .close-btn {
     align-self: center !important;
     margin-left: auto !important;
     margin-right: auto !important;
     margin-bottom: clamp(20px, 3.5vh, 36px) !important;
   }
+
   .nav-links {
     align-items: center !important;
     text-align: center !important;
     width: 100% !important;
     gap: clamp(14px, 2.2vh, 20px) !important;
   }
-  .nav-links > a, .nav-drop-btn {
-    font-size: clamp(20px, 5.5vw, 24px) !important; /* Responsive for mobile fit */
+
+  .nav-links>a,
+  .nav-drop-btn {
+    font-size: clamp(20px, 5.5vw, 24px) !important;
+    /* Responsive for mobile fit */
     text-align: center !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }
+
   .nav-dropdown {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     width: 100% !important;
   }
+
   .nav-dropdown:hover .nav-dropdown-content {
     display: none;
   }
+
   .nav-dropdown-content {
     display: none !important;
     align-items: center !important;
@@ -1830,31 +2200,38 @@ body.slide-in-left-active {
     gap: clamp(10px, 1.8vh, 14px) !important;
     margin-top: clamp(10px, 1.6vh, 14px) !important;
   }
+
   .nav-dropdown.show-dropdown .nav-dropdown-content {
     display: flex !important;
     animation: dropdownBlur 0.4s ease forwards;
   }
+
   .nav-dropdown.show-dropdown .down-arrow {
     transform: rotate(180deg);
   }
+
   .nav-dropdown-content a {
     font-size: clamp(16px, 4.4vw, 19px) !important;
     line-height: 1.3 !important;
     text-align: center !important;
   }
+
   .hero-text-container:hover .dropdown-content,
   .custom-dropdown:hover .dropdown-content {
     display: none !important;
   }
+
   .custom-dropdown.show-dropdown:not(.is-closing) .dropdown-content {
     display: flex !important;
     animation: dropdownBlur 0.3s ease forwards;
   }
+
   .custom-dropdown.is-closing .dropdown-content {
     display: flex !important;
     animation: dropdownBlurClose 0.3s ease forwards !important;
     pointer-events: none;
   }
+
   .contact-side-title {
     text-align: center !important;
     width: 100% !important;
@@ -1862,6 +2239,7 @@ body.slide-in-left-active {
     letter-spacing: 1.5px;
     margin-bottom: 25px;
   }
+
   .contact-side-links a {
     text-align: left !important;
     font-size: clamp(18px, 4.8vw, 22.5px) !important;
@@ -1875,16 +2253,39 @@ body.slide-in-left-active {
 
   /* Hardware-Accelerated GPU Transitions for Mobile (Eliminates Blur Calculation Lag) */
   @keyframes pageLoadBlur {
-    0% { opacity: 0; transform: translateY(6px); }
-    100% { opacity: 1; transform: translateY(0); }
+    0% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
+
   @keyframes dropdownBlur {
-    0% { opacity: 0; transform: translateY(-4px); }
-    100% { opacity: 1; transform: translateY(0); }
+    0% {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
+
   @keyframes dropdownBlurClose {
-    0% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(-4px); }
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
   }
 
   /* Subpage Adjustments for Mobile */
@@ -1912,30 +2313,35 @@ body.slide-in-left-active {
     display: flex !important;
     align-items: center !important;
   }
+
   .subpage-header .main-logo {
-    height: clamp(52px, 7vh, 64px) !important;
+    height: clamp(52px, 6vw, 75px) !important;
     width: auto !important;
     object-fit: contain !important;
     display: block !important;
   }
+
   .home-btn {
     top: 54px !important;
     right: 20px !important;
     transform: translateY(-50%) !important;
-    width: 64px !important;
-    height: 42px !important;
+    width: clamp(64px, 8vw, 88px) !important;
+    height: clamp(42px, 5.2vw, 55px) !important;
     border-radius: 50px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     z-index: 200 !important;
   }
+
   .home-btn svg {
-    width: 24px !important;
-    height: 24px !important;
+    width: clamp(24px, 3.2vw, 32px) !important;
+    height: clamp(24px, 3.2vw, 32px) !important;
   }
+
   .subpage-action-btn {
-    top: clamp(525px, calc(50dvh + 270px), 770px) !important; /* Positioned with ample clearance below submission text */
+    top: clamp(525px, calc(50dvh + 270px), 770px) !important;
+    /* Positioned with ample clearance below submission text */
     right: 20px !important;
     transform: none !important;
     width: 68px !important;
@@ -1946,10 +2352,12 @@ body.slide-in-left-active {
     justify-content: center !important;
     z-index: 200 !important;
   }
+
   .subpage-action-btn svg {
     width: 26px !important;
     height: 20px !important;
   }
+
   .subpage-container {
     padding: 100px 16px 40px 16px !important;
     display: flex;
@@ -1967,6 +2375,7 @@ body.slide-in-left-active {
     overscroll-behavior-y: auto;
     -webkit-overflow-scrolling: touch;
   }
+
   /* About Us, Design Solutions & Contact Us Mobile Centered Formatting */
   .about-page .subpage-container,
   .design-page .subpage-container,
@@ -1988,9 +2397,10 @@ body.slide-in-left-active {
     overscroll-behavior-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
   }
+
   .about-page .page-heading {
     font-family: "BBH Bartle", sans-serif !important;
-    font-size: clamp(24px, 7.5vw, 34px) !important;
+    font-size: clamp(24px, 5.5vw, 54px) !important;
     line-height: 1.15 !important;
     letter-spacing: 0.8px !important;
     margin-top: 0 !important;
@@ -2005,9 +2415,10 @@ body.slide-in-left-active {
     padding: 0 4px !important;
     box-sizing: border-box !important;
   }
+
   .design-page .page-heading {
     font-family: "BBH Bartle", sans-serif !important;
-    font-size: clamp(21px, 6.6vw, 30px) !important;
+    font-size: clamp(21px, 5vw, 48px) !important;
     line-height: 1.15 !important;
     letter-spacing: 0.4px !important;
     margin-top: 0 !important;
@@ -2023,13 +2434,14 @@ body.slide-in-left-active {
     padding: 0 4px !important;
     box-sizing: border-box !important;
   }
+
   .about-page .page-paragraph,
   .design-page .page-paragraph {
     font-family: 'Castoro Titling', serif !important;
-    font-size: clamp(12.2px, 3.4vw, 14.5px) !important;
-    line-height: clamp(1.85, 2.7vh, 2.05) !important;
+    font-size: clamp(12.2px, 2.2vw, 19.5px) !important;
+    line-height: clamp(1.85, 2.4vw, 2.1) !important;
     letter-spacing: -0.15px !important;
-    max-width: clamp(310px, 88vw, 440px) !important;
+    max-width: clamp(310px, 86vw, 780px) !important;
     width: 100% !important;
     margin: 0 auto clamp(16px, 2.5vh, 26px) auto !important;
     text-align: center !important;
@@ -2038,10 +2450,12 @@ body.slide-in-left-active {
     box-sizing: border-box !important;
     color: #dedede !important;
   }
+
   .about-page .page-paragraph:last-child,
   .design-page .page-paragraph:last-child {
     margin-bottom: 0 !important;
   }
+
   .career-page .subpage-container {
     padding: 0 20px !important;
     display: flex !important;
@@ -2056,43 +2470,54 @@ body.slide-in-left-active {
     box-sizing: border-box !important;
     text-align: center !important;
   }
+
   .page-heading.career-heading,
   .career-page .page-heading {
     font-family: "BBH Bartle", sans-serif !important;
-    font-size: clamp(20px, 5.8vw, 28px) !important;
+    font-size: clamp(20px, 4.8vw, 44px) !important;
     line-height: 1.2 !important;
     letter-spacing: 0.6px !important;
     text-align: center !important;
     display: block !important;
     width: 100% !important;
     max-width: calc(100vw - 32px) !important;
-    margin: 0 auto clamp(48px, 7.5vh, 72px) auto !important; /* Increased gap between title and Apply Now button on mobile */
+    margin: 0 auto clamp(48px, 7.5vh, 72px) auto !important;
+    /* Increased gap between title and Apply Now button on mobile */
     padding: 0 4px !important;
     white-space: normal !important;
     box-sizing: border-box !important;
   }
+
   .career-page .apply-now-btn {
     margin: 0 auto !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    font-size: clamp(13px, 2.2vw, 18px) !important;
+    padding: clamp(10px, 1.6vw, 14px) clamp(30px, 4.5vw, 48px) !important;
   }
+
   .mobile-only-br {
-    display: block !important; /* Forces clean 2-line break on mobile */
+    display: block !important;
+    /* Forces clean 2-line break on mobile */
   }
+
   .desktop-space {
     display: none !important;
   }
+
   .page-heading.contact-heading,
   .contact-page .page-heading {
     font-family: "BBH Bartle", sans-serif !important;
-    font-size: clamp(23px, 7vw, 32px) !important;
+    font-size: clamp(23px, 5.2vw, 50px) !important;
     line-height: 1.15 !important;
     letter-spacing: 0.8px !important;
     margin-top: 0 !important;
-    margin-bottom: clamp(24px, 3.8vh, 38px) !important; /* Increased gap between heading and form on mobile */
+    margin-bottom: clamp(24px, 3.8vh, 38px) !important;
+    /* Increased gap between heading and form on mobile */
     text-align: center !important;
-    white-space: nowrap !important; /* Strictly single line, centered with zero button overlap */
+    white-space: nowrap !important;
+    /* Strictly single line, centered with zero button overlap */
     width: 100% !important;
     max-width: 100% !important;
     display: block !important;
@@ -2101,12 +2526,13 @@ body.slide-in-left-active {
     padding: 0 4px !important;
     box-sizing: border-box !important;
   }
+
   .page-paragraph {
     font-family: 'Castoro Titling', serif !important;
-    font-size: clamp(12.5px, 3.4vw, 14.5px) !important;
+    font-size: clamp(12.5px, 2.2vw, 19px) !important;
     line-height: 1.95 !important;
     letter-spacing: -0.2px;
-    max-width: 480px;
+    max-width: clamp(310px, 86vw, 760px);
     width: 100%;
     margin: 0 auto 20px auto !important;
     text-align: center !important;
@@ -2114,25 +2540,30 @@ body.slide-in-left-active {
     box-sizing: border-box;
     color: #dedede !important;
   }
+
   .page-subheading {
     font-size: 18px;
     line-height: 1.55;
     margin-bottom: 22px;
     text-align: center;
   }
+
   .apply-now-btn {
     margin-top: 20px;
   }
+
   .split-layout {
     position: relative;
     display: block;
     width: 100%;
   }
+
   .split-text {
     position: relative;
     z-index: 2;
     width: 100%;
   }
+
   .split-image {
     position: absolute;
     top: 0;
@@ -2146,6 +2577,7 @@ body.slide-in-left-active {
     justify-content: center;
     align-items: center;
   }
+
   .split-image video,
   .innovation-video,
   .innovation-video.video-num3,
@@ -2156,35 +2588,40 @@ body.slide-in-left-active {
     max-width: 100%;
     max-height: 100%;
   }
+
   .contact-form {
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 12px;
-    row-gap: clamp(8px, 1.4vh, 14px) !important;
-    max-width: clamp(310px, 88vw, 380px) !important;
+    row-gap: clamp(8px, 1.4vh, 16px) !important;
+    max-width: clamp(310px, 86vw, 700px) !important;
     width: 100%;
     margin: 0 auto;
   }
+
   .form-group input,
   .form-group select {
-    height: clamp(34px, 4.2vh, 38px) !important;
-    font-size: 13px !important;
+    height: clamp(34px, 4.4vw, 44px) !important;
+    font-size: clamp(12.5px, 1.8vw, 15px) !important;
   }
+
   .form-group textarea {
-    min-height: clamp(65px, 8.5vh, 92px) !important;
-    font-size: 13px !important;
+    min-height: clamp(65px, 8.5vw, 105px) !important;
+    font-size: clamp(12.5px, 1.8vw, 15px) !important;
   }
+
   .form-group.full-width {
     grid-column: span 2 !important;
   }
+
   .submit-btn {
     grid-column: span 2 !important;
     justify-self: center !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    margin-top: clamp(8px, 1.5vh, 16px) !important;
-    height: clamp(36px, 4.4vh, 40px) !important;
-    padding: 0 38px !important;
+    margin-top: clamp(8px, 1.5vh, 18px) !important;
+    height: clamp(36px, 4.6vw, 46px) !important;
+    padding: 0 clamp(32px, 4.5vw, 48px) !important;
     background-color: #D81700 !important;
     color: white !important;
     display: inline-flex !important;
@@ -2192,20 +2629,23 @@ body.slide-in-left-active {
     justify-content: center !important;
     text-align: center !important;
     line-height: 1 !important;
+    font-size: clamp(12.5px, 1.7vw, 15px) !important;
   }
+
   .form-success-msg {
     grid-column: span 2 !important;
     justify-self: center !important;
-    font-size: clamp(8.5px, 2.4vw, 10.5px) !important;
+    font-size: clamp(8.5px, 1.6vw, 13px) !important;
     letter-spacing: 0.5px !important;
     line-height: 1.35 !important;
     margin-top: 8px !important;
-    max-width: clamp(260px, 86vw, 340px) !important;
+    max-width: clamp(260px, 86vw, 500px) !important;
     width: 100% !important;
     text-align: center !important;
     padding: 0 4px !important;
     box-sizing: border-box !important;
   }
+
   .form-success-msg span {
     display: block !important;
     white-space: nowrap !important;
@@ -2215,22 +2655,27 @@ body.slide-in-left-active {
   .v-odne1s-page .subpage-container.split-view,
   .bobart-page .subpage-container.split-view,
   .ltb-page .subpage-container.split-view {
-    padding: clamp(65px, 8.5vh, 85px) clamp(16px, 5vw, 24px) clamp(20px, 3vh, 32px) clamp(16px, 5vw, 24px) !important;
+    padding-top: clamp(125px, 17.5vh, 155px) !important;
+    padding-left: clamp(16px, 5vw, 24px) !important;
+    padding-right: clamp(16px, 5vw, 24px) !important;
+    padding-bottom: max(130px, calc(115px + env(safe-area-inset-bottom))) !important;
     height: 100vh !important;
     height: 100dvh !important;
     min-height: 100vh !important;
     min-height: 100dvh !important;
-    overflow-y: auto !important;
+    overflow: hidden !important;
+    overflow-y: hidden !important;
     overflow-x: hidden !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     box-sizing: border-box !important;
     -webkit-overflow-scrolling: touch !important;
-    touch-action: pan-y !important;
-    overscroll-behavior-y: auto !important;
+    touch-action: none !important;
+    overscroll-behavior: none !important;
   }
+
   .v-odne1s-page .split-layout,
   .bobart-page .split-layout,
   .ltb-page .split-layout {
@@ -2239,10 +2684,13 @@ body.slide-in-left-active {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 370px; /* Clean centered column width */
+    max-width: clamp(320px, 86vw, 760px);
+    /* Clean centered column width */
     margin: 0 auto;
-    flex-shrink: 0; /* Ensures content never shrinks or cuts off */
+    flex-shrink: 0;
+    /* Ensures content never shrinks or cuts off */
   }
+
   .v-odne1s-page .split-text,
   .bobart-page .split-text,
   .ltb-page .split-text {
@@ -2258,14 +2706,16 @@ body.slide-in-left-active {
     text-align: center !important;
     flex-shrink: 0;
   }
+
   .v-odne1s-page .page-heading.left-align,
   .bobart-page .page-heading.left-align,
   .ltb-page .page-heading.left-align {
     text-align: center !important;
-    font-size: clamp(28px, 7.5vw, 36px) !important;
+    font-size: clamp(28px, 5.5vw, 50px) !important;
     color: #D81700 !important;
     margin-top: 0 !important;
-    margin-bottom: clamp(22px, 3.6vh, 36px) !important; /* Distinctly increased gap between Title and Subtitle */
+    margin-bottom: clamp(22px, 3.6vh, 36px) !important;
+    /* Distinctly increased gap between Title and Subtitle */
     white-space: normal !important;
     letter-spacing: 0.8px !important;
     transform: none !important;
@@ -2274,46 +2724,54 @@ body.slide-in-left-active {
     line-height: 1.1 !important;
     width: 100% !important;
   }
+
   .ltb-page .page-heading.left-align {
-    font-size: clamp(24px, 6.5vw, 32px) !important;
+    font-size: clamp(24px, 4.6vw, 42px) !important;
   }
+
   .ltb-page .page-heading.left-align .heading-nowrap {
     white-space: nowrap !important;
     display: inline-block !important;
   }
+
   .ltb-page .page-heading.left-align .heading-block {
     display: block !important;
   }
+
   .mobile-subhead-break {
     display: block !important;
   }
+
   .v-odne1s-page .page-subheading.left-align,
   .bobart-page .page-subheading.left-align,
   .ltb-page .page-subheading.left-align {
     text-align: center !important;
-    font-size: clamp(11px, 3.1vw, 13.5px) !important;
+    font-size: clamp(11px, 2.2vw, 20px) !important;
     color: #ffffff !important;
-    margin-bottom: clamp(24px, 3.8vh, 38px) !important; /* Increased gap between Subtitle and Paragraph */
+    margin-bottom: clamp(24px, 3.8vh, 38px) !important;
+    /* Increased gap between Subtitle and Paragraph */
     margin-left: auto !important;
     margin-right: auto !important;
     white-space: normal !important;
     letter-spacing: 0.2px !important;
-    line-height: 1.35 !important;
-    max-width: clamp(310px, 88vw, 370px) !important;
+    line-height: clamp(1.35, 2.2vw, 1.45) !important;
+    max-width: clamp(310px, 86vw, 720px) !important;
     transform: none !important;
     animation: none !important;
     opacity: 1 !important;
     width: 100% !important;
   }
+
   .v-odne1s-page .page-paragraph.left-align,
   .bobart-page .page-paragraph.left-align,
   .ltb-page .page-paragraph.left-align {
     text-align: center !important;
-    font-size: clamp(11.5px, 3vw, 13.5px) !important;
+    font-size: clamp(11.5px, 2.1vw, 18.5px) !important;
     color: #dedede !important;
-    line-height: clamp(1.62, 2.1vh, 1.74) !important;
-    max-width: clamp(310px, 88vw, 370px) !important;
-    margin: 0 auto clamp(9px, 1.4vh, 13px) auto !important; /* Kept compact internal gap between paragraphs */
+    line-height: clamp(1.62, 2.4vw, 1.85) !important;
+    max-width: clamp(310px, 86vw, 720px) !important;
+    margin: 0 auto clamp(9px, 1.4vh, 13px) auto !important;
+    /* Kept compact internal gap between paragraphs */
     letter-spacing: -0.1px !important;
     text-wrap: balance !important;
     transform: none !important;
@@ -2321,11 +2779,172 @@ body.slide-in-left-active {
     opacity: 1 !important;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 3px rgba(0, 0, 0, 1);
   }
+
   .v-odne1s-page .page-paragraph.left-align:last-child,
   .bobart-page .page-paragraph.left-align:last-child,
   .ltb-page .page-paragraph.left-align:last-child {
     margin-bottom: 0 !important;
   }
+
+  /* LTB Mobile Text Switcher (100% Non-Scrollable & Zero Layout Shift) */
+  .ltb-page .ltb-text-slider {
+    display: grid !important;
+    grid-template-areas: "ltbslide" !important;
+    width: 100% !important;
+    max-width: clamp(310px, 86vw, 720px) !important;
+    margin: 0 auto !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .ltb-page .ltb-slide {
+    grid-area: ltbslide !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    align-self: start !important;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate3d(35px, 0, 0);
+    transition: opacity 0.35s cubic-bezier(0.25, 1, 0.5, 1), transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform, opacity;
+  }
+
+  .ltb-page .ltb-slide.is-active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translate3d(0, 0, 0) !important;
+  }
+
+  .ltb-page .ltb-slide.slide-out-left {
+    opacity: 0 !important;
+    transform: translate3d(-35px, 0, 0) !important;
+    pointer-events: none !important;
+    visibility: visible !important;
+  }
+
+  .ltb-page .ltb-slide.slide-in-right {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    animation: ltbSlideInRight 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+  }
+
+  .ltb-page .ltb-slide.slide-out-right {
+    opacity: 0 !important;
+    transform: translate3d(35px, 0, 0) !important;
+    pointer-events: none !important;
+    visibility: visible !important;
+  }
+
+  .ltb-page .ltb-slide.slide-in-left {
+    opacity: 1 !important;
+    transform: translate3d(0, 0, 0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    animation: ltbSlideInLeft 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+  }
+
+  @keyframes ltbSlideInRight {
+    0% {
+      opacity: 0;
+      transform: translate3d(35px, 0, 0);
+    }
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes ltbSlideInLeft {
+    0% {
+      opacity: 0;
+      transform: translate3d(-35px, 0, 0);
+    }
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .ltb-page .ltb-toggle-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    line-height: 1 !important;
+    gap: 4px !important;
+    background: rgba(216, 23, 0, 0.12) !important;
+    border: 1px solid rgba(216, 23, 0, 0.45) !important;
+    color: #D81700 !important;
+    font-family: 'Castoro Titling', serif !important;
+    font-size: clamp(10px, 1.4vw, 13.5px) !important;
+    font-weight: bold !important;
+    letter-spacing: 0.5px !important;
+    word-spacing: -1.5px !important;
+    text-indent: 0.5px !important;
+    /* Balances trailing letter-spacing for exact horizontal centering */
+    height: clamp(24px, 3.4vw, 30px) !important;
+    padding: 0 clamp(11px, 1.6vw, 15px) !important;
+    border-radius: 20px !important;
+    cursor: pointer !important;
+    outline: none !important;
+    user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    margin-top: clamp(6px, 1.2vh, 12px) !important;
+    transition: all 0.25s ease !important;
+    box-sizing: border-box !important;
+  }
+
+  .ltb-page .ltb-toggle-btn span {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .ltb-page .ltb-toggle-btn svg {
+    display: block !important;
+    width: clamp(9px, 1.3vw, 12px) !important;
+    height: clamp(9px, 1.3vw, 12px) !important;
+    flex-shrink: 0 !important;
+    stroke: currentColor !important;
+    stroke-width: 2.5 !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    transform: translateY(-0.8px) !important;
+    /* Aligns chevron apex at exact optical vertical center of uppercase letters */
+  }
+
+  .ltb-page .ltb-toggle-btn:active,
+  .ltb-page .ltb-toggle-btn:hover {
+    background: rgba(216, 23, 0, 0.28) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 12px rgba(216, 23, 0, 0.4) !important;
+    transform: scale(1.04) !important;
+  }
+
+  .ltb-page .ltb-back-btn {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    color: #dedede !important;
+  }
+
+  .ltb-page .ltb-back-btn:active,
+  .ltb-page .ltb-back-btn:hover {
+    background: rgba(216, 23, 0, 0.25) !important;
+    border-color: #D81700 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 12px rgba(216, 23, 0, 0.4) !important;
+    transform: scale(1.04) !important;
+  }
+
   /* Extra Large Centered 3D Video/Graphics in Background (100% Bigger) */
   .v-odne1s-page .split-image,
   .bobart-page .split-image,
@@ -2345,8 +2964,10 @@ body.slide-in-left-active {
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    opacity: 0.52 !important; /* Prominent background visibility */
+    opacity: 0.52 !important;
+    /* Prominent background visibility */
   }
+
   .v-odne1s-page .innovation-video,
   .bobart-page .innovation-video,
   .ltb-page .innovation-video,
@@ -2362,20 +2983,54 @@ body.slide-in-left-active {
     transform-origin: center center !important;
     opacity: 1 !important;
   }
+
   .innovation-video.video-num3,
   .v-odne1s-page .innovation-video {
-    transform: translate(-9px, 7px) scale(1.48) !important; /* Video 3 moved 9px LEFT & 7px DOWN */
+    transform: translate(-9px, 7px) scale(1.48) !important;
+    /* Video 3 moved 9px LEFT & 7px DOWN */
     transform-origin: center center !important;
   }
+
   .innovation-video.video-num6,
   .bobart-page .innovation-video {
-    transform: translateY(-3px) scale(1.65) !important; /* Video 6 thodi si choti */
+    transform: translateY(-3px) scale(1.65) !important;
+    /* Video 6 thodi si choti */
     transform-origin: center center !important;
   }
+
   .innovation-video.video-num9,
   .ltb-page .innovation-video {
-    transform: scale(2.10) !important; /* Video 9 thodi si choti */
+    transform: scale(2.10) !important;
+    /* Video 9 thodi si choti */
     transform-origin: center center !important;
   }
-}
 
+  /* Innovation Navigation Arrows on Mobile (Fully safe from iOS/Android tab bars and gesture home bars) */
+  .nav-arrow {
+    width: clamp(54px, 5.8vw, 68px) !important;
+    height: clamp(54px, 5.8vw, 68px) !important;
+    bottom: max(90px, calc(76px + env(safe-area-inset-bottom))) !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .nav-arrow svg {
+    width: clamp(38px, 4.2vw, 48px) !important;
+    height: clamp(38px, 4.2vw, 48px) !important;
+    overflow: visible;
+  }
+
+  .nav-arrow-prev {
+    left: clamp(28px, 4.5vw, 60px) !important;
+    right: auto !important;
+  }
+
+  .nav-arrow-next {
+    right: clamp(28px, 4.5vw, 60px) !important;
+    left: auto !important;
+  }
+}

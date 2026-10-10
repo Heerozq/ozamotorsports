@@ -6,12 +6,20 @@ if (sessionStorage.getItem('navigatedFromHome') === 'true') {
     document.documentElement.classList.remove('slide-in-active');
     if (document.body) document.body.classList.remove('slide-in-active');
   }, 600);
+} else if (sessionStorage.getItem('navigatedToPrev') === 'true') {
+  document.documentElement.classList.add('slide-in-left-active');
+  if (document.body) document.body.classList.add('slide-in-left-active');
+  sessionStorage.removeItem('navigatedToPrev');
+  setTimeout(() => {
+    document.documentElement.classList.remove('slide-in-left-active');
+    if (document.body) document.body.classList.remove('slide-in-left-active');
+  }, 600);
 }
 
 const clearSubpageExitClasses = () => {
-  document.documentElement.classList.remove('slide-in-active');
+  document.documentElement.classList.remove('slide-in-active', 'slide-in-left-active');
   if (document.body) {
-    document.body.classList.remove('slide-out-right', 'slide-out-left', 'slide-in-active');
+    document.body.classList.remove('slide-out-right', 'slide-out-left', 'slide-in-active', 'slide-in-left-active');
   }
 };
 window.addEventListener('pageshow', clearSubpageExitClasses);
@@ -74,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Subpage navigation links smooth transition and origin tracking
-  const allSubpageLinks = document.querySelectorAll('.side-menu a[href], .subpage-header a[href], .subpage-container a[href]');
+  const allSubpageLinks = document.querySelectorAll('.side-menu a[href], .subpage-header a[href], .subpage-container a[href], .nav-arrow[href]');
   allSubpageLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       const targetUrl = link.href;
@@ -88,11 +96,17 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.setItem('openMenuOnHome', 'true');
       }
 
-      // Mark navigating to next page for smooth slide-in landing
-      sessionStorage.setItem('navigatedFromHome', 'true');
+      const isPrevArrow = link.classList.contains('nav-arrow-prev');
+      if (isPrevArrow) {
+        sessionStorage.setItem('navigatedToPrev', 'true');
+        sessionStorage.removeItem('navigatedFromHome');
+      } else {
+        sessionStorage.setItem('navigatedFromHome', 'true');
+        sessionStorage.removeItem('navigatedToPrev');
+      }
 
       e.preventDefault();
-      document.body.classList.add('slide-out-left');
+      document.body.classList.add(isPrevArrow ? 'slide-out-right' : 'slide-out-left');
       setTimeout(() => {
         window.location.href = targetUrl;
       }, 550);
@@ -436,6 +450,48 @@ document.addEventListener('DOMContentLoaded', () => {
         isTargetActive = false;
         startAnim();
       }
+    });
+  }
+
+  // LTB Valve Techno Mobile Paragraph Switcher
+  const ltbMoreBtn = document.getElementById('ltbMoreBtn');
+  const ltbBackBtn = document.getElementById('ltbBackBtn');
+  const ltbSlide1 = document.getElementById('ltbSlide1');
+  const ltbSlide2 = document.getElementById('ltbSlide2');
+
+  if (ltbMoreBtn && ltbBackBtn && ltbSlide1 && ltbSlide2) {
+    let isTransitioning = false;
+
+    ltbMoreBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (isTransitioning) return;
+      isTransitioning = true;
+
+      ltbSlide1.classList.add('slide-out-left');
+      ltbSlide2.classList.add('slide-in-right');
+
+      setTimeout(() => {
+        ltbSlide1.classList.remove('is-active', 'slide-out-left');
+        ltbSlide2.classList.remove('slide-in-right');
+        ltbSlide2.classList.add('is-active');
+        isTransitioning = false;
+      }, 350);
+    });
+
+    ltbBackBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (isTransitioning) return;
+      isTransitioning = true;
+
+      ltbSlide2.classList.add('slide-out-right');
+      ltbSlide1.classList.add('slide-in-left');
+
+      setTimeout(() => {
+        ltbSlide2.classList.remove('is-active', 'slide-out-right');
+        ltbSlide1.classList.remove('slide-in-left');
+        ltbSlide1.classList.add('is-active');
+        isTransitioning = false;
+      }, 350);
     });
   }
 });

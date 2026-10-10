@@ -31,6 +31,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const isWindows = /Windows/i.test(navigator.userAgent || navigator.platform || '');
     let userManuallyMuted = false;
 
+    // Ensure adaptive video src is assigned if not already set by inline script
+    if (!bgVideo.getAttribute('src')) {
+      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      const isMobile = (window.innerWidth <= 768) || (('ontouchstart' in window) && window.innerWidth <= 1024);
+      const saveData = conn && conn.saveData;
+      const effectiveType = conn ? conn.effectiveType : '4g';
+      const downlink = conn && typeof conn.downlink === 'number' ? conn.downlink : 10;
+
+      let targetSrc = '/bg-video.mp4';
+      if (saveData || effectiveType === '2g' || effectiveType === '3g' || downlink < 2.0) {
+        targetSrc = '/bg-video-720p.mp4';
+      } else if (isMobile) {
+        targetSrc = (downlink >= 4.0) ? '/bg-video-1080p.mp4' : '/bg-video-720p.mp4';
+      } else if (downlink < 6.0) {
+        targetSrc = '/bg-video-1080p.mp4';
+      }
+      bgVideo.src = targetSrc;
+    }
+
+    // Smooth invisible network downgrade fallback if 1440p buffers unexpectedly
+    let hasFallbackSwitched = false;
+    bgVideo.addEventListener('stalled', () => {
+      if (!hasFallbackSwitched && bgVideo.src && bgVideo.src.endsWith('/bg-video.mp4')) {
+        hasFallbackSwitched = true;
+        const curTime = bgVideo.currentTime;
+        const wasMuted = bgVideo.muted;
+        bgVideo.src = '/bg-video-1080p.mp4';
+        bgVideo.currentTime = curTime;
+        bgVideo.muted = wasMuted;
+        bgVideo.play().catch(() => {});
+      }
+    });
+
     // Ensure critical mobile & cross-browser attributes
     bgVideo.setAttribute('playsinline', '');
     bgVideo.setAttribute('webkit-playsinline', '');

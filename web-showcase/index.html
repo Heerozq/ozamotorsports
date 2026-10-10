@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Oza Motorsports | We Create Unicorns</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q8XQW6C9BB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-Q8XQW6C9BB');
+    </script>
     <!-- Use a modern Google Font like Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,7 +58,7 @@
     </script>
     <!-- Background Media -->
     <div class="bg-container">
-      <video class="bg-video" id="bgVideo" src="/bg-video.mp4" autoplay loop playsinline webkit-playsinline preload="auto"></video>
+      <video class="bg-video" id="bgVideo" autoplay loop playsinline webkit-playsinline preload="auto"></video>
       <!-- Overlay to slightly darken the video so the white text stays readable -->
       <div class="bg-overlay"></div>
     </div>
@@ -57,6 +66,23 @@
       (function() {
         var v = document.getElementById('bgVideo');
         if (v) {
+          // Invisible auto-resolution selector based on network speed & device (zero visible UI)
+          var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+          var isMobile = (window.innerWidth <= 768) || (('ontouchstart' in window) && window.innerWidth <= 1024);
+          var saveData = conn && conn.saveData;
+          var effectiveType = conn ? conn.effectiveType : '4g';
+          var downlink = conn && typeof conn.downlink === 'number' ? conn.downlink : 10;
+
+          var targetSrc = '/bg-video.mp4';
+          if (saveData || effectiveType === '2g' || effectiveType === '3g' || downlink < 2.0) {
+            targetSrc = '/bg-video-720p.mp4';
+          } else if (isMobile) {
+            targetSrc = (downlink >= 4.0) ? '/bg-video-1080p.mp4' : '/bg-video-720p.mp4';
+          } else if (downlink < 6.0) {
+            targetSrc = '/bg-video-1080p.mp4';
+          }
+          v.src = targetSrc;
+
           var isWin = /Windows/i.test(navigator.userAgent || navigator.platform || '');
           var savedState = sessionStorage.getItem('homeVideoAudioMuted');
           if (savedState === 'false' || (savedState === null && isWin)) {
