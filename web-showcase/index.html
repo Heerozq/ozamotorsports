@@ -36,6 +36,7 @@
                        (window.performance && window.performance.navigation && window.performance.navigation.type === 1);
       if (isReload) {
         sessionStorage.removeItem('homeVideoTime');
+        sessionStorage.removeItem('homeVideoAudioMuted');
         sessionStorage.removeItem('navigatedToHome');
       }
 

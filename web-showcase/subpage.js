@@ -1,3 +1,5 @@
+import './tracker.js';
+
 if (sessionStorage.getItem('navigatedFromHome') === 'true') {
   document.documentElement.classList.add('slide-in-active');
   if (document.body) document.body.classList.add('slide-in-active');

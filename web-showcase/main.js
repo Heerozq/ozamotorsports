@@ -1,3 +1,5 @@
+import './tracker.js';
+
 if (sessionStorage.getItem('navigatedToHome') === 'true') {
   document.documentElement.classList.add('slide-in-left-active');
   if (document.body) document.body.classList.add('slide-in-left-active');
@@ -76,6 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isReload) {
       // On page reload: Horse video restarts from the very beginning (0s)
       sessionStorage.removeItem('homeVideoTime');
+      sessionStorage.removeItem('homeVideoAudioMuted');
+      userManuallyMuted = false;
       try { bgVideo.currentTime = 0; } catch (err) {}
     } else {
       // Restore saved playback position ONLY when returning from a subpage
@@ -228,6 +232,38 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     document.addEventListener('click', toggleVideoAudio);
+
+    // 3. Desktop Hover-to-Unmute:
+    // When video is muted, any slight mouse hover / movement on desktop immediately un-mutes it.
+    // Existing click to mute / unmute remains fully functional.
+    const hasHoverCapability = window.matchMedia('(hover: hover) and (pointer: fine)').matches || (window.innerWidth > 1024);
+
+    const handleHoverUnmute = () => {
+      if (!bgVideo) return;
+
+      // Small cooldown (350ms) right after a click so lifting the mouse button doesn't cancel the click
+      if (Date.now() - lastAudioToggleTime < 350) return;
+
+      if (bgVideo.muted) {
+        bgVideo.muted = false;
+        bgVideo.volume = 1.0;
+        userManuallyMuted = false;
+        sessionStorage.setItem('homeVideoAudioMuted', 'false');
+        if (bgVideo.paused) {
+          bgVideo.play().catch(() => {});
+        }
+      }
+    };
+
+    if (hasHoverCapability) {
+      window.addEventListener('mousemove', handleHoverUnmute, { passive: true });
+      window.addEventListener('pointermove', handleHoverUnmute, { passive: true });
+      window.addEventListener('mouseenter', () => {
+        // A fresh hover into the browser window re-enables hover-unmute
+        userManuallyMuted = false;
+        handleHoverUnmute();
+      }, { passive: true });
+    }
   }
 
   // Toggle Side Menu
