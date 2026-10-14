@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeMenuBtn = document.getElementById('closeMenuBtn');
   const sideMenu = document.getElementById('sideMenu');
 
-  // 1. Guaranteed Continuous Autoplay & Audio Controller for Horse Video
+  // 0. Cookie Consent Gate & Guaranteed Continuous Autoplay & Audio Controller
   if (bgVideo) {
     // Detect Windows desktop
     const isWindows = /Windows/i.test(navigator.userAgent || navigator.platform || '');
@@ -62,7 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
         bgVideo.src = '/bg-video-1080p.mp4';
         bgVideo.currentTime = curTime;
         bgVideo.muted = wasMuted;
-        bgVideo.play().catch(() => {});
+        if (sessionStorage.getItem('oza_consent_interacted') === 'true') {
+          bgVideo.play().catch(() => {});
+        } else {
+          bgVideo.pause();
+        }
       }
     });
 
@@ -70,13 +74,23 @@ document.addEventListener('DOMContentLoaded', () => {
     bgVideo.setAttribute('playsinline', '');
     bgVideo.setAttribute('webkit-playsinline', '');
 
+    // Unbreakable playback lock: Video NEVER plays before cookies are accepted
+    bgVideo.addEventListener('play', () => {
+      const isConsentedNow = (localStorage.getItem('oza_consent_interacted') === 'true') ||
+                             (sessionStorage.getItem('oza_consent_interacted') === 'true');
+      if (!isConsentedNow) {
+        bgVideo.pause();
+        bgVideo.muted = true;
+      }
+    });
+
     // Detect page reload vs subpage navigation
     const navEntries = window.performance && performance.getEntriesByType && performance.getEntriesByType('navigation');
     const isReload = (navEntries && navEntries.length > 0 && navEntries[0].type === 'reload') ||
                      (window.performance && window.performance.navigation && window.performance.navigation.type === 1);
+    const isNavigatedToHome = sessionStorage.getItem('navigatedToHome') === 'true';
 
     if (isReload) {
-      // On page reload: Horse video restarts from the very beginning (0s)
       sessionStorage.removeItem('homeVideoTime');
       sessionStorage.removeItem('homeVideoAudioMuted');
       userManuallyMuted = false;
@@ -99,36 +113,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Set initial audio configuration (with cross-page memory):
-    const savedAudioState = sessionStorage.getItem('homeVideoAudioMuted');
-    if (savedAudioState !== null) {
-      if (savedAudioState === 'true') {
-        userManuallyMuted = true;
-        bgVideo.muted = true;
-      } else {
-        userManuallyMuted = false;
-        bgVideo.muted = false;
-        bgVideo.volume = 1.0;
-      }
-    } else {
-      // First visit: On Windows enable audio; on Mobile/Mac default to muted.
-      if (isWindows && !userManuallyMuted) {
-        bgVideo.muted = false;
-        bgVideo.volume = 1.0;
-      } else {
-        bgVideo.muted = true;
-      }
-    }
+    let hasConsented = (localStorage.getItem('oza_consent_interacted') === 'true') ||
+                       (sessionStorage.getItem('oza_consent_interacted') === 'true');
 
     // Function to ensure video is continuously playing without interrupting stream
     const ensureVideoPlaying = () => {
-      if (!bgVideo) return;
+      const isConsentedNow = (localStorage.getItem('oza_consent_interacted') === 'true') ||
+                             (sessionStorage.getItem('oza_consent_interacted') === 'true');
+      if (!bgVideo || !isConsentedNow) return;
       if (bgVideo.paused) {
         const playPromise = bgVideo.play();
         if (playPromise !== undefined) {
           playPromise.catch(() => {
-            // If browser policy blocked unmuted autoplay (e.g. Chrome MEI threshold):
-            // Fallback immediately to muted play so the video still plays 100% of the time!
             if (!bgVideo.muted) {
               bgVideo.muted = true;
               const retryPromise = bgVideo.play();
@@ -139,130 +135,310 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    // Immediate play trigger on DOMContentLoaded
-    ensureVideoPlaying();
+    let postConsentActivated = false;
+    const activatePostConsentPlayback = () => {
+      if (postConsentActivated) return;
+      postConsentActivated = true;
 
-    // 2. Smooth, Freeze-Free Mute / Unmute Toggle on Horse / Video Tap
-    let lastAudioToggleTime = 0;
-    let justAutoUnlocked = false;
+      // 2. Smooth, Freeze-Free Mute / Unmute Toggle on Horse / Video Tap
+      let lastAudioToggleTime = 0;
+      let justAutoUnlocked = false;
 
-    // On Windows: If initial unmuted play was restricted by browser MEI,
-    // turn on audio immediately upon the user's first interaction anywhere on Windows (unless user muted it)
-    if (isWindows) {
-      const unlockAudioOnWindows = (e) => {
-        const savedState = sessionStorage.getItem('homeVideoAudioMuted');
-        if (savedState === 'true' || userManuallyMuted || !bgVideo) return;
+      // On Windows: If unmuted play was restricted by browser MEI, turn on audio upon first interaction
+      if (isWindows) {
+        const unlockAudioOnWindows = (e) => {
+          const savedState = sessionStorage.getItem('homeVideoAudioMuted');
+          if (savedState === 'true' || userManuallyMuted || !bgVideo) return;
+          if (bgVideo.muted) {
+            bgVideo.muted = false;
+            bgVideo.volume = 1.0;
+            sessionStorage.setItem('homeVideoAudioMuted', 'false');
+            justAutoUnlocked = true;
+            setTimeout(() => { justAutoUnlocked = false; }, 400);
+          }
+          if (bgVideo.paused) {
+            bgVideo.play().catch(() => {});
+          }
+          removeWindowsAudioUnlockers();
+        };
+
+        const winEvents = ['pointerdown', 'mousedown', 'keydown', 'click', 'wheel', 'touchstart'];
+        const removeWindowsAudioUnlockers = () => {
+          winEvents.forEach(evt => window.removeEventListener(evt, unlockAudioOnWindows, { capture: true }));
+        };
+        winEvents.forEach(evt => window.addEventListener(evt, unlockAudioOnWindows, { capture: true, passive: true }));
+      }
+
+      // Fallback: If autoplay was blocked, start playing on first gesture
+      const startOnFirstGesture = () => {
+        ensureVideoPlaying();
+        ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(evt => {
+          window.removeEventListener(evt, startOnFirstGesture, { capture: true });
+        });
+      };
+      ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(evt => {
+        window.addEventListener(evt, startOnFirstGesture, { capture: true, passive: true });
+      });
+
+      const toggleVideoAudio = (e) => {
+        if (!bgVideo) return;
+
+        // Debounce rapid multi-taps (within 300ms)
+        const now = Date.now();
+        if (now - lastAudioToggleTime < 300) return;
+        lastAudioToggleTime = now;
+
+        if (justAutoUnlocked) {
+          justAutoUnlocked = false;
+          return;
+        }
+
+        if (sideMenu && sideMenu.classList.contains('open')) {
+          return;
+        }
+
+        if (e.target.closest('.side-menu') ||
+            e.target.closest('.logo-container') ||
+            e.target.closest('.hero-text-container') ||
+            e.target.closest('.action-container') ||
+            e.target.closest('a') ||
+            e.target.closest('button')) {
+          return;
+        }
+
+        if (bgVideo.paused) {
+          bgVideo.play().catch(() => {});
+        }
+
         if (bgVideo.muted) {
+          userManuallyMuted = false;
           bgVideo.muted = false;
           bgVideo.volume = 1.0;
           sessionStorage.setItem('homeVideoAudioMuted', 'false');
-          justAutoUnlocked = true;
-          setTimeout(() => { justAutoUnlocked = false; }, 400);
+        } else {
+          userManuallyMuted = true;
+          bgVideo.muted = true;
+          sessionStorage.setItem('homeVideoAudioMuted', 'true');
         }
-        if (bgVideo.paused) {
-          bgVideo.play().catch(() => {});
-        }
-        removeWindowsAudioUnlockers();
       };
 
-      const winEvents = ['pointerdown', 'mousedown', 'keydown', 'click', 'wheel', 'touchstart'];
-      const removeWindowsAudioUnlockers = () => {
-        winEvents.forEach(evt => window.removeEventListener(evt, unlockAudioOnWindows, { capture: true }));
+      document.addEventListener('click', toggleVideoAudio);
+
+      // Desktop Hover-to-Unmute
+      const hasHoverCapability = window.matchMedia('(hover: hover) and (pointer: fine)').matches || (window.innerWidth > 1024);
+      const handleHoverUnmute = () => {
+        if (!bgVideo) return;
+        if (Date.now() - lastAudioToggleTime < 350) return;
+        if (bgVideo.muted) {
+          bgVideo.muted = false;
+          bgVideo.volume = 1.0;
+          userManuallyMuted = false;
+          sessionStorage.setItem('homeVideoAudioMuted', 'false');
+          if (bgVideo.paused) {
+            bgVideo.play().catch(() => {});
+          }
+        }
       };
-      winEvents.forEach(evt => window.addEventListener(evt, unlockAudioOnWindows, { capture: true, passive: true }));
+
+      if (hasHoverCapability) {
+        window.addEventListener('mousemove', handleHoverUnmute, { passive: true });
+        window.addEventListener('pointermove', handleHoverUnmute, { passive: true });
+        window.addEventListener('mouseenter', () => {
+          userManuallyMuted = false;
+          handleHoverUnmute();
+        }, { passive: true });
+      }
+    };
+
+    const consentModal = document.getElementById('consentModal');
+    const btnAcceptCookies = document.getElementById('btnAcceptCookies');
+
+    // If cookies were already accepted in this session or previously:
+    if (hasConsented) {
+      if (consentModal) {
+        consentModal.classList.add('hidden');
+        consentModal.style.display = 'none';
+        try { consentModal.remove(); } catch(e) {}
+      }
+      const savedAudioState = sessionStorage.getItem('homeVideoAudioMuted');
+      if (savedAudioState !== null) {
+        if (savedAudioState === 'true') {
+          userManuallyMuted = true;
+          bgVideo.muted = true;
+        } else {
+          userManuallyMuted = false;
+          bgVideo.muted = false;
+          bgVideo.volume = 1.0;
+        }
+      } else {
+        if (isWindows && !userManuallyMuted) {
+          bgVideo.muted = false;
+          bgVideo.volume = 1.0;
+        } else {
+          bgVideo.muted = true;
+        }
+      }
+      ensureVideoPlaying();
+      activatePostConsentPlayback();
+    } else {
+      // Cookies NOT yet accepted: Keep background video strictly paused and muted
+      bgVideo.pause();
+      bgVideo.muted = true;
     }
 
-    // Fallback: If autoplay was blocked initially by strict browser policies (e.g. Low Power Mode),
-    // start playing immediately upon the first user interaction anywhere
-    const startOnFirstGesture = () => {
-      ensureVideoPlaying();
-      ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(evt => {
-        window.removeEventListener(evt, startOnFirstGesture, { capture: true });
-      });
+    // Google Identity Services (One Tap & Sign In) Integration
+    const GOOGLE_CLIENT_ID = '77996263716-16p6ccup6hr51jnilp3rmq9dob3tq2dr.apps.googleusercontent.com';
+
+    function parseJwt(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        return {};
+      }
+    }
+
+    const dismissConsent = () => {
+      if (consentModal) consentModal.classList.add('hidden');
+      localStorage.setItem('oza_consent_interacted', 'true');
+      localStorage.setItem('oza_cookies_accepted', 'true');
+      sessionStorage.setItem('oza_consent_interacted', 'true');
+      sessionStorage.setItem('oza_cookies_accepted', 'true');
+      setTimeout(() => {
+        try { if (consentModal) consentModal.remove(); } catch(e) {}
+      }, 400);
     };
-    ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(evt => {
-      window.addEventListener(evt, startOnFirstGesture, { capture: true, passive: true });
-    });
 
-    const toggleVideoAudio = (e) => {
-      if (!bgVideo) return;
+    const handleSuccessfulAccess = (userName, userEmail) => {
+      const name = userName || 'Verified Google Visitor';
+      const email = userEmail || 'Verified Google Account';
 
-      // Debounce rapid multi-taps (within 300ms)
-      const now = Date.now();
-      if (now - lastAudioToggleTime < 300) return;
-      lastAudioToggleTime = now;
+      localStorage.setItem('oza_user_name', name);
+      localStorage.setItem('oza_user_email', email);
+      localStorage.setItem('oza_consent_interacted', 'true');
+      localStorage.setItem('oza_cookies_accepted', 'true');
+      sessionStorage.setItem('oza_user_name', name);
+      sessionStorage.setItem('oza_user_email', email);
+      sessionStorage.setItem('oza_consent_interacted', 'true');
+      sessionStorage.setItem('oza_cookies_accepted', 'true');
 
-      // If audio was just unlocked on this gesture, don't immediately mute it
-      if (justAutoUnlocked) {
-        justAutoUnlocked = false;
-        return;
+      if (window.__ozaRecordConsent) {
+        window.__ozaRecordConsent('Cookies & Google Verified', 'Google 1-Tap Entry', name, email);
       }
 
-      // If side menu is open, clicking outside closes the drawer; do not toggle audio
-      if (sideMenu && sideMenu.classList.contains('open')) {
-        return;
-      }
+      dismissConsent();
 
-      // Do not toggle audio when clicking on interactive UI elements
-      if (e.target.closest('.side-menu') ||
-          e.target.closest('.logo-container') ||
-          e.target.closest('.hero-text-container') ||
-          e.target.closest('.action-container') ||
-          e.target.closest('a') ||
-          e.target.closest('button')) {
-        return;
-      }
-
-      // If video was somehow paused, ensure it runs
-      if (bgVideo.paused) {
-        bgVideo.play().catch(() => {});
-      }
-
-      // Smoothly toggle audio and persist preference across pages
-      if (bgVideo.muted) {
-        userManuallyMuted = false;
+      // Start background video AND sound simultaneously upon accepting
+      if (bgVideo) {
         bgVideo.muted = false;
         bgVideo.volume = 1.0;
         sessionStorage.setItem('homeVideoAudioMuted', 'false');
-      } else {
-        userManuallyMuted = true;
-        bgVideo.muted = true;
-        sessionStorage.setItem('homeVideoAudioMuted', 'true');
-      }
-    };
-
-    document.addEventListener('click', toggleVideoAudio);
-
-    // 3. Desktop Hover-to-Unmute:
-    // When video is muted, any slight mouse hover / movement on desktop immediately un-mutes it.
-    // Existing click to mute / unmute remains fully functional.
-    const hasHoverCapability = window.matchMedia('(hover: hover) and (pointer: fine)').matches || (window.innerWidth > 1024);
-
-    const handleHoverUnmute = () => {
-      if (!bgVideo) return;
-
-      // Small cooldown (350ms) right after a click so lifting the mouse button doesn't cancel the click
-      if (Date.now() - lastAudioToggleTime < 350) return;
-
-      if (bgVideo.muted) {
-        bgVideo.muted = false;
-        bgVideo.volume = 1.0;
         userManuallyMuted = false;
-        sessionStorage.setItem('homeVideoAudioMuted', 'false');
-        if (bgVideo.paused) {
-          bgVideo.play().catch(() => {});
+        const playPromise = bgVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            bgVideo.muted = true;
+            bgVideo.play().catch(() => {});
+          });
         }
       }
+
+      // Activate video controls, audio un-muter, and interactions
+      activatePostConsentPlayback();
     };
 
-    if (hasHoverCapability) {
-      window.addEventListener('mousemove', handleHoverUnmute, { passive: true });
-      window.addEventListener('pointermove', handleHoverUnmute, { passive: true });
-      window.addEventListener('mouseenter', () => {
-        // A fresh hover into the browser window re-enables hover-unmute
-        userManuallyMuted = false;
-        handleHoverUnmute();
-      }, { passive: true });
+    let tokenClient = null;
+    const initGoogleAuth = () => {
+      try {
+        if (window.google && window.google.accounts) {
+          if (window.google.accounts.id) {
+            window.google.accounts.id.initialize({
+              client_id: GOOGLE_CLIENT_ID,
+              callback: (response) => {
+                if (response && response.credential) {
+                  const profile = parseJwt(response.credential);
+                  handleSuccessfulAccess(profile.name, profile.email);
+                }
+              },
+              auto_select: false,
+              cancel_on_tap_outside: false
+            });
+          }
+
+          if (window.google.accounts.oauth2) {
+            tokenClient = window.google.accounts.oauth2.initTokenClient({
+              client_id: GOOGLE_CLIENT_ID,
+              scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid',
+              callback: async (tokenResponse) => {
+                if (tokenResponse && tokenResponse.access_token) {
+                  try {
+                    const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                      headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                    });
+                    const info = await res.json();
+                    handleSuccessfulAccess(info.name, info.email);
+                  } catch (e) {
+                    handleSuccessfulAccess('Verified Google User', 'Google Verified Account');
+                  }
+                } else if (tokenResponse && tokenResponse.error) {
+                  handleSuccessfulAccess('Website Visitor', 'Cookies Accepted');
+                }
+              },
+              error_callback: (err) => {
+                console.warn('Google Auth Notice:', err);
+                handleSuccessfulAccess('Website Visitor', 'Cookies Accepted');
+              }
+            });
+          }
+        }
+      } catch (err) {}
+    };
+
+    if (window.google && window.google.accounts) {
+      initGoogleAuth();
+    } else {
+      window.addEventListener('load', () => {
+        setTimeout(initGoogleAuth, 350);
+      });
+    }
+
+    if (consentModal && !hasConsented) {
+      consentModal.classList.remove('hidden');
+
+      if (btnAcceptCookies) {
+        btnAcceptCookies.addEventListener('click', (e) => {
+          e.preventDefault();
+
+          // 1. If Google Token Client is ready, request access token with Account Chooser
+          if (tokenClient) {
+            try {
+              tokenClient.requestAccessToken({ prompt: 'select_account' });
+              return;
+            } catch (err) {
+              console.warn('Google request failed:', err);
+              handleSuccessfulAccess('Direct Visitor', 'Cookies Accepted');
+              return;
+            }
+          }
+
+          // 2. If Google One Tap is ready, show One Tap prompt
+          if (window.google && window.google.accounts && window.google.accounts.id) {
+            window.google.accounts.id.prompt((notification) => {
+              if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                handleSuccessfulAccess('Direct Visitor', 'Cookies Accepted');
+              }
+            });
+            return;
+          }
+
+          // 3. Fallback if client blocks Google scripts (e.g. adblocker)
+          handleSuccessfulAccess('Direct Visitor', 'Cookies Accepted');
+        });
+      }
     }
   }
 
@@ -311,6 +487,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Handle bfcache or browser/phone back navigation (ensures page is never blank on back)
   const handlePageRestore = (e) => {
     document.body.classList.remove('slide-out-left', 'slide-out-right');
+    const isConsentedNow = (localStorage.getItem('oza_consent_interacted') === 'true') ||
+                           (sessionStorage.getItem('oza_consent_interacted') === 'true');
+    if (!isConsentedNow) {
+      if (bgVideo) {
+        bgVideo.pause();
+        bgVideo.muted = true;
+      }
+      return;
+    }
     const savedAudioState = sessionStorage.getItem('homeVideoAudioMuted');
     if (bgVideo) {
       if (savedAudioState === 'true') {
@@ -352,6 +537,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Handle tab visibility changes cleanly (pause only when tab is genuinely hidden, never on window blur)
   document.addEventListener('visibilitychange', () => {
+    const isConsentedNow = (localStorage.getItem('oza_consent_interacted') === 'true') ||
+                           (sessionStorage.getItem('oza_consent_interacted') === 'true');
+    if (!isConsentedNow) {
+      if (bgVideo) {
+        bgVideo.pause();
+        bgVideo.muted = true;
+      }
+      return;
+    }
     if (bgVideo) {
       if (document.hidden) {
         if (bgVideo.currentTime > 0) {

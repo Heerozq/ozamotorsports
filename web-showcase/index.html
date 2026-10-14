@@ -19,8 +19,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=BBH+Bartle&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Castoro+Titling&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Condiment&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
+    <!-- Google Identity Services (One Tap & Sign In) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
       const clearExitState = () => {
         document.documentElement.classList.remove('slide-in-left-active', 'slide-in-active');
@@ -34,13 +35,18 @@
       const navEntries = window.performance && performance.getEntriesByType && performance.getEntriesByType('navigation');
       const isReload = (navEntries && navEntries.length > 0 && navEntries[0].type === 'reload') ||
                        (window.performance && window.performance.navigation && window.performance.navigation.type === 1);
+      const isNavigatedToHome = sessionStorage.getItem('navigatedToHome') === 'true';
+
       if (isReload) {
         sessionStorage.removeItem('homeVideoTime');
         sessionStorage.removeItem('homeVideoAudioMuted');
         sessionStorage.removeItem('navigatedToHome');
       }
 
-      if (sessionStorage.getItem('navigatedToHome') === 'true') {
+      const hasConsentedAlready = (localStorage.getItem('oza_consent_interacted') === 'true') || 
+                                  (sessionStorage.getItem('oza_consent_interacted') === 'true');
+
+      if (isNavigatedToHome) {
         document.documentElement.classList.add('slide-in-left-active');
       }
 
@@ -48,6 +54,10 @@
         document.documentElement.classList.add('menu-preset-open');
       } else {
         document.documentElement.classList.remove('menu-preset-open');
+      }
+
+      if (hasConsentedAlready) {
+        document.documentElement.classList.add('consent-already-handled');
       }
     </script>
   </head>
@@ -59,7 +69,7 @@
     </script>
     <!-- Background Media -->
     <div class="bg-container">
-      <video class="bg-video" id="bgVideo" autoplay loop playsinline webkit-playsinline preload="auto"></video>
+      <video class="bg-video" id="bgVideo" loop playsinline webkit-playsinline preload="auto"></video>
       <!-- Overlay to slightly darken the video so the white text stays readable -->
       <div class="bg-overlay"></div>
     </div>
@@ -83,26 +93,9 @@
             targetSrc = '/bg-video-1080p.mp4';
           }
           v.src = targetSrc;
-
-          var isWin = /Windows/i.test(navigator.userAgent || navigator.platform || '');
-          var savedState = sessionStorage.getItem('homeVideoAudioMuted');
-          if (savedState === 'false' || (savedState === null && isWin)) {
-            v.muted = false;
-            v.volume = 1.0;
-            var p = v.play();
-            if (p !== undefined) {
-              p.catch(function() {
-                v.muted = true;
-                v.defaultMuted = true;
-                var pRetry = v.play();
-                if (pRetry !== undefined) pRetry.catch(function(){});
-              });
-            }
-          } else {
+          if (!hasConsentedAlready) {
+            v.pause();
             v.muted = true;
-            v.defaultMuted = true;
-            var pMobile = v.play();
-            if (pMobile !== undefined) pMobile.catch(function(){});
           }
         }
       })();
@@ -110,6 +103,31 @@
 
     <!-- Main Content UI -->
     <div class="ui-layer">
+      
+      <!-- Oza Motorsports Cookie Consent Gate -->
+      <div class="consent-modal-overlay" id="consentModal">
+        <div class="consent-card" id="consentCard">
+          <div class="consent-badge">
+            <img src="/logo.png" alt="Oza Motorsports" class="consent-logo" />
+          </div>
+          <h2 class="consent-title">COOKIE CONSENT</h2>
+          <p class="consent-subtitle">OZA MOTORSPORTS</p>
+          <p class="consent-description">We use cookies and device telemetry to deliver a better, seamless, and high-performance experience across our digital showcase.</p>
+          <div class="consent-actions">
+            <button class="consent-btn primary-btn" id="btnAcceptCookies">
+              <span class="google-icon-wrapper">
+                <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"/>
+                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                </svg>
+              </span>
+              <span>ACCEPT COOKIES &amp; CONTINUE WITH GOOGLE</span>
+            </button>
+          </div>
+        </div>
+      </div>
       
       <!-- Side Menu -->
       <div class="side-menu" id="sideMenu">
