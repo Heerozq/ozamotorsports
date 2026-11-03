@@ -1,3 +1,15 @@
+/* Embedded Self-Hosted Condiment Font (Universal across all devices, zero fallback) */
+@font-face {
+  font-family: 'Condiment';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: local('Condiment'),
+       url('/fonts/condiment-regular.woff2') format('woff2'),
+       url('/fonts/condiment-regular.ttf') format('truetype'),
+       url('https://fonts.gstatic.com/s/condiment/v26/pONk1hggFNmwvXALyH6irIP5.woff2') format('woff2');
+}
+
 /* Reset and Base Styles */
 * {
   box-sizing: border-box;
