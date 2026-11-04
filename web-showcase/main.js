@@ -26,12 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const openMenuBtn = document.querySelector('.action-btn');
   const closeMenuBtn = document.getElementById('closeMenuBtn');
   const sideMenu = document.getElementById('sideMenu');
+  let userManuallyMuted = false;
+  let wasUnmutedBeforeMenu = false;
 
   // 0. Cookie Consent Gate & Guaranteed Continuous Autoplay & Audio Controller
   if (bgVideo) {
     // Detect Windows desktop
     const isWindows = /Windows/i.test(navigator.userAgent || navigator.platform || '');
-    let userManuallyMuted = false;
+
 
     // Ensure adaptive video src is assigned if not already set by inline script
     if (!bgVideo.getAttribute('src')) {
@@ -148,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isWindows) {
         const unlockAudioOnWindows = (e) => {
           const savedState = sessionStorage.getItem('homeVideoAudioMuted');
-          if (savedState === 'true' || userManuallyMuted || !bgVideo) return;
+          if (savedState === 'true' || userManuallyMuted || !bgVideo || (sideMenu && sideMenu.classList.contains('open'))) return;
           if (bgVideo.muted) {
             bgVideo.muted = false;
             bgVideo.volume = 1.0;
@@ -182,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const toggleVideoAudio = (e) => {
         if (!bgVideo) return;
+        if (sideMenu && sideMenu.classList.contains('open')) return;
 
         // Debounce rapid multi-taps (within 300ms)
         const now = Date.now();
@@ -228,6 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const hasHoverCapability = window.matchMedia('(hover: hover) and (pointer: fine)').matches || (window.innerWidth > 1024);
       const handleHoverUnmute = () => {
         if (!bgVideo) return;
+        if (sideMenu && sideMenu.classList.contains('open')) return;
         if (Date.now() - lastAudioToggleTime < 350) return;
         if (bgVideo.muted) {
           bgVideo.muted = false;
@@ -448,6 +452,14 @@ document.addEventListener('DOMContentLoaded', () => {
   function openDrawer(fromReturn = false) {
     if (!sideMenu) return;
     sideMenu.classList.add('open');
+
+    // Mute video when side menu opens (without pausing playback)
+    if (bgVideo) {
+      if (!bgVideo.muted && bgVideo.volume > 0) {
+        wasUnmutedBeforeMenu = true;
+      }
+      bgVideo.muted = true;
+    }
     if (fromReturn) {
       ignoreOutsideClickUntil = Date.now() + 1500; // Ignore accidental/spurious clicks or gesture residue on return
       setTimeout(() => {
@@ -463,6 +475,25 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.nav-dropdown.show-dropdown').forEach(el => el.classList.remove('show-dropdown'));
     sessionStorage.removeItem('openMenuOnHome');
     sessionStorage.removeItem('navigatedFromMenu');
+
+    // Unmute video when side menu closes if audio was active before opening
+    if (bgVideo) {
+      const isConsentedNow = (localStorage.getItem('oza_consent_interacted') === 'true') ||
+                             (sessionStorage.getItem('oza_consent_interacted') === 'true');
+      if (isConsentedNow) {
+        const savedAudioState = sessionStorage.getItem('homeVideoAudioMuted');
+        if (wasUnmutedBeforeMenu || (!userManuallyMuted && savedAudioState !== 'true')) {
+          bgVideo.muted = false;
+          bgVideo.volume = 1.0;
+          sessionStorage.setItem('homeVideoAudioMuted', 'false');
+          userManuallyMuted = false;
+          if (bgVideo.paused) {
+            bgVideo.play().catch(() => {});
+          }
+        }
+      }
+      wasUnmutedBeforeMenu = false;
+    }
   }
 
   if (sideMenu) {
