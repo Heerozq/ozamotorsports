@@ -1018,25 +1018,13 @@ body::-webkit-scrollbar {
 }
 
 .innovation-video.video-num3,
-video[src*="num3.mp4"] {
-  transform: translateX(-75px);
-  /* Shifted 35px to the left */
-  transform-origin: center center;
-}
-
 .innovation-video.video-num6,
-video[src*="num6.mp4"] {
-  transform: translateX(-26px) scale(1.08);
-  /* Shifted 10px to the right */
-  transform-origin: center center;
-}
-
 .innovation-video.video-num9,
+video[src*="num3.mp4"],
+video[src*="num6.mp4"],
 video[src*="num9.mp4"] {
-  max-width: 58vw;
-  max-height: 72vh;
-  transform: translate(-148px, -35px) scale(1.35);
-  /* Shifted additional 20px down */
+  transform: translateX(-75px);
+  /* Unified to match v-odne1s.html desktop position and scale (1.0) */
   transform-origin: center center;
 }
 
@@ -2991,30 +2979,10 @@ body.slide-in-left-active {
     max-width: 100% !important;
     max-height: 100% !important;
     object-fit: contain !important;
-    transform: scale(1.85) !important;
+    transform: translate(-9px, 7px) scale(1.48) !important;
+    /* Unified to match v-odne1s.html mobile position and scale (1.48) */
     transform-origin: center center !important;
     opacity: 1 !important;
-  }
-
-  .innovation-video.video-num3,
-  .v-odne1s-page .innovation-video {
-    transform: translate(-9px, 7px) scale(1.48) !important;
-    /* Video 3 moved 9px LEFT & 7px DOWN */
-    transform-origin: center center !important;
-  }
-
-  .innovation-video.video-num6,
-  .bobart-page .innovation-video {
-    transform: translateY(-3px) scale(1.65) !important;
-    /* Video 6 thodi si choti */
-    transform-origin: center center !important;
-  }
-
-  .innovation-video.video-num9,
-  .ltb-page .innovation-video {
-    transform: scale(2.10) !important;
-    /* Video 9 thodi si choti */
-    transform-origin: center center !important;
   }
 
   /* Innovation Navigation Arrows on Mobile (Fully safe from iOS/Android tab bars and gesture home bars) */
