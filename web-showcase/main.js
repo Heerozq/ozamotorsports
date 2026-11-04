@@ -635,7 +635,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Exclude external links or the Founder portfolio link
-      if (link.getAttribute('target') === '_blank' || !targetUrl.startsWith(window.location.origin) || targetUrl.includes('portfolio.html') || targetUrl === window.location.href || targetUrl.endsWith('#')) {
+      if (link.getAttribute('target') === '_blank' || !targetUrl.startsWith(window.location.origin) || targetUrl === window.location.href || targetUrl.endsWith('#')) {
         return;
       }
       

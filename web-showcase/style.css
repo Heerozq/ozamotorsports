@@ -1292,7 +1292,48 @@ video[src*="num9.mp4"] {
   }
 }
 
-/* Page Transition Styles */
+/* Contact Page Footer Info directly beneath submit button */
+.contact-footer-info {
+  grid-column: span 2;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 36px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.contact-footer-group {
+  display: contents;
+}
+
+.contact-footer-link {
+  color: #ffffff;
+  text-decoration: none;
+  font-family: 'Castoro Titling', serif;
+  font-size: clamp(11.5px, 0.95vw, 13.5px);
+  letter-spacing: 0.6px;
+  line-height: 1;
+  transition: color 0.25s ease, text-shadow 0.25s ease, transform 0.25s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.contact-footer-link:hover {
+  color: #D81700;
+  text-shadow: 0 0 12px rgba(216, 23, 0, 0.65);
+  transform: translateY(-1px);
+}
+
+.contact-footer-sep {
+  color: #D81700;
+  font-size: 13px;
+  user-select: none;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
 /* Page Transition Styles */
 html,
 body {
@@ -1838,6 +1879,12 @@ body.slide-in-left-active {
       max-width: 350px !important;
     }
 
+    
+
+    
+
+    
+
     .form-group input,
     .form-group select {
       height: 30px !important;
@@ -2011,6 +2058,8 @@ body.slide-in-left-active {
       row-gap: 6px !important;
       max-width: 310px !important;
     }
+
+    
 
     .form-group input,
     .form-group select {
@@ -2649,6 +2698,70 @@ body.slide-in-left-active {
   .form-success-msg span {
     display: block !important;
     white-space: nowrap !important;
+  }
+
+  /* Mobile Contact Info: Stack of 2 (Line 1: LinkedIn + Phone, Line 2: Email) */
+  .contact-footer-info {
+    grid-column: span 2 !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+    gap: clamp(7px, 1.3vh, 10px) !important;
+    margin-top: clamp(14px, 2.6vh, 22px) !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .contact-footer-group {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    white-space: nowrap !important;
+  }
+
+  .contact-footer-sep-desktop {
+    display: none !important;
+  }
+
+  .contact-footer-sep-inline {
+    display: inline-block !important;
+    color: #D81700 !important;
+    font-size: 13px !important;
+    line-height: 1 !important;
+    user-select: none !important;
+    opacity: 0.85 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .contact-footer-link {
+    color: #ffffff !important;
+    text-decoration: none !important;
+    font-family: 'Castoro Titling', serif !important;
+    font-size: clamp(12px, 3.2vw, 14.5px) !important;
+    letter-spacing: 0.7px !important;
+    line-height: 1.35 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    display: inline-block !important;
+    transition: color 0.25s ease, text-shadow 0.25s ease !important;
+  }
+
+  .contact-footer-email {
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .contact-footer-link:hover,
+  .contact-footer-link:active {
+    color: #D81700 !important;
+    text-shadow: 0 0 10px rgba(216, 23, 0, 0.6) !important;
   }
 
   /* Innovations Specific Mobile Layout (V.ODNE1S, BOBART, LTB VALVE TECHNO) */

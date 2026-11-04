@@ -11,7 +11,8 @@ export default defineConfig({
         career: 'career.html',
         bobart: 'bobart.html',
         vodne1s: 'v-odne1s.html',
-        ltb: 'ltb-valve-techno.html'
+        ltb: 'ltb-valve-techno.html',
+        founder: 'founder.html'
       }
     }
   }
