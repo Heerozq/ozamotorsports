@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Preload on link hover or touch
+  // Background cache warming & Fast prefetch for innovation media
   const videoMap = {
     'v-odne1s': '/num3.mp4',
     'bobart': '/num6.mp4',
@@ -345,13 +345,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function preloadVideo(src) {
     if (!src || preloadedVideos.has(src)) return;
     preloadedVideos.add(src);
-    const link = document.createElement('link');
-    link.rel = 'prefetch';
-    link.as = 'video';
-    link.href = src;
-    document.head.appendChild(link);
+    fetch(src, { priority: 'low' }).catch(() => {});
   }
 
+  // Preload on link hover or touch
   document.querySelectorAll('a[href*="v-odne1s"], a[href*="bobart"], a[href*="ltb-valve-techno"]').forEach(link => {
     ['mouseenter', 'touchstart'].forEach(evt => {
       link.addEventListener(evt, () => {
@@ -361,6 +358,44 @@ document.addEventListener('DOMContentLoaded', () => {
       }, { passive: true, once: true });
     });
   });
+
+  // Idle background cache warming for innovation videos & posters
+  const warmInnovationAssets = () => {
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn && conn.saveData) return; // Respect user's data-saving preference
+
+    const currentSrc = innovationVideo ? (innovationVideo.getAttribute('src') || '') : '';
+    const videosToWarm = ['/num3.mp4', '/num6.mp4', '/num9.mp4'].filter(v => !currentSrc.includes(v));
+    const postersToWarm = ['/num3-poster.webp', '/num6-poster.webp', '/num9-poster.webp'];
+
+    // 1. Instantly warm webp posters in browser memory (<15KB each)
+    postersToWarm.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+
+    // 2. Sequentially warm innovation videos into browser disk cache with breathing room
+    let idx = 0;
+    const fetchNext = () => {
+      if (idx >= videosToWarm.length) return;
+      const src = videosToWarm[idx++];
+      if (preloadedVideos.has(src)) {
+        fetchNext();
+        return;
+      }
+      preloadedVideos.add(src);
+      fetch(src, { priority: 'low' })
+        .then(() => setTimeout(fetchNext, 600))
+        .catch(() => setTimeout(fetchNext, 600));
+    };
+    fetchNext();
+  };
+
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => setTimeout(warmInnovationAssets, 1500), { timeout: 4000 });
+  } else {
+    window.addEventListener('load', () => setTimeout(warmInnovationAssets, 2000), { once: true });
+  }
 
   // Career Page: Proximity lighting & pulse animation on Apply Now button with smooth seamless exit
   const careerHeading = document.querySelector('.career-page .career-heading');

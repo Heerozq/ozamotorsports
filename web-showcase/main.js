@@ -744,7 +744,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Fast hover prefetch for innovation links
+  // Fast hover prefetch & idle background warming for innovation links
   const videoMap = {
     'v-odne1s': '/num3.mp4',
     'bobart': '/num6.mp4',
@@ -755,11 +755,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function preloadVideo(src) {
     if (!src || preloadedVideos.has(src)) return;
     preloadedVideos.add(src);
-    const link = document.createElement('link');
-    link.rel = 'prefetch';
-    link.as = 'video';
-    link.href = src;
-    document.head.appendChild(link);
+    fetch(src, { priority: 'low' }).catch(() => {});
   }
 
   document.querySelectorAll('a[href*="v-odne1s"], a[href*="bobart"], a[href*="ltb-valve-techno"]').forEach(link => {
@@ -771,4 +767,37 @@ document.addEventListener('DOMContentLoaded', () => {
       }, { passive: true, once: true });
     });
   });
+
+  // Idle background warming for innovation videos & posters from home page
+  const warmInnovationAssets = () => {
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn && conn.saveData) return;
+
+    ['/num3-poster.webp', '/num6-poster.webp', '/num9-poster.webp'].forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+
+    const videosToWarm = ['/num3.mp4', '/num6.mp4', '/num9.mp4'];
+    let idx = 0;
+    const fetchNext = () => {
+      if (idx >= videosToWarm.length) return;
+      const src = videosToWarm[idx++];
+      if (preloadedVideos.has(src)) {
+        fetchNext();
+        return;
+      }
+      preloadedVideos.add(src);
+      fetch(src, { priority: 'low' })
+        .then(() => setTimeout(fetchNext, 800))
+        .catch(() => setTimeout(fetchNext, 800));
+    };
+    fetchNext();
+  };
+
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => setTimeout(warmInnovationAssets, 3000), { timeout: 6000 });
+  } else {
+    window.addEventListener('load', () => setTimeout(warmInnovationAssets, 3500), { once: true });
+  }
 });
