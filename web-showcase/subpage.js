@@ -262,18 +262,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Fast Video Auto-Play & Rendering Initialization
+  // Fast Video Auto-Play & Smooth Buffer Initialization
   const innovationVideo = document.querySelector('.innovation-video');
   if (innovationVideo) {
     innovationVideo.preload = 'auto';
     const startPlay = () => {
-      innovationVideo.play().catch(() => {});
+      innovationVideo.muted = true;
+      const playPromise = innovationVideo.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+      }
     };
-    if (innovationVideo.readyState >= 2) {
+
+    // Buffer check: Ensure browser has sufficient future buffer before playback starts
+    // readyState 3 (HAVE_FUTURE_DATA) or 4 (HAVE_ENOUGH_DATA) avoids the 0.5s freeze
+    if (innovationVideo.readyState >= 3) {
       startPlay();
     } else {
-      innovationVideo.addEventListener('canplay', startPlay, { once: true });
-      innovationVideo.addEventListener('loadeddata', startPlay, { once: true });
+      let started = false;
+      const triggerSafeStart = () => {
+        if (started) return;
+        started = true;
+        startPlay();
+      };
+
+      // Prefer canplaythrough for zero-stutter continuous playback
+      innovationVideo.addEventListener('canplaythrough', triggerSafeStart, { once: true });
+      innovationVideo.addEventListener('canplay', triggerSafeStart, { once: true });
+
+      // Fallback safeguard: Never delay playback beyond 650ms even under conservative network estimates
+      setTimeout(triggerSafeStart, 650);
     }
 
     // Special loop range for num3.mp4 (starts from 0.10s and loops at 9.41s)
